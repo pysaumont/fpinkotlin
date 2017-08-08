@@ -1,69 +1,3 @@
-//version = '1.0'
-//
-//buildscript {
-//    ext.kotlin_version = '1.2-M1'
-//
-//    repositories {
-//        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-//        mavenCentral()
-//    }
-//    dependencies {
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//    }
-//}
-//
-//apply plugin: 'java'
-//apply plugin: 'kotlin'
-//apply plugin: 'eclipse'
-//apply plugin: 'idea'
-//
-//sourceCompatibility = 1.8
-//
-//repositories {
-//    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-//    mavenCentral()
-//    jcenter()
-//}
-//
-//allprojects {
-//    apply plugin: 'java'
-//    sourceCompatibility = 1.8
-//    targetCompatibility = 1.8
-//}
-//
-//subprojects {
-//    apply plugin: 'kotlin'
-//    apply plugin: 'eclipse'
-//    apply plugin: 'idea'
-//
-//    repositories {
-//        mavenCentral()
-//    }
-//}
-//
-//sourceSets {
-//    main.kotlin.srcDirs += 'src/main/kotlin'
-//    main.java.srcDirs += 'src/main/java'
-//}
-
-//buildscript {
-//    ext.kotlin_version = '1.2-M2-eap-26'
-//
-//    repositories {
-//        maven { url 'https://dl.bintray.com/kotlin/kotlin-dev/' }
-//        //maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-//        maven { url 'https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib'}
-//        maven { url 'https://plugins.gradle.org/m2/' }
-//        mavenCentral()
-//        jcenter()
-//    }
-//
-//    dependencies {
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//
-//    }
-//}
-
 group 'com.fpinkotlin'
 version '1.0-SNAPSHOT'
 
@@ -82,52 +16,16 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-//sourceCompatibility = 1.8
-
-repositories {
-    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-    mavenCentral()
-    jcenter()
-}
-
-
 allprojects{
     apply plugin: "kotlin"
+    apply plugin: 'java'
     sourceCompatibility = 1.8
 
-//
-//    compileKotlin {
-//        kotlinOptions {
-//            jvmTarget = "1.8"
-//            javaParameters = true
-//        }
-//    }
-//
-//    dependencies {
-//        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-//
-//        testCompile "org.jetbrains.kotlin:kotlin-test"
-//        testCompile "org.jetbrains.kotlin:kotlin-test-junit"
-//
-//    }
-//
-//
     repositories {
         maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
         mavenCentral()
         jcenter()
     }
-
-//    sourceSets {
-//        main.java.srcDirs += 'src/main/java'
-//        test.java.srcDirs += 'src/test/java'
-//        main.kotlin.srcDirs += 'src/main/kotlin'
-//        test.kotlin.srcDirs += 'src/test/kotlin'
-//    }
-
 }
 
 subprojects {
@@ -148,9 +46,3 @@ project(':fpinkotlin-introduction') {
     }
 }
 
-//compileKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
-//compileTestKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}

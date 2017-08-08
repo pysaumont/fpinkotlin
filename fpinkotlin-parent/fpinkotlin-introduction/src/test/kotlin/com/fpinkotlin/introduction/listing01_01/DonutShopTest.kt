@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class DonutShopTest: StringSpec()  {
+class DonutShopTest  {
 
     @Test
     fun testBuyCoffee() {

@@ -1,7 +1,7 @@
 package com.fpinkotlin.introduction.listing01_06
 
 
-class Payment(val creditCard: CreditCard, val amount: Int) {
+data class Payment(val creditCard: CreditCard, val amount: Int) {
     fun combine(payment: Payment): Payment =
             if (creditCard == payment.creditCard)
                 Payment(creditCard, amount + payment.amount)
