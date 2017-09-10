@@ -15,13 +15,6 @@ class PaymentTest: StringSpec() {
             })
         }
     }
-//
-//    @Test
-//    fun testBuyDonuts() {
-//        val creditCard = CreditCard()
-//        val purchase = buyDonuts(5, creditCard)
-//        assertEquals(Donut.price * 5, purchase.payment.amount)
-//    }
 }
 
 class CreditCardGenerator : Gen<CreditCard> {

@@ -46,3 +46,59 @@ project(':fpinkotlin-introduction') {
     }
 }
 
+project(':fpinkotlin-functions-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-functions-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-recursion-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-recursion-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-lists-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-lists-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-optionaldata-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-optionaldata-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+

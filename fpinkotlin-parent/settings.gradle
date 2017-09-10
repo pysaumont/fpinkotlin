@@ -3,5 +3,14 @@
  * This list is hold by the fpinkotlin-parent module
  */
 include 'fpinkotlin-common',
-        'fpinkotlin-introduction'
+        'fpinkotlin-introduction',
+        'fpinkotlin-functions-exercises',
+        'fpinkotlin-functions-solutions',
+        'fpinkotlin-recursion-exercises',
+        'fpinkotlin-recursion-solutions',
+        'fpinkotlin-lists-exercises',
+        'fpinkotlin-lists-solutions',
+        'fpinkotlin-optionaldata-exercises',
+        'fpinkotlin-optionaldata-solutions'
+
 
