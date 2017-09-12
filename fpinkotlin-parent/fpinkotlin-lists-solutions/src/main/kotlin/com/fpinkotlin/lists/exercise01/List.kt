@@ -4,6 +4,8 @@ sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
+    fun cons(a: A): List<A> = Cons(a, this)
+
     private class Nil<A> : List<A>() {
 
         override fun isEmpty() = true
@@ -15,7 +17,7 @@ sealed class List<A> {
         override fun hashCode(): Int = 0
     }
 
-    private class Cons<A>(private val head: A, private val tail: List<A>) : List<A>() {
+    private class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
 
         override fun isEmpty() = false
 
@@ -35,8 +37,10 @@ sealed class List<A> {
 }
 
 fun main(args: Array<String>) {
-    println(List<Any>())
-    println(List(1, 2, 3))
-    val numbers: Array<Int> = arrayOf(1, 2, 3, 4, 5)
-    println(List(*numbers))
+  println(List<Int>().cons(5))
+  val i = 5
+    val size= 0
+  println(Array(0, {it}).joinToString(", ", if (size == 0) "[$i" else "[$i, ", ", NIL]"))
+  println(Array(1, {it}).joinToString(", ", if (size + 1 == 0) "[$i" else "[$i, ", ", NIL]"))
+    println(List(0).cons(5))
 }

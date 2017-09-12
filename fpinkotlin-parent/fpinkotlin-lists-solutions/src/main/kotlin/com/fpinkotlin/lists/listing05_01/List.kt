@@ -33,10 +33,3 @@ sealed class List<A> {
                 az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
     }
 }
-
-fun main(args: Array<String>) {
-    println(List<Any>())
-    println(List(1, 2, 3))
-    val numbers: Array<Int> = arrayOf(1, 2, 3, 4, 5)
-    println(List(*numbers))
-}

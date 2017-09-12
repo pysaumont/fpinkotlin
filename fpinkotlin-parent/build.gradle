@@ -2,7 +2,7 @@ group 'com.fpinkotlin'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2-M1'
+    ext.kotlin_version = '1.2-M2'
     ext.kotlintest_version = '2.0.5'
 
     repositories {
@@ -37,7 +37,14 @@ subprojects {
     }
 }
 
-project(':fpinkotlin-common') {}
+project(':fpinkotlin-common') {
+
+    dependencies {
+        compile "io.kotlintest:kotlintest:$kotlintest_version"
+        compile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    }
+
+}
 
 project(':fpinkotlin-introduction') {
 

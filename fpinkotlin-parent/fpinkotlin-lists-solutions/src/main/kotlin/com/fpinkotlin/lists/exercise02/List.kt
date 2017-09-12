@@ -1,10 +1,16 @@
-package com.fpinkotlin.lists.listing05_01
+package com.fpinkotlin.lists.exercise02
 
 sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
+    fun cons(a: A): List<A>  = Cons(a, this)
+
+    abstract fun setHead(a: A): List<A>
+
     private class Nil<A> : List<A>() {
+
+        override fun setHead(a: A): List<A> = throw IllegalStateException("setHead called on an empty list")
 
         override fun isEmpty() = true
 
@@ -15,7 +21,9 @@ sealed class List<A> {
         override fun hashCode(): Int = 0
     }
 
-    private class Cons<A>(private val head: A, private val tail: List<A>) : List<A>() {
+    private class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
+
+        override fun setHead(a: A): List<A> = tail.cons(a)
 
         override fun isEmpty() = false
 
@@ -32,11 +40,4 @@ sealed class List<A> {
         operator fun <A> invoke(vararg az: A): List<A> =
                 az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
     }
-}
-
-fun main(args: Array<String>) {
-    println(List<Any>())
-    println(List(1, 2, 3))
-    val numbers: Array<Int> = arrayOf(1, 2, 3, 4, 5)
-    println(List(*numbers))
 }

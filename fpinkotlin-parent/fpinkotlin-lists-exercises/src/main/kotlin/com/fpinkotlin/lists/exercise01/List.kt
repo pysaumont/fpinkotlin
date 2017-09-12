@@ -4,6 +4,8 @@ sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
+    fun cons(a: A): List<A> = TODO("cons")
+
     private class Nil<A> : List<A>() {
 
         override fun isEmpty() = true
@@ -15,7 +17,7 @@ sealed class List<A> {
         override fun hashCode(): Int = 0
     }
 
-    private class Cons<A>(private val head: A, private val tail: List<A>) : List<A>() {
+    private class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
 
         override fun isEmpty() = false
 
