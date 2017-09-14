@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.exercise09
+package com.fpinkotlin.lists.exercise12
 
 
 import com.fpinkotlin.generators.forAll
@@ -9,16 +9,23 @@ import java.util.*
 
 class ListTest: StringSpec() {
 
+    val f: (Int) -> (String) -> String = { a -> { b -> "$a + ($b)"} }
+
     init {
 
-        "foldLeft" {
+        "foldRightViaFoldLeft0" {
+            forAll(IntListGenerator(0, 0), { (_, second) ->
+                second.foldRightViaFoldLeft("0", f) == "0"
+            }, 1)
+        }
+
+        "foldRightViaFoldLeft" {
             forAll(IntListGenerator(), { (_, second) ->
-                second.foldLeft(0) { a -> { b -> a + b } } ==  second.foldRight(0) { a -> { b -> a + b } }
+                second.foldRightViaFoldLeft("0", f) == second.foldRight("0", f)
             })
         }
     }
 }
-
 
 class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
 

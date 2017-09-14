@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.exercise09
+package com.fpinkotlin.lists.exercise11
 
 
 sealed class List<A> {
@@ -15,15 +15,15 @@ sealed class List<A> {
 
     fun concat(list: List<A>): List<A> = concat(this, list)
 
-    fun reverse(): List<A> = reverse(Nil(), this)
-
     abstract fun init(): List<A>
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
 
-    fun length(): Int = foldRight(0) { _ -> { it + 1} }
+    fun length(): Int = foldLeft(0) { { _ -> it + 1} }
+
+    fun reverse(): List<A> = foldLeft(List.invoke(), { acc -> { acc.cons(it) } })
 
     internal class Nil<A>: List<A>() {
 
@@ -73,11 +73,6 @@ sealed class List<A> {
             is Cons -> concat(list1.tail, list2).cons(list1.head)
         }
 
-        tailrec fun <A> reverse(acc: List<A>, list: List<A>): List<A> = when (list) {
-            is Nil -> acc
-            is Cons -> reverse(acc.cons(list.head), list.tail)
-        }
-
         fun <A, B> foldRight(list: List<A>, n: B, f: (A) -> (B) -> B): B =
             when (list) {
                 is List.Nil -> n
@@ -95,7 +90,6 @@ sealed class List<A> {
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldLeft(0, { x -> { y -> x + y } })
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
-
+fun product(list: List<Double>): Double = list.foldLeft(1.0, { x -> { y -> x * y } })

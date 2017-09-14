@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.exercise09
+package com.fpinkotlin.lists.exercise10
 
 
 sealed class List<A> {
@@ -23,7 +23,7 @@ sealed class List<A> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
 
-    fun length(): Int = foldRight(0) { _ -> { it + 1} }
+    fun length(): Int = TODO("length")
 
     internal class Nil<A>: List<A>() {
 
@@ -95,7 +95,6 @@ sealed class List<A> {
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = TODO("sum")
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
-
+fun product(list: List<Double>): Double = TODO("product")

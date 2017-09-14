@@ -21,7 +21,7 @@ sealed class List<A> {
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
-    fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
+    fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = TODO("foldLeft")
 
     fun length(): Int = foldRight(0) { _ -> { it + 1} }
 
@@ -84,12 +84,6 @@ sealed class List<A> {
                 is List.Cons -> f(list.head)(foldRight(list.tail, n, f))
             }
 
-        tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
-            when (list) {
-                is List.Nil -> acc
-                is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
-            }
-
         operator fun <A> invoke(vararg az: A): List<A> =
             az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
     }
@@ -98,4 +92,3 @@ sealed class List<A> {
 fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
-

@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.exercise09
+package com.fpinkotlin.lists.exercise19
 
 
 sealed class List<A> {
@@ -13,17 +13,29 @@ sealed class List<A> {
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
 
-    fun concat(list: List<A>): List<A> = concat(this, list)
-
-    fun reverse(): List<A> = reverse(Nil(), this)
-
     abstract fun init(): List<A>
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
 
-    fun length(): Int = foldRight(0) { _ -> { it + 1} }
+    fun length(): Int = foldLeft(0) { { _ -> it + 1} }
+
+    fun reverse(): List<A> = foldLeft(List.invoke(), { acc -> { acc.cons(it) } })
+
+    fun <B> foldRightViaFoldLeft(identity: B, f: (A) -> (B) -> B): B =
+        this.reverse().foldLeft(identity) { x -> { y -> f(y)(x) } }
+
+    fun <B> cofoldRight(identity: B, f: (A) -> (B) -> B): B = cofoldRight(identity, this.reverse(), identity, f)
+
+    fun concat(list: List<A>): List<A> = concat(this, list)
+
+    fun concat_(list: List<A>): List<A> = concat_(this, list)
+
+    fun <B> map(f: (A) -> B): List<B> = foldRight(Nil()) { h -> { t: List<B> -> Cons(f(h), t) } }
+
+    fun filter(p: (A) -> Boolean): List<A> = foldRight(Nil()) { h -> { t: List<A> -> if (p(h)) Cons(h, t) else t } }
+
 
     internal class Nil<A>: List<A>() {
 
@@ -68,16 +80,6 @@ sealed class List<A> {
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
-        fun <A> concat(list1: List<A>, list2: List<A>): List<A> = when (list1) {
-            is Nil -> list2
-            is Cons -> concat(list1.tail, list2).cons(list1.head)
-        }
-
-        tailrec fun <A> reverse(acc: List<A>, list: List<A>): List<A> = when (list) {
-            is Nil -> acc
-            is Cons -> reverse(acc.cons(list.head), list.tail)
-        }
-
         fun <A, B> foldRight(list: List<A>, n: B, f: (A) -> (B) -> B): B =
             when (list) {
                 is List.Nil -> n
@@ -90,12 +92,28 @@ sealed class List<A> {
                 is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
             }
 
+        tailrec fun <A, B> cofoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
+            when (list) {
+                is List.Nil -> acc
+                is List.Cons -> cofoldRight(f(list.head)(acc), list.tail, identity, f)
+            }
+
+        fun <A> concat_(list1: List<A>, list2: List<A>): List<A> = foldRight(list1, list2) { x -> { y -> Cons(x, y) } }
+
+        fun <A> concat(list1: List<A>, list2: List<A>): List<A> = list1.reverse().foldLeft(list2) { x -> x::cons }
+
+        fun <A> flatten(list: List<List<A>>): List<A> = foldRight(list, Nil()) { x -> x::concat }
+
         operator fun <A> invoke(vararg az: A): List<A> =
             az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldLeft(0, { x -> { y -> x + y } })
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldLeft(1.0, { x -> { y -> x * y } })
 
+fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+
+fun doubleToString(list: List<Double>): List<String> =
+    List.foldRight(list, List<String>())  { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
