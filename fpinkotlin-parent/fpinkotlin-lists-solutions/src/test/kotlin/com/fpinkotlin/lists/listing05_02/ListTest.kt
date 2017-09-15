@@ -20,7 +20,6 @@ class ListTest: StringSpec() {
     }
 }
 
-
 class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
 
     override fun generate(): Pair<Array<Int>, List<Int>> {

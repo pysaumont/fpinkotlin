@@ -18,7 +18,7 @@ fun <T> list(gen: Gen<T>, minLength: Int = 0, maxLength: Int = 100): Gen<kotlin.
     }
   }
 
-fun <T> forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000) {
+fun <T>  forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000) {
   for (k in 0..numTests) {
     val a = generator.generate()
     val passed = fn(a)
@@ -27,3 +27,12 @@ fun <T> forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000) 
     }
   }
 }
+
+class IntPairGenerator: Gen<Pair<Int, Int>> {
+    override fun generate(): Pair<Int, Int> = Pair(Gen.int().generate(), Gen.int().generate())
+}
+
+class IntDoublePairGenerator: Gen<Pair<Int, Double>> {
+    override fun generate(): Pair<Int, Double> = Pair(Gen.int().generate(), Gen.double().generate())
+}
+
