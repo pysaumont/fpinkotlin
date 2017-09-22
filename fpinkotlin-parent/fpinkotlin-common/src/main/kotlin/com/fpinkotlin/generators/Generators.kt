@@ -38,8 +38,9 @@ class CharGenerator(private val min: Char = ' ', val max: Char = '~'): Gen<Char>
     override fun generate(): Char = (RANDOM.nextInt(max.toInt() - min.toInt()) + min.toInt()).toChar()
 }
 
-class IntPairGenerator: Gen<Pair<Int, Int>> {
-    override fun generate(): Pair<Int, Int> = Pair(Gen.int().generate(), Gen.int().generate())
+class IntPairGenerator(private val min: Int = 0, private val max: Int = 100) : Gen<Pair<Int, Int>> {
+    private val gen = IntGenerator(min, max)
+    override fun generate(): Pair<Int, Int> = Pair(gen.generate(), gen.generate())
 }
 
 class IntDoublePairGenerator: Gen<Pair<Int, Double>> {
@@ -55,13 +56,22 @@ class CharListGenerator(private val minLength: Int = 0, private val maxLength: I
     }
 }
 
-
 class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>,
-        List<Int>>> {
+    List<Int>>> {
 
     override fun generate(): Pair<Array<Int>, List<Int>> {
         val array: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
         return Pair(array, listOf(*array))
+    }
+}
+
+class IntListPairGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<List<Int>,
+    List<Int>>> {
+
+    override fun generate(): Pair<List<Int>, List<Int>> {
+        val array1: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
+        val array2: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
+        return Pair(listOf(*array1), listOf(*array2))
     }
 }
 

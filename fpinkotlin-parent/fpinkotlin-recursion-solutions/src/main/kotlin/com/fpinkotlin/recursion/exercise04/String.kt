@@ -20,8 +20,3 @@ fun <T> List<T>.tail(): List<T> =
             throw IllegalArgumentException("tail called on empty list")
         else
             this.subList(1, this.size)
-
-fun main(args: Array<String>) {
-    println(string(listOf('a', 'b', 'c')))
-
-}

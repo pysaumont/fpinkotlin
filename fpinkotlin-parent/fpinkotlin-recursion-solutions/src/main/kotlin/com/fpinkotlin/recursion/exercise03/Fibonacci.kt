@@ -9,16 +9,12 @@ fun fibonacci(number: Int): Int =
             fibonacci(number - 1) + fibonacci(number - 2)
 
 
-fun main(args: Array<String>) {
-    (0 until 10).forEach { print("${fibonacci(it)} ") }
-}
-
 fun fib(x: Int): BigInteger {
     tailrec
-    fun fib_(acc1: BigInteger, acc2: BigInteger, x: BigInteger): BigInteger = when {
+    fun fib_(val1: BigInteger, val2: BigInteger, x: BigInteger): BigInteger = when {
         (x == BigInteger.ZERO) -> BigInteger.ONE
-        (x == BigInteger.ONE) -> acc1 + acc2
-        else -> fib_(acc2, acc1 + acc2, x - BigInteger.ONE)
+        (x == BigInteger.ONE) -> val1 + val2
+        else -> fib_(val2, val1 + val2, x - BigInteger.ONE)
     }
     return fib_(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(x.toLong()))
 }
