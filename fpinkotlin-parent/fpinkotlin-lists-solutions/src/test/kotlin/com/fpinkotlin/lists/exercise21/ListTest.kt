@@ -28,6 +28,6 @@ class IntListGenerator(private val minLength: Int = 0, private val maxLength: In
 }
 
 class IntGenerator(private val max: Int): Gen<Int> {
-    private val RANDOM = Random()
-    override fun generate(): Int = RANDOM.nextInt(max)
+    private val random = Random()
+    override fun generate(): Int = random.nextInt(max)
 }

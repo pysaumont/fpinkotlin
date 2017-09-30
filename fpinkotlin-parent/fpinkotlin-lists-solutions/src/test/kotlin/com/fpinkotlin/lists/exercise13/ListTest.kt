@@ -15,13 +15,13 @@ class ListTest: StringSpec() {
 
         "cofoldRight0" {
             forAll(IntListGenerator(0, 0), { (_, second) ->
-                second.cofoldRight("0", f) == "0"
+                second.coFoldRight("0", f) == "0"
             }, 1)
         }
 
-        "cofoldRight" {
+        "coFoldRight" {
             forAll(IntListGenerator(), { (_, second) ->
-                second.cofoldRight("0", f) == second.foldRight("0", f)
+                second.coFoldRight("0", f) == second.foldRight("0", f)
             })
         }
     }

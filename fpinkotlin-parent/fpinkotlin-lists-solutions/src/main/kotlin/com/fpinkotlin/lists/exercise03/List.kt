@@ -6,26 +6,25 @@ sealed class List<A> {
 
     fun cons(a: A): List<A> = Cons(a, this)
 
-    abstract fun setHead(a: A): List<A>
+    fun setHead(a: A): List<A> = when (this) {
+        is Nil -> throw IllegalStateException("setHead called on an empty list")
+        is Cons -> tail.cons(a)
+    }
 
     fun drop(n: Int): List<A> = drop(this, n)
 
-    internal class Nil<A>: List<A>() {
-
-        override fun setHead(a: A): List<A> = throw IllegalStateException("setHead called on an empty list")
+    internal object Nil: List<Nothing>() {
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
 
-        override fun equals(other: Any?): Boolean = other is Nil<*>
+        override fun equals(other: Any?): Boolean = other is Nil
 
         override fun hashCode(): Int = 0
     }
 
-    internal class Cons<A>(val head: A, val tail: List<A>): List<A>() {
-
-        override fun setHead(a: A): List<A> = tail.cons(a)
+    internal class Cons<A>(internal val head: A, internal val tail: List<A>): List<A>() {
 
         override fun isEmpty() = false
 
@@ -45,6 +44,6 @@ sealed class List<A> {
         }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-            az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
+            az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
     }
 }

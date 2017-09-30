@@ -1,16 +1,16 @@
-package com.fpinkotlin.lists.listing05_01
+package com.fpinkotlin.lists.listing01
 
 sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
-    private class Nil<A> : List<A>() {
+    private object Nil : List<Nothing>() {
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
 
-        override fun equals(other: Any?): Boolean = other is Nil<*>
+        override fun equals(other: Any?): Boolean = other is Nil
 
         override fun hashCode(): Int = 0
     }
@@ -30,6 +30,6 @@ sealed class List<A> {
     companion object {
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
     }
 }

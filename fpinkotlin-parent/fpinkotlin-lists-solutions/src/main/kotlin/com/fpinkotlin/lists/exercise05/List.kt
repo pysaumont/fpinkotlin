@@ -1,14 +1,15 @@
 package com.fpinkotlin.lists.exercise05
 
 
-
 sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
-    fun cons(a: A): List<A> = Cons(a, this)
-
     abstract fun setHead(a: A): List<A>
+
+    abstract fun init(): List<A>
+
+    fun cons(a: A): List<A> = Cons(a, this)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -16,29 +17,27 @@ sealed class List<A> {
 
     fun concat(list: List<A>): List<A> = concat(this, list)
 
-    fun reverse(): List<A> = reverse(Nil(), this)
+    fun reverse(): List<A> = reverse(List.invoke(), this)
 
-    fun reverse2_(): List<A> {
-        tailrec fun <A> reverse2_(acc: List<A>, list: List<A>): List<A> = when (list) {
+    fun reverse2(): List<A> {
+        tailrec fun <A> reverse2(acc: List<A>, list: List<A>): List<A> = when (list) {
             is Nil -> acc
-            is Cons -> reverse2_(acc.cons(list.head), list.tail)
+            is Cons -> reverse2(acc.cons(list.head), list.tail)
         }
-        return reverse2_(Nil(), this)
+        return reverse2(List.invoke(), this)
     }
 
-    abstract fun init(): List<A>
+    internal object Nil: List<Nothing>() {
 
-    internal class Nil<A>: List<A>() {
+        override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
-        override fun init(): List<A> = throw IllegalStateException("init called on an empty list")
-
-        override fun setHead(a: A): List<A> = throw IllegalStateException("setHead called on an empty list")
+        override fun setHead(a: Nothing): List<Nothing> = throw IllegalStateException("setHead called on an empty list")
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
 
-        override fun equals(other: Any?): Boolean = other is Nil<*>
+        override fun equals(other: Any?): Boolean = other is Nil
 
         override fun hashCode(): Int = 0
     }
@@ -82,19 +81,6 @@ sealed class List<A> {
         }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-            az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
+            az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
     }
-}
-
-
-fun main(args: Array<String>) {
-    val list1 = List(1, 2, 3)
-    val list2 = List(4, 5, 6)
-    val list = list1.concat(list2)
-
-    println(list.reverse())
-    println(list.reverse2_())
-
-    println(list.init())
-    println(List<Int>().init())
 }

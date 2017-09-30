@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.listing05_01
+package com.fpinkotlin.lists.listing01
 
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll

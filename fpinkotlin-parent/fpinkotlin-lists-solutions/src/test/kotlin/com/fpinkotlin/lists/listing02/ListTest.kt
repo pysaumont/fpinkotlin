@@ -1,4 +1,4 @@
-package com.fpinkotlin.lists.listing05_02
+package com.fpinkotlin.lists.listing02
 
 
 import com.fpinkotlin.generators.forAll
