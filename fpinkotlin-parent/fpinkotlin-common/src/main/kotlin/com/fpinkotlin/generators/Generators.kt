@@ -56,11 +56,29 @@ class CharListGenerator(private val minLength: Int = 0, private val maxLength: I
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>,
-    List<Int>>> {
+class IntKListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>,
+        List<Int>>> {
 
     override fun generate(): Pair<Array<Int>, List<Int>> {
         val array: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
+        return Pair(array, listOf(*array))
+    }
+}
+
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>,
+        com.fpinkotlin.common.List<Int>>> {
+
+    override fun generate(): Pair<Array<Int>, com.fpinkotlin.common.List<Int>> {
+        val array: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
+        return Pair(array, com.fpinkotlin.common.List(*array))
+    }
+}
+
+class DoubleListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Double>,
+        List<Double>>> {
+
+    override fun generate(): Pair<Array<Double>, List<Double>> {
+        val array: Array<Double> = list(Gen.double(), minLength, maxLength).generate().toTypedArray()
         return Pair(array, listOf(*array))
     }
 }

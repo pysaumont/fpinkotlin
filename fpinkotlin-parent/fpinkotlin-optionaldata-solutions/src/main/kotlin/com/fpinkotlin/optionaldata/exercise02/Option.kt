@@ -41,7 +41,7 @@ sealed class Option<out A> {
             is Some -> option.value
         }
 
-        operator fun <A> invoke(a: A?): Option<A> = when (a) {
+        operator fun <A> invoke(a: A? = null): Option<A> = when (a) {
             null -> None
             else -> Some(a)
         }

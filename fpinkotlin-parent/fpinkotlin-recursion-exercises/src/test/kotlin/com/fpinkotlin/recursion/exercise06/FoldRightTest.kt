@@ -1,7 +1,7 @@
 package com.fpinkotlin.recursion.exercise06
 
 import com.fpinkotlin.generators.CharListGenerator
-import com.fpinkotlin.generators.IntListGenerator
+import com.fpinkotlin.generators.IntKListGenerator
 
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec
@@ -20,7 +20,7 @@ class FoldRightTest : StringSpec() {
     init {
 
         "sum" {
-            forAll(IntListGenerator(), { (array, list) ->
+            forAll(IntKListGenerator(), { (array, list) ->
                 sum(list) == array.fold(0) { s, c -> s + c}
             })
         }

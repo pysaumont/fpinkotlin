@@ -118,3 +118,17 @@ fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -
 
 fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List<String>()) { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
+
+fun List<Double>.sum() = this.foldRight(0.0, { x -> { y -> x + y } })
+
+fun List<*>.size() = this.length()
+
+//fun <A> List<A>.head() = when (this) {
+//    is List.Cons -> this.head
+//    is List.Nil -> throw IllegalStateException("head called on Nil")
+//}
+//
+//fun <A> List<A>.tail() = when (this) {
+//    is List.Cons -> this.tail
+//    is List.Nil -> throw IllegalStateException("tail called on Nil")
+//}

@@ -32,7 +32,7 @@ sealed class Option<out A> {
 
     companion object {
 
-        operator fun <A> invoke(a: A?): Option<A> = when (a) {
+        operator fun <A> invoke(a: A? = null): Option<A> = when (a) {
             null -> None
             else -> Some(a)
         }
