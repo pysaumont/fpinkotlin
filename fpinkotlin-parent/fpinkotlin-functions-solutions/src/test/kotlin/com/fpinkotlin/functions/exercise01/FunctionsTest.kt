@@ -11,7 +11,7 @@ class FunctionsTest: StringSpec() {
 
         "compose" {
             forAll(Gen.int(), { x ->
-                compose(::square, ::triple)(x) == square(square(x))
+                compose(::square, ::triple)(x) == square(triple(x))
             })
         }
     }
