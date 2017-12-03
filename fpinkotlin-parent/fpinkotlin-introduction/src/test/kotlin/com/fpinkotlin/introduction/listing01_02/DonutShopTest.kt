@@ -22,3 +22,7 @@ class DonutShopTest: StringSpec() {
 class CreditCardGenerator : Gen<CreditCard> {
     override fun generate(): CreditCard = CreditCard()
 }
+
+fun main(args: Array<String>) {
+	println("Hello, Kotlin!")
+}

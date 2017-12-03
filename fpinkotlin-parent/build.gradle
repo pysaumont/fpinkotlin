@@ -19,6 +19,7 @@ buildscript {
 allprojects{
     apply plugin: "kotlin"
     apply plugin: 'java'
+    apply plugin: 'eclipse'
     sourceCompatibility = 1.8
 
     repositories {
@@ -103,6 +104,20 @@ project(':fpinkotlin-optionaldata-exercises') {
 }
 
 project(':fpinkotlin-optionaldata-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-handlingerrors-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-handlingerrors-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')

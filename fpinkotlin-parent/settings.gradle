@@ -11,6 +11,8 @@ include 'fpinkotlin-common',
         'fpinkotlin-lists-exercises',
         'fpinkotlin-lists-solutions',
         'fpinkotlin-optionaldata-exercises',
-        'fpinkotlin-optionaldata-solutions'
+        'fpinkotlin-optionaldata-solutions',
+        'fpinkotlin-handlingerrors-exercises',
+        'fpinkotlin-handlingerrors-solutions'
 
 
