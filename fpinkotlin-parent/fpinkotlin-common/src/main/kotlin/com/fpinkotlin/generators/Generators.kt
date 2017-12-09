@@ -43,6 +43,11 @@ class IntPairGenerator(private val min: Int = 0, private val max: Int = 100) : G
     override fun generate(): Pair<Int, Int> = Pair(gen.generate(), gen.generate())
 }
 
+class IntTripleGenerator(private val min: Int = 0, private val max: Int = 100) : Gen<Triple<Int, Int, Int>> {
+    private val gen = IntGenerator(min, max)
+    override fun generate(): Triple<Int, Int, Int> = Triple(gen.generate(), gen.generate(), gen.generate())
+}
+
 class IntDoublePairGenerator: Gen<Pair<Int, Double>> {
     override fun generate(): Pair<Int, Double> = Pair(Gen.int().generate(), Gen.double().generate())
 }

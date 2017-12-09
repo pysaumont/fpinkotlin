@@ -3,9 +3,9 @@ package com.fpinkotlin.handlingerrors.listing02
 import java.io.Serializable
 
 
-sealed class Result<out A>: Serializable { // <1>
+sealed class Result<out A>: Serializable {
 
-    internal class Failure<out A>(internal val exception: RuntimeException): Result<A>() { // <2>
+    internal class Failure<out A>(internal val exception: RuntimeException): Result<A>() {
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -17,15 +17,15 @@ sealed class Result<out A>: Serializable { // <1>
 
     companion object {
 
-        operator fun <A> invoke(a: A? = null): Result<A> = when (a) { // <3>
+        operator fun <A> invoke(a: A? = null): Result<A> = when (a) {
             null -> Failure(NullPointerException())
             else -> Success(a)
         }
 
-        fun <A> failure(message: String): Result<A> = Failure(IllegalStateException(message)) // <4>
+        fun <A> failure(message: String): Result<A> = Failure(IllegalStateException(message))
 
-        fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception) // <5>
+        fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception)
 
-        fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception)) // <6>
+        fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
     }
 }
