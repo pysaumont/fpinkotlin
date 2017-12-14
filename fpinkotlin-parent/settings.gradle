@@ -13,6 +13,8 @@ include 'fpinkotlin-common',
         'fpinkotlin-optionaldata-exercises',
         'fpinkotlin-optionaldata-solutions',
         'fpinkotlin-handlingerrors-exercises',
-        'fpinkotlin-handlingerrors-solutions'
+        'fpinkotlin-handlingerrors-solutions',
+        'fpinkotlin-advancedlisthandling-exercises',
+        'fpinkotlin-advancedlisthandling-solutions'
 
 
