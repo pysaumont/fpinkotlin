@@ -33,6 +33,11 @@ class IntGenerator(private val min: Int = 0, val max: Int = Int.MAX_VALUE): Gen<
     override fun generate(): Int = RANDOM.nextInt(max - min) + min
 }
 
+class DoubleGenerator(private val min: Double = 0.0, val max: Double = Double.MAX_VALUE): Gen<Double> {
+    val RANDOM = Random()
+    override fun generate(): Double = RANDOM.nextDouble() % max
+}
+
 class CharGenerator(private val min: Char = ' ', val max: Char = '~'): Gen<Char> {
     val RANDOM = Random()
     override fun generate(): Char = (RANDOM.nextInt(max.toInt() - min.toInt()) + min.toInt()).toChar()

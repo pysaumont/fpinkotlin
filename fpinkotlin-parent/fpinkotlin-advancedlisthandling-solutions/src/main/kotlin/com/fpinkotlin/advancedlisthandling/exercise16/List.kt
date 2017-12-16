@@ -3,9 +3,6 @@ package com.fpinkotlin.advancedlisthandling.exercise16
 import com.fpinkotlin.common.Result
 import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.common.map2
-import kotlin.reflect.jvm.internal.impl.name.FqNamesUtilKt.tail
-
-
 
 
 sealed class List<out A> {
@@ -21,80 +18,20 @@ sealed class List<out A> {
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): Pair<B, List<A>>
 
-    fun <A> startsWith(list: List<A>, sub: List<A>): Boolean? {
-        return startsWith_<Any>(list, sub).eval()
-    }
-
-    fun <A> startsWith(list: List<A>,
-                        sub: List<A>): Boolean {
-        return if (sub.isEmpty())
-            true
-        else if (list.isEmpty())
-            false
-        else if (list.head().equals(sub.head()))
-            startsWith(list.tail(), sub.tail())
-        else
-            false
-    }
-
-    fun splitAt_(index: Int): Pair<List<A>, List<A>> {
-        tailrec fun splitAt_(acc: List<A>,
+    fun splitAt(index: Int): Pair<List<A>, List<A>> {
+        tailrec fun splitAt(acc: List<A>,
                             list: List<A>, i: Int): Pair<List<A>, List<A>> =
             when (list) {
                 is Nil -> Pair(list.reverse(), acc)
                 is Cons ->  if (i == 0)
                     Pair(list.reverse(), acc)
                 else
-                    splitAt_(acc.cons(list.head), list.tail, i - 1)
+                    splitAt(acc.cons(list.head), list.tail, i - 1)
             }
         return when {
-            index < 0        -> splitAt_(0)
-            index > length() -> splitAt_(length())
-            else             -> splitAt_(Nil, this.reverse(), this.length() - index)
-        }
-    }
-
-    fun splitAt__(index: Int): Pair<List<A>, List<A>> {
-        val ii = if (index < 0) 0 else if (index >= length()) length() else index
-        val identity = Triple(Nil, Nil, ii)
-        val rt = foldLeft(identity) { ta: Triple<List<A>, List<A>, Int> ->
-            { a: A ->
-                if (ta.third == 0)
-                    Triple(ta.first, ta.second.cons(a), ta.third)
-                else
-                    Triple(ta.first.cons(a), ta.second, ta.third - 1)
-            }
-        }
-        return Pair(rt.first.reverse(), rt.second.reverse())
-    }
-
-    fun splitAt(index: Int): Pair<List<A>, List<A>> {
-        data class Triple<out A>(val first: List<A>, val second: List<A>, val third: Int) {
-            override fun equals(o: Any?): Boolean {
-                return when {
-                    o == null -> false
-                    o.javaClass == this.javaClass -> (o as Triple<A>).third == third
-                    else -> false
-                }
-            }
-        }
-
-        return Triple<A>(Nil, Nil, index).let { identity ->
-            Triple<A>(Nil, Nil, 0).let { zero ->
-                if (index <= 0)
-                    Pair(identity, this)
-                else
-                    foldLeft(identity, zero) { ta ->
-                        { a ->
-                            if (ta.third < 0)
-                                ta
-                            else
-                                Triple(ta.first.cons(a), ta.second, ta.third - 1)
-                        }
-                    }
-            }
-        }.let {
-            Pair(it.first.first.reverse(), it.second)
+            index < 0        -> splitAt(0)
+            index > length() -> splitAt(length())
+            else             -> splitAt(Nil, this.reverse(), this.length() - index)
         }
     }
 
@@ -127,7 +64,7 @@ sealed class List<out A> {
     }
 
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
-        this.foldRight(Pair(Nil, Nil)) { a ->
+        this.coFoldRight(Pair(Nil, Nil)) { a ->
             { listPair: Pair<List<A1>, List<A2>> ->
                 f(a).let {
                     Pair(listPair.first.cons(it.first), listPair.second.cons(it.second))
@@ -154,9 +91,9 @@ sealed class List<out A> {
 
     fun <B> coFoldRight(identity: B, f: (A) -> (B) -> B): B = coFoldRight(identity, this.reverse(), identity, f)
 
-    fun <B> map(f: (A) -> B): List<B> = foldRight(Nil) { h -> { acc: List<B> -> Cons(f(h), acc) } }
+    fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = foldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
@@ -196,7 +133,7 @@ sealed class List<out A> {
 
         override fun headSafe(): Result<A> = Result(head)
 
-        private val length: Int = tail.length() + 1
+        private val length: Int = tail.lengthMemoized() + 1
 
         override fun lengthMemoized() = length
 
@@ -254,7 +191,7 @@ sealed class List<out A> {
     }
 }
 
-fun <A> flatten(list: List<List<A>>): List<A> = List.foldRight(list, List.Nil) { x -> x::concat }
+fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(List.Nil) { x -> x::concat }
 
 fun <A> List<A>.setHead(a: A): List<A> = when (this) {
     is List.Cons -> List.Cons(a, this.tail)
@@ -271,10 +208,11 @@ fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
 
-fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> =
+        List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List<String>())  { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
+        List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
     is List.Nil  -> Result()
@@ -339,3 +277,33 @@ fun <A, B, C> product(list1: List<A>,
         list1.flatMap { a -> list2.map { b -> f(a)(b) } }
 
 fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { it }
+
+fun <A> List<A>.startsWith(sub: List<A>): Boolean {
+    tailrec fun startsWith(list: List<A>, sub: List<A>): Boolean =
+        when (sub) {
+            is List.Nil  -> true
+            is List.Cons -> when (list) {
+                is List.Nil  -> false
+                is List.Cons -> if (list.head == sub.head)
+                    startsWith(list.tail, sub.tail)
+                else
+                    false
+            }
+        }
+    return startsWith(this, sub)
+}
+
+fun <A> List<A>.hasSubList(sub: List<A>): Boolean {
+    tailrec
+    fun <A> hasSubList(list: List<A>, sub: List<A>): Boolean =
+        when (list) {
+            is List.Nil -> sub.isEmpty()
+            is List.Cons ->
+                if (list.startsWith(sub))
+                    true
+                else
+                    hasSubList(list.tail, sub)
+        }
+    return hasSubList(this, sub)
+}
+

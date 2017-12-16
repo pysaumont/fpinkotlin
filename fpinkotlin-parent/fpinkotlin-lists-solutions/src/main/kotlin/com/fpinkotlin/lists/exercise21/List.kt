@@ -24,9 +24,9 @@ sealed class List<out A> {
 
     fun <B> coFoldRight(identity: B, f: (A) -> (B) -> B): B = coFoldRight(identity, this.reverse(), identity, f)
 
-    fun <B> map(f: (A) -> B): List<B> = foldRight(Nil) { h -> { t: List<B> -> Cons(f(h), t) } }
+    fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = foldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
@@ -93,7 +93,7 @@ sealed class List<out A> {
                     is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
-        fun <A> flatten(list: List<List<A>>): List<A> = foldRight(list, Nil) { x -> x::concat }
+        fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(Nil) { x -> x::concat }
 
         operator fun <A> invoke(vararg az: A): List<A> =
                 az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
@@ -115,7 +115,8 @@ fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
 
-fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> =
+        List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List<String>())  { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
+        List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }

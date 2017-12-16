@@ -25,3 +25,12 @@ class IntListGenerator(private val minLength: Int = 0, private val maxLength: In
         return Pair(array, List(*array))
     }
 }
+
+fun main(args: Array<String>) {
+    val testLimit = 35000
+    val array = Array(testLimit) {i -> i.toLong() }
+    val testList: List<Long> = List(*array)
+    val start = System.currentTimeMillis()
+    testList.map { it * 2 }
+    println(System.currentTimeMillis() - start)
+}

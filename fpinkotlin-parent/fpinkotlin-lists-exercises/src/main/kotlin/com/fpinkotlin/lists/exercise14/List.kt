@@ -95,7 +95,7 @@ fun <A> List<A>.setHead(a: A): List<A> = when (this) {
 
 fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
 
-fun <A> List<A>.concat(list: List<A>): List<A> = TODO("")
+fun <A> List<A>.concat(list: List<A>): List<A> = TODO("Implement this function")
 
 fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 

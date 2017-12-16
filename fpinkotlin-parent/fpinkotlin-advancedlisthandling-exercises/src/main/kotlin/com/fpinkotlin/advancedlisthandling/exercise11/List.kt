@@ -36,9 +36,9 @@ sealed class List<out A> {
 
     fun <B> coFoldRight(identity: B, f: (A) -> (B) -> B): B = coFoldRight(identity, this.reverse(), identity, f)
 
-    fun <B> map(f: (A) -> B): List<B> = foldRight(Nil) { h -> { acc: List<B> -> Cons(f(h), acc) } }
+    fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = foldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
@@ -64,7 +64,7 @@ sealed class List<out A> {
 
         override fun headSafe(): Result<A> = Result(head)
 
-        private val length: Int = tail.length() + 1
+        private val length: Int = tail.lengthMemoized() + 1
 
         override fun lengthMemoized() = length
 
@@ -122,7 +122,7 @@ sealed class List<out A> {
     }
 }
 
-fun <A> flatten(list: List<List<A>>): List<A> = List.foldRight(list, List.Nil) { x -> x::concat }
+fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(List.Nil) { x -> x::concat }
 
 fun <A> List<A>.setHead(a: A): List<A> = when (this) {
     is List.Cons -> List.Cons(a, this.tail)
@@ -139,10 +139,11 @@ fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
 
-fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> =
+        List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List<String>())  { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
+        List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
     is List.Nil  -> Result()

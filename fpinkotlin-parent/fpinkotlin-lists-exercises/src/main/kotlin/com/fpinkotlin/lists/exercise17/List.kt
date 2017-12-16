@@ -87,7 +87,7 @@ sealed class List<out A> {
                     is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
-        fun <A> flatten(list: List<List<A>>): List<A> = foldRight(list, Nil) { x -> x::concat }
+        fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(Nil) { x -> x::concat }
 
         operator fun <A> invoke(vararg az: A): List<A> =
                 az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
@@ -109,6 +109,7 @@ fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
 
-fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> =
+        List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> = TODO("doubleToString")

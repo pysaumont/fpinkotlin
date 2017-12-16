@@ -52,7 +52,7 @@ sealed class Result<out A>: Serializable {
         override fun toString(): String = "Empty"
     }
 
-    internal class Failure<out A>(private val exception: RuntimeException): Result<A>() {
+    internal class Failure<out A>(internal val exception: RuntimeException): Result<A>() {
 
         override fun isEmpty(): Boolean = false
 
