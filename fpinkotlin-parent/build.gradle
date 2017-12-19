@@ -6,9 +6,10 @@ buildscript {
     ext.kotlintest_version = '2.0.5'
 
     repositories {
+        maven { url "http://pkgarti2:7000/artifactory/all" }
         //maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-        mavenCentral()
-        jcenter()
+        //mavenCentral()
+        //jcenter()
     }
 
     dependencies {
@@ -22,9 +23,10 @@ allprojects{
     sourceCompatibility = 1.8
 
     repositories {
+        maven { url "http://pkgarti2:7000/artifactory/all" }
         //maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-        mavenCentral()
-        jcenter()
+        //mavenCentral()
+        //jcenter()
     }
 }
 
@@ -32,6 +34,7 @@ subprojects {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         testCompile "io.kotlintest:kotlintest:$kotlintest_version"
         testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     }

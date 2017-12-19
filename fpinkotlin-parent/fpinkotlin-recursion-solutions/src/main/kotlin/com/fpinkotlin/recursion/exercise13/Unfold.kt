@@ -1,9 +1,6 @@
 package com.fpinkotlin.recursion.exercise13
 
 
-class Unfold {
-}
-
 fun <T> List<T>.head(): T =
     if (this.isEmpty())
         throw IllegalArgumentException("head called on empty list")
@@ -17,12 +14,12 @@ fun <T> List<T>.tail(): List<T> =
         this.subList(1, this.size)
 
 fun <T, U> foldLeft(list: List<T>, z: U, f: (U, T) -> U): U {
-    tailrec fun foldLeft_(list: List<T>, acc: U, f: (U, T) -> U): U =
+    tailrec fun foldLeft(list: List<T>, acc: U, f: (U, T) -> U): U =
         if (list.isEmpty())
             acc
         else
-            foldLeft_(list.tail(), f(acc, list.head()), f)
-    return foldLeft_(list, z, f)
+            foldLeft(list.tail(), f(acc, list.head()), f)
+    return foldLeft(list, z, f)
 }
 
 fun <T> prepend(list: List<T>, elem: T): List<T> = foldLeft(list, listOf(elem)) { lst, elm -> lst + elm }

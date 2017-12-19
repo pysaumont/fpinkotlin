@@ -3,9 +3,6 @@ package com.fpinkotlin.recursion.exercise18
 import java.math.BigInteger
 
 
-class FiboCorecursive {
-}
-
 fun <T> List<T>.head(): T =
     if (this.isEmpty())
         throw IllegalArgumentException("head called on empty list")
@@ -19,24 +16,24 @@ fun <T> List<T>.tail(): List<T> =
         this.subList(1, this.size)
 
 fun <T, U> foldLeft(list: List<T>, z: U, f: (U, T) -> U): U {
-    tailrec fun foldLeft_(list: List<T>, acc: U, f: (U, T) -> U): U =
+    tailrec fun foldLeft(list: List<T>, acc: U, f: (U, T) -> U): U =
         if (list.isEmpty())
             acc
         else
-            foldLeft_(list.tail(), f(acc, list.head()), f)
-    return foldLeft_(list, z, f)
+            foldLeft(list.tail(), f(acc, list.head()), f)
+    return foldLeft(list, z, f)
 }
 
 fun <T, U> map(list: List<T>, f: (T) -> U): List<U> =
     foldLeft(list, listOf()) { acc, elem -> acc + f(elem)}
 
 fun <T> iterate(seed: T, f: (T) -> T, n: Int): List<T> {
-    tailrec fun iterate_(acc: List<T>, seed: T): List<T> =
+    tailrec fun iterate(acc: List<T>, seed: T): List<T> =
         if (acc.size < n)
-            iterate_(acc + seed, f(seed))
+            iterate(acc + seed, f(seed))
         else
             acc
-    return iterate_(listOf(), seed)
+    return iterate(listOf(), seed)
 }
 
 fun <T> makeString(list: List<T>, separator: String): String =

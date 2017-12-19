@@ -1,5 +1,6 @@
 package com.fpinkotlin.recursion.exercise02
 
+
 object Factorial {
     private lateinit var fact: (Int) -> Int
     init {

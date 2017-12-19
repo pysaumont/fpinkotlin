@@ -11,10 +11,10 @@ fun fibonacci(number: Int): Int =
 
 fun fib(x: Int): BigInteger {
     tailrec
-    fun fib_(val1: BigInteger, val2: BigInteger, x: BigInteger): BigInteger = when {
+    fun fib(val1: BigInteger, val2: BigInteger, x: BigInteger): BigInteger = when {
         (x == BigInteger.ZERO) -> BigInteger.ONE
         (x == BigInteger.ONE) -> val1 + val2
-        else -> fib_(val2, val1 + val2, x - BigInteger.ONE)
+        else -> fib(val2, val1 + val2, x - BigInteger.ONE)
     }
-    return fib_(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(x.toLong()))
+    return fib(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(x.toLong()))
 }
