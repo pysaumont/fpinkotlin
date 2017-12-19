@@ -34,7 +34,7 @@ To import the project into IntelliJ:
  
  - in the new dialog box, check the _Import project from external model option_, select _Gradle_ and click _Next to get the following dialog box:
  
-![alt text](/media/KINGSTON2/fpinkotlin/fpinkotlin/ImportProject.png
+![Import project](graphics/ImportProject.png)
  
  - Click _Finish_ and wait stil import is complete
 
@@ -108,15 +108,15 @@ gradle :fpinkotlin-advancedlisthandling-exercises:test --info --tests com.fpinko
 
 Here is the report for a failed test:
 
-![alt text](/media/KINGSTON2/fpinkotlin/fpinkotlin/FailedTest01.png
+![Failed Test 1](graphics/FailedTest01.png)
 
 You may click on the test name to get detailed about what happened:
 
-![alt text](/media/KINGSTON2/fpinkotlin/fpinkotlin/FailedTest02.png
+![Failed Test 2](graphics/FailedTest02.png)
 
 Once the problem is fixed, the test succeeds and you get the following report:
 
-![alt text](/media/KINGSTON2/fpinkotlin/fpinkotlin/successTest03.png
+![Successful Test](graphics/successTest03.png)
 
 ## Doing the exercises
 
