@@ -108,11 +108,11 @@ gradle :fpinkotlin-advancedlisthandling-exercises:test --info --tests com.fpinko
 
 Here is the report for a failed test:
 
-![Failed Test 1](graphics/FailedTest01.png)
+![Failed Test 1](graphics/failedTest01.png)
 
 You may click on the test name to get detailed about what happened:
 
-![Failed Test 2](graphics/FailedTest02.png)
+![Failed Test 2](graphics/failedTest02.png)
 
 Once the problem is fixed, the test succeeds and you get the following report:
 
