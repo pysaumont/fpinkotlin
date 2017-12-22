@@ -6,10 +6,9 @@ buildscript {
     ext.kotlintest_version = '2.0.5'
 
     repositories {
-        maven { url "http://pkgarti2:7000/artifactory/all" }
-        //maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-        //mavenCentral()
-        //jcenter()
+        //maven { url "http://pkgarti2:7000/artifactory/all" }
+        mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -23,10 +22,9 @@ allprojects{
     sourceCompatibility = 1.8
 
     repositories {
-        maven { url "http://pkgarti2:7000/artifactory/all" }
-        //maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.2' }
-        //mavenCentral()
-        //jcenter()
+        //maven { url "http://pkgarti2:7000/artifactory/all" }
+        mavenCentral()
+        jcenter()
     }
 }
 
@@ -49,7 +47,7 @@ project(':fpinkotlin-common') {
 
 }
 
-project(':fpinkotlin-introduction') {
+project(':fpinkotlin-makingprogramssafer') {
 
     dependencies {
         compile project(':fpinkotlin-common')
@@ -134,6 +132,21 @@ project(':fpinkotlin-advancedlisthandling-exercises') {
 }
 
 project(':fpinkotlin-advancedlisthandling-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+
+project(':fpinkotlin-workingwithlaziness-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-workingwithlaziness-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')

@@ -3,7 +3,7 @@
  * This list is hold by the fpinkotlin-parent module
  */
 include 'fpinkotlin-common',
-        'fpinkotlin-introduction',
+        'fpinkotlin-makingprogramssafer',
         'fpinkotlin-functions-exercises',
         'fpinkotlin-functions-solutions',
         'fpinkotlin-recursion-exercises',
@@ -15,6 +15,9 @@ include 'fpinkotlin-common',
         'fpinkotlin-handlingerrors-exercises',
         'fpinkotlin-handlingerrors-solutions',
         'fpinkotlin-advancedlisthandling-exercises',
-        'fpinkotlin-advancedlisthandling-solutions'
+        'fpinkotlin-advancedlisthandling-solutions',
+        'fpinkotlin-workingwithlaziness-solutions',
+        'fpinkotlin-workingwithlaziness-exercises'
+
 
 
