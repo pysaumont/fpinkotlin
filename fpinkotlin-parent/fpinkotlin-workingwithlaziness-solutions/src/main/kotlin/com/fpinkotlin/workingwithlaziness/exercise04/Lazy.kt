@@ -1,5 +1,6 @@
-package com.fpinkotlin.workingwithlaziness.exercise03
+package com.fpinkotlin.workingwithlaziness.exercise04
 
+import com.fpinkotlin.workingwithlaziness.exercise04.Lazy.Companion.lift2
 import java.util.*
 
 
@@ -12,16 +13,26 @@ class Lazy<out A>(function: () -> A): () -> A {
     companion object {
 
         operator fun <A> invoke(function: () -> A): Lazy<A> = Lazy(function)
+
+        val lift2: ((String) -> (String) -> String) -> (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
+                { f ->
+                    { ls1 ->
+                        { ls2 ->
+                            Lazy { f(ls1())(ls2()) }
+                        }
+                    }
+                }
     }
 }
 
-
-val constructMessage: (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
-        { greetings ->
-            { name ->
-                Lazy { "${greetings()}, ${name()}!" }
-            }
+val consMessage: (String) -> (String) -> String =
+    { greetings ->
+        { name ->
+            "$greetings, $name!"
         }
+    }
+
+
 
 fun main(args: Array<String>) {
     val greetings = Lazy {
@@ -40,10 +51,11 @@ fun main(args: Array<String>) {
         println("computing default message")
         "No greetings when time is odd"
     }
-    val greetingString = constructMessage(greetings)
+    val greetingString = lift2(consMessage)(greetings)
     val message1 = greetingString(name1)
     val message2 = greetingString(name2)
     val condition = Random(System.currentTimeMillis()).nextInt() % 2 == 0
+    println(if (condition) message1() else defaultMessage())
     println(if (condition) message1() else defaultMessage())
     println(if (condition) message2() else defaultMessage())
 }

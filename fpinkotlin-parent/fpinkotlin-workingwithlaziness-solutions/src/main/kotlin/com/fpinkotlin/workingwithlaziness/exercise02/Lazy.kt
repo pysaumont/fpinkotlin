@@ -1,5 +1,7 @@
 package com.fpinkotlin.workingwithlaziness.exercise02
 
+import java.util.*
+
 
 class Lazy<out A>(function: () -> A): () -> A {
 
@@ -13,19 +15,30 @@ class Lazy<out A>(function: () -> A): () -> A {
     }
 }
 
+
+fun constructMessage(greetings: Lazy<String>, name: Lazy<String>): Lazy<String> = Lazy { "${greetings()}, ${name()}!" }
+
 fun main(args: Array<String>) {
-    val first = Lazy {
-        println("computing first")
-        true
+    val greetings = Lazy {
+        println("computing greetings")
+        "Hello"
     }
-    val second = Lazy {
-        println("computing second")
-        throw IllegalStateException()
+    val name1: Lazy<String> = Lazy {
+        println("computing name")
+        "Mickey"
     }
-    println(first() || second())
-    println(first() || second())
-    println(or(first, second))
+    val name2: Lazy<String> = Lazy {
+        println("computing name")
+        "Donald"
+    }
+    val defaultMessage = Lazy {
+        println("computing default message")
+        "No greetings when time is odd"
+    }
+    val message1 = constructMessage(greetings, name1)
+    val message2 = constructMessage(greetings, name2)
+    val condition = Random(System.currentTimeMillis()).nextInt() % 2 == 0
+    println(if (condition) message1() else defaultMessage())
+    println(if (condition) message1() else defaultMessage())
+    println(if (condition) message2() else defaultMessage())
 }
-
-fun or(a: Lazy<Boolean>, b: Lazy<Boolean>): Boolean = if (a()) true else b()
-
