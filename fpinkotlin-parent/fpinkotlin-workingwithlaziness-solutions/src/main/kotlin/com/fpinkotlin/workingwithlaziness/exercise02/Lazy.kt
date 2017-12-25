@@ -20,19 +20,19 @@ fun constructMessage(greetings: Lazy<String>, name: Lazy<String>): Lazy<String> 
 
 fun main(args: Array<String>) {
     val greetings = Lazy {
-        println("computing greetings")
+        println("Evaluating greetings")
         "Hello"
     }
     val name1: Lazy<String> = Lazy {
-        println("computing name")
+        println("Evaluating name1")
         "Mickey"
     }
     val name2: Lazy<String> = Lazy {
-        println("computing name")
+        println("Evaluating name2")
         "Donald"
     }
     val defaultMessage = Lazy {
-        println("computing default message")
+        println("Evaluating default message")
         "No greetings when time is odd"
     }
     val message1 = constructMessage(greetings, name1)

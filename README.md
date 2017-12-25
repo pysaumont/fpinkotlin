@@ -141,7 +141,7 @@ is copied to the `fpinjava-common` module and should be used from there.
 
 Code modules are generally named after the chapter titles, and not the chapter numbers, which sometimes make them difficult to find. Here is the list of the modules:
 
-* Chapter 1: fpinkotlin-makingprogramssafer
+* Chapter 1: fpinkotlin-introduction
 
 * Chapter 2: This chapter has no corresponding module
 

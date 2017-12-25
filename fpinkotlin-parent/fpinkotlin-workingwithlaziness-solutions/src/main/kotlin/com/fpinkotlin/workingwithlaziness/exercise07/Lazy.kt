@@ -1,4 +1,4 @@
-package com.fpinkotlin.workingwithlaziness.exercise03
+package com.fpinkotlin.workingwithlaziness.exercise07
 
 import java.util.*
 
@@ -9,30 +9,34 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     override fun invoke(): A = value
 
+    fun <B> map(f: (A) -> B): Lazy<B> = Lazy { f(value) }
+
+    fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = Lazy { f(value)() }
+
     companion object {
 
         operator fun <A> invoke(function: () -> A): Lazy<A> = Lazy(function)
+
     }
 }
 
-
-val constructMessage: (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
-        { greetings ->
-            { name ->
-                Lazy { "${greetings()}, ${name()}!" }
+fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
+        { ls1 ->
+            { ls2 ->
+                Lazy { f(ls1())(ls2()) }
             }
         }
 
 fun main(args: Array<String>) {
+
     val greetings = Lazy {
         println("Evaluating greetings")
         "Hello"
     }
-    val name1: Lazy<String> = Lazy {
-        println("Evaluating name")
-        "Mickey"
-    }
-    val name2: Lazy<String> = Lazy {
+
+    val flatGreets: (String) -> Lazy<String> = { name -> greetings.map { "$it, $name!"} }
+
+    val name: Lazy<String> = Lazy {
         println("Evaluating name")
         "Donald"
     }
@@ -40,10 +44,8 @@ fun main(args: Array<String>) {
         println("Evaluating default message")
         "No greetings when time is odd"
     }
-    val greetingString = constructMessage(greetings)
-    val message1 = greetingString(name1)
-    val message2 = greetingString(name2)
+    val message = name.flatMap(flatGreets)
     val condition = Random(System.currentTimeMillis()).nextInt() % 2 == 0
-    println(if (condition) message1() else defaultMessage())
-    println(if (condition) message2() else defaultMessage())
+    println(if (condition) message() else defaultMessage())
+    println(if (condition) message() else defaultMessage())
 }

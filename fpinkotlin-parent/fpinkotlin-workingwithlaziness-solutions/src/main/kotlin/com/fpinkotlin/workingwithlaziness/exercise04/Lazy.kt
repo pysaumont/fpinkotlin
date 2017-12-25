@@ -36,19 +36,19 @@ val consMessage: (String) -> (String) -> String =
 
 fun main(args: Array<String>) {
     val greetings = Lazy {
-        println("computing greetings")
+        println("Evaluating greetings")
         "Hello"
     }
     val name1: Lazy<String> = Lazy {
-        println("computing name")
+        println("Evaluating name")
         "Mickey"
     }
     val name2: Lazy<String> = Lazy {
-        println("computing name")
+        println("Evaluating name")
         "Donald"
     }
     val defaultMessage = Lazy {
-        println("computing default message")
+        println("Evaluating default message")
         "No greetings when time is odd"
     }
     val greetingString = lift2(consMessage)(greetings)

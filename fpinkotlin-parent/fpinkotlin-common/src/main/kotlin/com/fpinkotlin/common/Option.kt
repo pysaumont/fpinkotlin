@@ -69,7 +69,7 @@ fun <A> Option<A>.orElse(default: () -> Option<A>): Option<A> = map { this }.get
 val mean: (List<Double>) -> Option<Double> = { list ->
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 }
 
@@ -84,7 +84,7 @@ val variance: (List<Double>) -> Option<Double> = { list ->
 fun mean(list: List<Double>): Option<Double> =
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 
 
@@ -139,7 +139,7 @@ fun <A, B, C, D> map3(oa: Option<A>,
                       f: (A) -> (B) -> (C) -> D): Option<D> =
         oa.flatMap { a -> ob.flatMap { b -> oc.map { c -> f(a)(b)(c) } } }
 
-fun <A, B> traverse(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
+fun <A, B> traverseOption(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
         list.foldRight(Option(List())) { x ->
             { y: Option<List<B>> ->
                 map2(f(x), y) { a ->
@@ -151,4 +151,4 @@ fun <A, B> traverse(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
         }
 
 fun <A> sequence(list: List<Option<A>>): Option<List<A>> =
-                            traverse(list, { x -> x })
+                            traverseOption(list, { x -> x })
