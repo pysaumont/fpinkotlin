@@ -1,4 +1,4 @@
-package com.fpinkotlin.workingwithlaziness.listing01
+package com.fpinkotlin.workingwithlaziness.exercise17
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result

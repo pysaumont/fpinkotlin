@@ -1,6 +1,8 @@
-package com.fpinkotlin.workingwithlaziness.exercise13
+package com.fpinkotlin.workingwithlaziness.exercise16
 
+import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.cons
 
 
 sealed class Stream<out A> {
@@ -12,6 +14,8 @@ sealed class Stream<out A> {
     abstract fun tail(): Result<Stream<A>>
 
     abstract fun takeAtMost(n: Int): Stream<A>
+
+    fun toList(): List<A> = toList(this)
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
@@ -57,10 +61,33 @@ sealed class Stream<out A> {
             }
             else -> stream
         }
+
+        fun <A> toList(stream: Stream<A>) : List<A> {
+            tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
+                is Empty -> list
+                is Cons -> toList(list.cons(stream.hd()), stream.tl())
+            }
+            return toList(List(), stream).reverse()
+        }
+
+        fun <A> iterate(seed: Lazy<A>, f: (A) -> A): Stream<A> = cons(seed, Lazy { iterate(f(seed()), f) })
+
+        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
     }
 }
 
 fun main(args: Array<String>) {
-    val stream = Stream.from(0).dropAtMost(60000).takeAtMost(60000)
-    stream.head().forEach(::println)
+    fun inc(i: Int): Int = (i + 1).let {
+        println("generating $it")
+        it
+    }
+    val stream = Stream
+        .iterate(Lazy{ inc(0) }, ::inc)
+        .takeAtMost(60000)
+        .dropAtMost(10000)
+        .takeAtMost(10000)
+    val list = stream.toList()
+    println(list)
+    val list2 = stream.toList()
+    println(list2)
 }

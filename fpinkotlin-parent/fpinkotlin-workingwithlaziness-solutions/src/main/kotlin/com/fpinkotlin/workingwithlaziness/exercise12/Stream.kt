@@ -39,7 +39,7 @@ sealed class Stream<out A> {
 
         override fun dropAtMost(n: Int): Stream<A> =  when {
             n > 0 -> tl().dropAtMost(n - 1)
-            else -> Empty
+            else -> this
         }
 
         override fun head(): Result<A> = Result(hd())
@@ -57,4 +57,9 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
     }
+}
+
+fun main(args: Array<String>) {
+    val stream = Stream.from(0).dropAtMost(60000).takeAtMost(60000)
+    stream.head().forEach(::println)
 }

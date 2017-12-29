@@ -1,4 +1,4 @@
-package com.fpinkotlin.workingwithlaziness.exercise14
+package com.fpinkotlin.workingwithlaziness.exercise19
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
@@ -15,11 +15,19 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
+    abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
+
+    fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
+
+    fun dropWhile(p: (A) -> Boolean): Stream<A> = dropWhile(this, p)
+
     fun toList(): List<A> = toList(this)
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
     private object Empty: Stream<Nothing>() {
+
+        override fun takeWhile(p: (Nothing) -> Boolean): Stream<Nothing> = this
 
         override fun takeAtMost(n: Int): Stream<Nothing> = this
 
@@ -33,6 +41,11 @@ sealed class Stream<out A> {
 
     private class Cons<out A> (internal val hd: Lazy<A>,
                                internal val tl: Lazy<Stream<A>>) : Stream<A>() {
+
+        override fun takeWhile(p: (A) -> Boolean): Stream<A> = when {
+            p(hd()) -> cons(hd, Lazy { tl().takeWhile(p) })
+            else -> Empty
+        }
 
         override fun takeAtMost(n: Int): Stream<A> = when {
             n > 0 -> cons(hd, Lazy { tl().takeAtMost(n - 1) })
@@ -54,6 +67,15 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
+        tailrec fun <A> dropWhile(stream: Stream<A>,
+                              p: (A) -> Boolean): Stream<A> = when (stream) {
+                is Empty -> stream
+                is Cons -> when {
+                    p(stream.hd()) -> dropWhile(stream.tl(), p)
+                    else -> stream
+                }
+        }
+
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
             n > 0 -> when (stream) {
                 is Empty -> stream
@@ -69,10 +91,31 @@ sealed class Stream<out A> {
             }
             return toList(List(), stream).reverse()
         }
+
+        fun <A> iterate(seed: Lazy<A>, f: (A) -> A): Stream<A> = cons(seed, Lazy { iterate(f(seed()), f) })
+
+        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
+
+        tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
+            when (stream) {
+                is Empty -> false
+                is Cons  -> when {
+                    p(stream.hd()) -> true
+                    else           -> exists(stream.tl(), p)
+                }
+            }
     }
 }
 
 fun main(args: Array<String>) {
-    val stream = Stream.from(0).dropAtMost(60000).takeAtMost(60000)
-    println(stream.toList())
+    fun inc(i: Int): Int = (i + 1).let {
+        println("generating $it")
+        it
+    }
+    val stream = Stream
+        .iterate(Lazy{ inc(0) }, ::inc)
+//        .takeWhile { it < 80_000 }
+//        .dropWhile { it < 70_000}
+//        .takeWhile { it < 70_010 }
+    println(stream.exists { it == 70_004 })
 }
