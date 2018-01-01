@@ -1,4 +1,4 @@
-package com.fpinkotlin.workingwithlaziness.exercise15_
+package com.fpinkotlin.workingwithlaziness.listing01
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
@@ -17,22 +17,22 @@ class Lazy<out A>(function: () -> A): () -> A {
     fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = Lazy { f(value)() }
 
     fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: () -> Unit = {}) =
-        if (condition)
-            ifTrue(value)
-        else
-            ifFalse()
+            if (condition)
+                ifTrue(value)
+            else
+                ifFalse()
 
     fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit) =
-        if (condition)
-            ifTrue()
-        else
-            ifFalse(value)
+            if (condition)
+                ifTrue()
+            else
+                ifFalse(value)
 
     fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: (A) -> Unit) =
-        if (condition)
-            ifTrue(value)
-        else
-            ifFalse(value)
+            if (condition)
+                ifTrue(value)
+            else
+                ifFalse(value)
 
     companion object {
 
@@ -41,16 +41,16 @@ class Lazy<out A>(function: () -> A): () -> A {
 }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
-    { ls1 ->
-        { ls2 ->
-            Lazy { f(ls1())(ls2()) }
+        { ls1 ->
+            { ls2 ->
+                Lazy { f(ls1())(ls2()) }
+            }
         }
-    }
 
 fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = Lazy { lst.map { it() } }
 
 fun <A> sequenceResult(lst: List<Lazy<A>>): Lazy<Result<List<A>>> =
-    Lazy { sequence(lst.map { Result.of(it) }) }
+        Lazy { sequence(lst.map { Result.of(it) }) }
 
 fun main(args: Array<String>) {
 

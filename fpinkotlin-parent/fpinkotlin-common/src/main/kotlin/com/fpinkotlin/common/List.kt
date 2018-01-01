@@ -122,10 +122,10 @@ sealed class List<out A> {
 
     fun getAt(index: Int): Result<A> {
         data class Pair<out A>(val first: Result<A>, val second: Int) {
-            override fun equals(o: Any?): Boolean {
+            override fun equals(other: Any?): Boolean {
                 return when {
-                    o == null -> false
-                    o.javaClass == this.javaClass -> (o as Pair<A>).second == second
+                    other == null -> false
+                    other.javaClass == this.javaClass -> (other as Pair<A>).second == second
                     else -> false
                 }
             }
