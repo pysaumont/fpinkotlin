@@ -138,7 +138,6 @@ project(':fpinkotlin-advancedlisthandling-solutions') {
     }
 }
 
-
 project(':fpinkotlin-workingwithlaziness-exercises') {
 
     dependencies {
@@ -147,6 +146,20 @@ project(':fpinkotlin-workingwithlaziness-exercises') {
 }
 
 project(':fpinkotlin-workingwithlaziness-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-trees-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-trees-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')

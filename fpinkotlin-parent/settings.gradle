@@ -17,7 +17,9 @@ include 'fpinkotlin-common',
         'fpinkotlin-advancedlisthandling-exercises',
         'fpinkotlin-advancedlisthandling-solutions',
         'fpinkotlin-workingwithlaziness-solutions',
-        'fpinkotlin-workingwithlaziness-exercises'
+        'fpinkotlin-workingwithlaziness-exercises',
+        'fpinkotlin-trees-solutions',
+        'fpinkotlin-trees-exercises'
 
 
 

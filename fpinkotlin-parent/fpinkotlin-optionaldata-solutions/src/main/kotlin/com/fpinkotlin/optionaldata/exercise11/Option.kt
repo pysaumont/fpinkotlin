@@ -2,7 +2,6 @@ package com.fpinkotlin.optionaldata.exercise11
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.cons
-import com.fpinkotlin.common.size
 import com.fpinkotlin.common.sum
 
 

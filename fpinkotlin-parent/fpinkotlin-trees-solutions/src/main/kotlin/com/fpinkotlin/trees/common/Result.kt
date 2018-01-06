@@ -1,4 +1,4 @@
-package com.fpinkotlin.common
+package com.fpinkotlin.trees.common
 
 import java.io.Serializable
 

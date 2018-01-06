@@ -1,5 +1,7 @@
 package com.fpinkotlin.lists.exercise01
 
+import sun.reflect.generics.tree.Tree
+
 sealed class List<A> {
 
     abstract fun isEmpty(): Boolean

@@ -120,3 +120,4 @@ fun triple(list: List<Int>): List<Int> =
 
 fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
+
