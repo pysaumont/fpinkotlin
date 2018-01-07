@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.exercise11
 
 import com.fpinkotlin.common.List
-import com.fpinkotlin.common.cons
 import com.fpinkotlin.common.sum
 
 
@@ -73,7 +72,7 @@ fun <A> Option<A>.orElse(default: () -> Option<A>): Option<A> = map { this }.get
 val mean: (List<Double>) -> Option<Double> = { list ->
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 }
 
@@ -88,7 +87,7 @@ val variance: (List<Double>) -> Option<Double> = { list ->
 fun mean(list: List<Double>): Option<Double> =
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 
 

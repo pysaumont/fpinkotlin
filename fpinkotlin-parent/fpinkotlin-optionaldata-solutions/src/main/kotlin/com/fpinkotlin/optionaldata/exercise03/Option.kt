@@ -7,6 +7,16 @@ sealed class Option<out A> {
 
     abstract fun <B> map(f: (A) -> B): Option<B>
 
+    fun getOrElse(default: @UnsafeVariance A): A = when (this) {
+        is None -> default
+        is Some -> value
+    }
+
+    fun getOrElse(default: () -> @UnsafeVariance A): A = when (this) {
+        is None -> default()
+        is Some -> value
+    }
+
     internal object None: Option<Nothing>() {
 
         override fun <B> map(f: (Nothing) -> B): Option<B> = None
@@ -38,23 +48,9 @@ sealed class Option<out A> {
 
     companion object {
 
-        fun <A> getOrElse(option: Option<A>, default: A): A = when (option) {
-            is None -> default
-            is Some -> option.value
-        }
-
-        fun <A> getOrElse(option: Option<A>, default: () -> A): A = when (option) {
-            is None -> default()
-            is Some -> option.value
-        }
-
         operator fun <A> invoke(a: A? = null): Option<A> = when (a) {
             null -> None
             else -> Some(a)
         }
     }
 }
-
-fun <A> Option<A>.getOrElse(default: A): A = Option.getOrElse(this, default)
-
-fun <A> Option<A>.getOrElse(default: () -> A): A = Option.getOrElse(this, default)

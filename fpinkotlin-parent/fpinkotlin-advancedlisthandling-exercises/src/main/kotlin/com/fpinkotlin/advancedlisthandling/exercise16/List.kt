@@ -21,13 +21,13 @@ sealed class List<out A> {
     fun splitAt(index: Int): Pair<List<A>, List<A>> {
         tailrec fun splitAt(acc: List<A>,
                             list: List<A>, i: Int): Pair<List<A>, List<A>> =
-            when (list) {
-                is Nil -> Pair(list.reverse(), acc)
-                is Cons ->  if (i == 0)
-                    Pair(list.reverse(), acc)
-                else
-                    splitAt(acc.cons(list.head), list.tail, i - 1)
-            }
+                when (list) {
+                    is Nil -> Pair(list.reverse(), acc)
+                    is Cons ->  if (i == 0)
+                        Pair(list.reverse(), acc)
+                    else
+                        splitAt(acc.cons(list.head), list.tail, i - 1)
+                }
         return when {
             index < 0        -> splitAt(0)
             index > length() -> splitAt(length())
@@ -64,15 +64,35 @@ sealed class List<out A> {
     }
 
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
-        this.coFoldRight(Pair(Nil, Nil)) { a ->
-            { listPair: Pair<List<A1>, List<A2>> ->
-                f(a).let {
-                    Pair(listPair.first.cons(it.first), listPair.second.cons(it.second))
+            this.coFoldRight(Pair(Nil, Nil)) { a ->
+                { listPair: Pair<List<A1>, List<A2>> ->
+                    f(a).let {
+                        Pair(listPair.first.cons(it.first), listPair.second.cons(it.second))
+                    }
                 }
             }
-        }
 
-    fun lastSafe(): Result<A> = foldLeft(Result()) { _: Result<A> -> { y: A -> Result(y) } }
+    fun lastSafe(): Result<A> =
+            foldLeft(Result()) { _: Result<A> ->
+                { y: A ->
+                    Result(y)
+                }
+            }
+
+    fun startsWith(sub: List<@UnsafeVariance A>): Boolean = TODO("Implement this function")
+
+    fun hasSubList(sub: List<@UnsafeVariance A>): Boolean = TODO("Implement this function")
+
+    fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        is Cons -> Cons(a, this.tail)
+        is Nil -> throw IllegalStateException("setHead called on an empty list")
+    }
+
+    fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
+
+    fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
+
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.Companion.concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -93,14 +113,14 @@ sealed class List<out A> {
 
     fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
     internal object Nil: List<Nothing>() {
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (Nothing) -> B):
-                                            Pair<B, List<Nothing>> = Pair(identity, Nil)
+                Pair<B, List<Nothing>> = Pair(identity, Nil)
 
         override fun headSafe(): Result<Nothing> = Result()
 
@@ -165,7 +185,7 @@ sealed class List<out A> {
 
         fun <A> concat(list1: List<A>, list2: List<A>): List<A> = list1.reverse().foldLeft(list2) { x -> x::cons }
 
-        fun <A> concat_(list1: List<A>, list2: List<A>): List<A> = foldRight(list1, list2) { x -> { y -> Cons(x, y) } }
+        fun <A> concatViaFoldRight(list1: List<A>, list2: List<A>): List<A> = foldRight(list1, list2) { x -> { y -> Cons(x, y) } }
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
@@ -193,17 +213,6 @@ sealed class List<out A> {
 
 fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(List.Nil) { x -> x::concat }
 
-fun <A> List<A>.setHead(a: A): List<A> = when (this) {
-    is List.Cons -> List.Cons(a, this.tail)
-    is List.Nil -> throw IllegalStateException("setHead called on an empty list")
-}
-
-fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
-
-fun <A> List<A>.concat(list: List<A>): List<A> = List.Companion.concat(this, list)
-
-fun <A> List<A>.concat_(list: List<A>): List<A> = List.Companion.concat_(this, list)
-
 fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
@@ -223,34 +232,34 @@ tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
 }
 
 fun <A> flattenResult(list: List<Result<A>>): List<A> =
-    flatten(list.foldRight(List()) { ra: Result<A> ->
-        { lla: List<List<A>> -> lla.cons(ra.map { List(it)}.getOrElse(List())) }
-    })
+        flatten(list.foldRight(List()) { ra: Result<A> ->
+            { lla: List<List<A>> -> lla.cons(ra.map { List(it)}.getOrElse(List())) }
+        })
 
 fun <A> flattenResultLeft(list: List<Result<A>>): List<A> =
-    flatten(list.foldLeft(List()) { lla: List<List<A>> ->
-        { ra: Result<A> ->
-            lla.cons(ra.map { List(it)}.getOrElse(List()))
-        }
-    }).reverse()
+        flatten(list.foldLeft(List.Nil as List<List<A>>) { lla: List<List<A>> ->
+            { ra: Result<A> ->
+                lla.cons(ra.map { List(it)}.getOrElse(List()))
+            }
+        }).reverse()
 
 fun <A> sequenceLeft(list: List<Result<A>>): Result<List<A>> =
-    list.foldLeft(Result(List())) { x: Result<List<A>> ->
-        { y -> map2(y, x) { a -> { b: List<A> -> b.cons(a) } } }
-    }.map { it.reverse() }
+        list.foldLeft(Result(List())) { x: Result<List<A>> ->
+            { y -> map2(y, x) { a -> { b: List<A> -> b.cons(a) } } }
+        }.map { it.reverse() }
 
 fun <A> sequence2(list: List<Result<A>>): Result<List<A>> =
-    list.filter{ !it.isEmpty() }.foldRight(Result(List())) { x ->
-        { y: Result<List<A>> -> map2(x, y) { a -> { b: List<A> -> b.cons(a) } } }
-    }
+        list.filter{ !it.isEmpty() }.foldRight(Result(List())) { x ->
+            { y: Result<List<A>> -> map2(x, y) { a -> { b: List<A> -> b.cons(a) } } }
+        }
 
 fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> =
-    list.foldRight(Result(List())) { x ->
-        { y: Result<List<B>> -> map2(f(x), y) { a -> { b: List<B> -> b.cons(a) } } }
-    }
+        list.foldRight(Result(List())) { x ->
+            { y: Result<List<B>> -> map2(f(x), y) { a -> { b: List<B> -> b.cons(a) } } }
+        }
 
 fun <A> sequence(list: List<Result<A>>): Result<List<A>> =
-                                traverse(list, { x: Result<A> -> x })
+        traverse(list, { x: Result<A> -> x })
 
 fun <A, B, C> zipWith(list1: List<A>,
                       list2: List<B>,
@@ -260,14 +269,14 @@ fun <A, B, C> zipWith(list1: List<A>,
                           list1: List<A>,
                           list2: List<B>,
                           f: (A) -> (B) -> C): List<C> = when (list1) {
-                              is List.Nil -> acc
-                              is List.Cons -> when (list2) {
-                                  is List.Nil -> acc
-                                  is List.Cons ->
-                                      zipWith(acc.cons(f(list1.head)(list2.head)),
-                                              list1.tail, list2.tail, f)
-                              }
-                          }
+        is List.Nil -> acc
+        is List.Cons -> when (list2) {
+            is List.Nil -> acc
+            is List.Cons ->
+                zipWith(acc.cons(f(list1.head)(list2.head)),
+                        list1.tail, list2.tail, f)
+        }
+    }
     return zipWith(List(), list1, list2, f).reverse()
 }
 
@@ -278,6 +287,4 @@ fun <A, B, C> product(list1: List<A>,
 
 fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { it }
 
-fun <A> List<A>.startsWith(sub: List<A>): Boolean = TODO("Implement this function using corecursion")
 
-fun <A> List<A>.hasSubList(sub: List<A>): Boolean = TODO("Implement this function using corecursion")

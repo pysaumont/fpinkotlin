@@ -15,6 +15,17 @@ sealed class List<out A> {
 
     fun lastSafe(): Result<A> = TODO("Implement this function")
 
+    fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        is Cons -> Cons(a, this.tail)
+        is Nil -> throw IllegalStateException("setHead called on an empty list")
+    }
+
+    fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
+
+    fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
+
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.Companion.concatViaFoldRight(this, list)
+
     fun drop(n: Int): List<A> = drop(this, n)
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
@@ -34,7 +45,7 @@ sealed class List<out A> {
 
     fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
@@ -92,7 +103,7 @@ sealed class List<out A> {
 
         fun <A> concat(list1: List<A>, list2: List<A>): List<A> = list1.reverse().foldLeft(list2) { x -> x::cons }
 
-        fun <A> concat_(list1: List<A>, list2: List<A>): List<A> = foldRight(list1, list2) { x -> { y -> Cons(x, y) } }
+        fun <A> concatViaFoldRight(list1: List<A>, list2: List<A>): List<A> = foldRight(list1, list2) { x -> { y -> Cons(x, y) } }
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
@@ -119,17 +130,6 @@ sealed class List<out A> {
     }
 }
 
-fun <A> List<A>.setHead(a: A): List<A> = when (this) {
-    is List.Cons -> List.Cons(a, this.tail)
-    is List.Nil -> throw IllegalStateException("setHead called on an empty list")
-}
-
-fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
-
-fun <A> List<A>.concat(list: List<A>): List<A> = List.Companion.concat(this, list)
-
-fun <A> List<A>.concat_(list: List<A>): List<A> = List.Companion.concat_(this, list)
-
 fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
 
 fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
@@ -139,3 +139,11 @@ fun triple(list: List<Int>): List<Int> =
 
 fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
+
+tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
+    is List.Nil  -> Result()
+    is List.Cons<A> -> when (list.tail) {
+        is List.Nil  -> Result(list.head)
+        is List.Cons -> lastSafe(list.tail)
+    }
+}

@@ -30,8 +30,8 @@ class ListTest: StringSpec() {
 
         "concat_" {
             forAll(IntListPairGenerator(), { (list1, list2) ->
-                val concat1 = list1.concat_(list2).drop(1)
-                val concat2 = list2.reverse().concat_(list1.reverse()).reverse().drop(1)
+                val concat1 = list1.concatViaFoldRight(list2).drop(1)
+                val concat2 = list2.reverse().concatViaFoldRight(list1.reverse()).reverse().drop(1)
                 sum(concat1) == sum(concat2)
             }, 10)
         }

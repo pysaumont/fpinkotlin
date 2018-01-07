@@ -8,6 +8,15 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
 
+    fun contains(a: @UnsafeVariance A): Boolean = when (this) {
+        is Empty -> false
+        is T -> when {
+            a < value -> left.contains(a)
+            a > value -> right.contains(a)
+            else -> value == a
+        }
+    }
+
     internal object Empty : Tree<Nothing>() {
 
         override fun isEmpty(): Boolean = true
@@ -49,14 +58,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 }
 
-fun <A: Comparable<A>> Tree<A>.contains(a: @UnsafeVariance A): Boolean = when (this) {
-    is Tree.Empty -> false
-    is Tree.T<A> -> when {
-        a < value -> left.contains(a)
-        a > value -> right.contains(a)
-        else -> value == a
-    }
-}
+//fun <A: Comparable<A>> Tree<A>.contains(a: @UnsafeVariance A): Boolean = when (this) {
+//    is Tree.Empty -> false
+//    is Tree.T<A> -> when {
+//        a < value -> left.contains(a)
+//        a > value -> right.contains(a)
+//        else -> value == a
+//    }
+//}
 
 
 fun main(args: Array<String>) {

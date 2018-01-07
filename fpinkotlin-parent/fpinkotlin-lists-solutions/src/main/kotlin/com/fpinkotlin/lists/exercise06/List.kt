@@ -7,6 +7,15 @@ sealed class List<out A> {
 
     abstract fun init(): List<A>
 
+    fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        is Cons -> Cons(a, this.tail)
+        is Nil -> throw IllegalStateException("setHead called on an empty list")
+    }
+
+    fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
+
+    fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
+
     fun drop(n: Int): List<A> = drop(this, n)
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
@@ -76,15 +85,6 @@ sealed class List<out A> {
             az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
     }
 }
-
-fun <A> List<A>.setHead(a: A): List<A> = when (this) {
-    is List.Cons -> List.Cons(a, this.tail)
-    is List.Nil -> throw IllegalStateException("setHead called on an empty list")
-}
-
-fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
-
-fun <A> List<A>.concat(list: List<A>): List<A> = List.Companion.concat(this, list)
 
 fun sum(ints: List<Int>): Int = when (ints) {
     is List.Nil -> 0
