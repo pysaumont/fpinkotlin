@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.listing02
 
 import com.fpinkotlin.optionaldata.exercise06.Option
-import com.fpinkotlin.optionaldata.exercise06.getOrElse
 
 data class Toon (val firstName: String,
                  val lastName: String,

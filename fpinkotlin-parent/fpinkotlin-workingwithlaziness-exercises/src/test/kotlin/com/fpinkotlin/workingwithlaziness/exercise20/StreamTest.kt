@@ -18,7 +18,7 @@ class LazyTest: StringSpec() {
                     return i + 1
                 }
                 val stream = Stream.iterate(a, ::inc).takeAtMost(100)
-                val expected = sum(range(a , a + 100))
+                val expected = range(a , a + 100).sum()
                 val result = stream.foldRight(Lazy { 0 }) { x -> { y -> x + y() } }
                 expected == result
             }, 10)

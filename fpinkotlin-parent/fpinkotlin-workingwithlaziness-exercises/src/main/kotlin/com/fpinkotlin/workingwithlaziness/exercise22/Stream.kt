@@ -2,9 +2,6 @@ package com.fpinkotlin.workingwithlaziness.exercise22
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.cons
-
-
 
 
 sealed class Stream<out A> {

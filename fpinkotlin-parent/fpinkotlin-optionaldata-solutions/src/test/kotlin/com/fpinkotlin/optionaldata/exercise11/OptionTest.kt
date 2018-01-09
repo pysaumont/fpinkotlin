@@ -11,7 +11,7 @@ class OptionTest: StringSpec() {
 
         "sequenceSome" {
             forAll(IntListGenerator(), { (array, list) ->
-                sequence(list.map { Option(it)}).map { lst -> sum(lst)} ==
+                sequence(list.map { Option(it)}).map { lst -> lst.sum()} ==
                         Option(array.sum())
             })
         }
@@ -19,7 +19,7 @@ class OptionTest: StringSpec() {
         "sequenceNone" {
             val f: (Int) -> Option<Int> = { a -> if (a % 2 == 0 ) Option(a) else Option() }
             forAll(IntListGenerator(), { (array, list) ->
-                sequence(list.map(f)).map { lst -> sum(lst)} == Option<Int>() ||
+                sequence(list.map(f)).map { lst -> lst.sum() } == Option<Int>() ||
                         array.map { a -> if (a % 2 == 0 ) a else 0 }.sum() == array.sum()
             })
         }

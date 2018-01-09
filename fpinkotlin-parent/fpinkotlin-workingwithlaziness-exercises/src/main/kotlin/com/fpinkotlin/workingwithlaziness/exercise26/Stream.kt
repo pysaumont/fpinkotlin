@@ -2,7 +2,6 @@ package com.fpinkotlin.workingwithlaziness.exercise26
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.cons
 
 
 sealed class Stream<out A> {
@@ -20,38 +19,40 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
-            { b: Lazy<Stream<B>> ->
-                f(a).append(b)
+    fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> = TODO("Implement this function")
+
+    fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
+            this.foldRight(stream2) { a: A ->
+                { b: Lazy<Stream<A>> ->
+                    Stream.cons(Lazy { a }, b)
+                }
             }
-        })
 
     fun filter(p: (A) -> Boolean): Stream<A> =
-         foldRight(Lazy { Empty }, { a ->
-             { b: Lazy<Stream<A>> ->
-                 if (p(a)) cons(Lazy { a }, b) else b()
-             }
-         })
+            foldRight(Lazy { Empty }, { a ->
+                { b: Lazy<Stream<A>> ->
+                    if (p(a)) cons(Lazy { a }, b) else b()
+                }
+            })
     fun <B> map(f: (A) -> B): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
-            { b: Lazy<Stream<B>> ->
-                cons(Lazy { f(a) }, b)
-            }
-        })
+            foldRight(Lazy { Empty }, { a ->
+                { b: Lazy<Stream<B>> ->
+                    cons(Lazy { f(a) }, b)
+                }
+            })
 
     fun headSafeViaFoldRight(): Result<A> =
-          foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
+            foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-        foldRight(Lazy { Empty }, { a ->
-            { b: Lazy<Stream<A>> ->
-                if (p(a))
-                    cons(Lazy { a }, b)
-                else
-                    Empty
-            }
-        })
+            foldRight(Lazy { Empty }, { a ->
+                { b: Lazy<Stream<A>> ->
+                    if (p(a))
+                        cons(Lazy { a }, b)
+                    else
+                        Empty
+                }
+            })
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 
@@ -81,7 +82,7 @@ sealed class Stream<out A> {
                                internal val tl: Lazy<Stream<A>>) : Stream<A>() {
 
         override fun <B> foldRight(z: Lazy<B>, f: (A) -> (Lazy<B>) -> B): B =
-                                           f(hd())(Lazy { tl().foldRight(z, f) })
+                f(hd())(Lazy { tl().foldRight(z, f) })
 
         override fun takeWhile(p: (A) -> Boolean): Stream<A> = when {
             p(hd()) -> cons(hd, Lazy { tl().takeWhile(p) })
@@ -109,12 +110,12 @@ sealed class Stream<out A> {
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
         tailrec fun <A> dropWhile(stream: Stream<A>,
-                              p: (A) -> Boolean): Stream<A> = when (stream) {
-                is Empty -> stream
-                is Cons -> when {
-                    p(stream.hd()) -> dropWhile(stream.tl(), p)
-                    else -> stream
-                }
+                                  p: (A) -> Boolean): Stream<A> = when (stream) {
+            is Empty -> stream
+            is Cons -> when {
+                p(stream.hd()) -> dropWhile(stream.tl(), p)
+                else -> stream
+            }
         }
 
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
@@ -138,19 +139,12 @@ sealed class Stream<out A> {
         fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
 
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
-            when (stream) {
-                is Empty -> false
-                is Cons  -> when {
-                    p(stream.hd()) -> true
-                    else           -> exists(stream.tl(), p)
+                when (stream) {
+                    is Empty -> false
+                    is Cons  -> when {
+                        p(stream.hd()) -> true
+                        else           -> exists(stream.tl(), p)
+                    }
                 }
-            }
     }
 }
-
-fun <A> Stream<A>.append(stream2: Lazy<Stream<A>>): Stream<A> =
-      this.foldRight(stream2) { a: A ->
-          { b: Lazy<Stream<A>> ->
-              Stream.cons(Lazy { a }, b)
-          }
-      }

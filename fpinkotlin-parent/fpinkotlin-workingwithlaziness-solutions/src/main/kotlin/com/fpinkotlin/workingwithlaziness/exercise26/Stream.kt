@@ -2,7 +2,6 @@ package com.fpinkotlin.workingwithlaziness.exercise26
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.cons
 
 
 sealed class Stream<out A> {
@@ -21,11 +20,18 @@ sealed class Stream<out A> {
                                f: (A) -> (Lazy<B>) -> B): B
 
     fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty as Stream<B> }, { a ->
             { b: Lazy<Stream<B>> ->
                 f(a).append(b)
             }
         })
+
+    fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
+            this.foldRight(stream2) { a: A ->
+                { b: Lazy<Stream<A>> ->
+                    Stream.cons(Lazy { a }, b)
+                }
+            }
 
     fun filter(p: (A) -> Boolean): Stream<A> =
          foldRight(Lazy { Empty }, { a ->
@@ -147,10 +153,3 @@ sealed class Stream<out A> {
             }
     }
 }
-
-fun <A> Stream<A>.append(stream2: Lazy<Stream<A>>): Stream<A> =
-      this.foldRight(stream2) { a: A ->
-          { b: Lazy<Stream<A>> ->
-              Stream.cons(Lazy { a }, b)
-          }
-      }

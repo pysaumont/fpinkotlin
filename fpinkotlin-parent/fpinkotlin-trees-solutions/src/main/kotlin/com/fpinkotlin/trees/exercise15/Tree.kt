@@ -1,8 +1,6 @@
 package com.fpinkotlin.trees.exercise15
 
 import com.fpinkotlin.common.List
-import com.fpinkotlin.common.concat
-import com.fpinkotlin.common.cons
 import com.fpinkotlin.trees.common.Result
 import com.fpinkotlin.trees.common.getOrElse
 import com.fpinkotlin.trees.common.orElse

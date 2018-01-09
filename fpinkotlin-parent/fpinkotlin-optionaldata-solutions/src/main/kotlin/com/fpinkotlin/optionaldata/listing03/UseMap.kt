@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.listing03
 
 import com.fpinkotlin.optionaldata.exercise06.Option
-import com.fpinkotlin.optionaldata.exercise06.getOrElse
 import java.io.IOException
 
 
