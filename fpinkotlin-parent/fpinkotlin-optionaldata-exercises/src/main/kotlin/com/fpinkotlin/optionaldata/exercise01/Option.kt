@@ -5,6 +5,8 @@ sealed class Option<out A> {
 
     abstract fun isEmpty(): Boolean
 
+    fun getOrElse(default: @UnsafeVariance A): A = TODO("Implement this function")
+
     internal object None: Option<Nothing>() {
 
         override fun isEmpty() = true
@@ -39,4 +41,3 @@ sealed class Option<out A> {
     }
 }
 
-fun <A> Option<A>.getOrElse(default: A): A = TODO("getOrElse")

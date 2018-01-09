@@ -33,13 +33,34 @@ sealed class Result<out A>: Serializable {
                                onFailure: (RuntimeException) -> Unit,
                                onEmpty: () -> Unit)
 
+    fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue
+    }
+
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue()
+    }
+
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
+        when (it) {
+            is Success -> it.value
+            else -> try {
+                defaultValue()
+            } catch (e: RuntimeException) {
+                Result.failure<A>(e)
+            } catch (e: Exception) {
+                Result.failure<A>(RuntimeException(e))
+            }
+        }
+    }
+
     internal object Empty: Result<Nothing>() {
 
         override fun forEachOrElse(onSuccess: (Nothing) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) {
-            onEmpty()
-        }
+                                   onEmpty: () -> Unit) = TODO("Implement this function")
 
         override fun forEach(effect: (Nothing) -> Unit) {}
 
@@ -61,13 +82,13 @@ sealed class Result<out A>: Serializable {
         override fun forEach(effect: (A) -> Unit) {}
 
         override fun <B> map(f: (A) -> B): Result<B> = Failure(
-            exception)
+                exception)
 
         override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(
-            exception)
+                exception)
 
         override fun mapFailure(message: String): Result<A> = Failure(
-            RuntimeException(message, exception))
+                RuntimeException(message, exception))
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -77,6 +98,7 @@ sealed class Result<out A>: Serializable {
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
                                    onEmpty: () -> Unit) = TODO("Implement this function")
+
         override fun forEach(effect: (A) -> Unit) {
             effect(value)
         }
@@ -112,13 +134,13 @@ sealed class Result<out A>: Serializable {
         operator fun <A> invoke(): Result<A> = Empty
 
         fun <A> failure(message: String): Result<A> = Failure(
-            IllegalStateException(message))
+                IllegalStateException(message))
 
         fun <A> failure(exception: RuntimeException): Result<A> = Failure(
-            exception)
+                exception)
 
         fun <A> failure(exception: Exception): Result<A> = Failure(
-            IllegalStateException(exception))
+                IllegalStateException(exception))
 
         operator fun <A> invoke(a: A? = null, message: String): Result<A> = when (a) {
             null -> Failure(NullPointerException(message))
@@ -138,31 +160,8 @@ sealed class Result<out A>: Serializable {
             else -> when {
                 p(a) -> Success(a)
                 else -> Failure(
-                    IllegalArgumentException("Argument $a does not match condition: $message"))
+                        IllegalArgumentException("Argument $a does not match condition: $message"))
             }
-        }
-    }
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: A): A = when (this) {
-    is Result.Success -> this.value
-    else                                                       -> defaultValue
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: () -> A): A = when (this) {
-    is Result.Success -> this.value
-    else                                                       -> defaultValue()
-}
-
-fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this }.let {
-    when (it) {
-        is Result.Success -> it.value
-        else                                                       -> try {
-            defaultValue()
-        } catch (e: RuntimeException) {
-            Result.failure<A>(e)
-        } catch (e: Exception) {
-            Result.failure<A>(RuntimeException(e))
         }
     }
 }

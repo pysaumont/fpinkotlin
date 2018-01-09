@@ -23,6 +23,29 @@ sealed class Result<out A>: Serializable {
             failure(message)
     }
 
+    fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue
+    }
+
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue()
+    }
+
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
+        when (it) {
+            is Success -> it.value
+            else -> try {
+                defaultValue()
+            } catch (e: RuntimeException) {
+                Result.failure<A>(e)
+            } catch (e: Exception) {
+                Result.failure<A>(RuntimeException(e))
+            }
+        }
+    }
+
     internal object Empty: Result<Nothing>() {
 
         override fun <B> map(f: (Nothing) -> B): Result<B> = Empty
@@ -76,28 +99,5 @@ sealed class Result<out A>: Serializable {
         fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception)
 
         fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
-    }
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: A): A = when (this) {
-    is Result.Success -> this.value
-    else -> defaultValue
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: () -> A): A = when (this) {
-    is Result.Success -> this.value
-    else -> defaultValue()
-}
-
-fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this }.let {
-    when (it) {
-        is Result.Success -> it.value
-        else -> try {
-            defaultValue()
-        } catch (e: RuntimeException) {
-            Result.failure<A>(e)
-        } catch (e: Exception) {
-            Result.failure<A>(RuntimeException(e))
-        }
     }
 }

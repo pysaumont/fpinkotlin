@@ -29,6 +29,29 @@ sealed class Result<out A>: Serializable {
 
     abstract fun forEach(effect: (A) -> Unit)
 
+    fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue
+    }
+
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = when (this) {
+        is Success -> this.value
+        else -> defaultValue()
+    }
+
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
+        when (it) {
+            is Success -> it.value
+            else -> try {
+                defaultValue()
+            } catch (e: RuntimeException) {
+                Result.failure<A>(e)
+            } catch (e: Exception) {
+                Result.failure<A>(RuntimeException(e))
+            }
+        }
+    }
+
     internal object Empty: Result<Nothing>() {
 
         override fun forEach(effect: (Nothing) -> Unit) {}
@@ -123,29 +146,6 @@ sealed class Result<out A>: Serializable {
                 else -> Failure(
                     IllegalArgumentException("Argument $a does not match condition: $message"))
             }
-        }
-    }
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: A): A = when (this) {
-    is Result.Success -> this.value
-    else                                                       -> defaultValue
-}
-
-fun <A> Result<A>.getOrElse(defaultValue: () -> A): A = when (this) {
-    is Result.Success -> this.value
-    else                                                       -> defaultValue()
-}
-
-fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this }.let {
-    when (it) {
-        is Result.Success -> it.value
-        else                                                       -> try {
-            defaultValue()
-        } catch (e: RuntimeException) {
-            Result.failure<A>(e)
-        } catch (e: Exception) {
-            Result.failure<A>(RuntimeException(e))
         }
     }
 }

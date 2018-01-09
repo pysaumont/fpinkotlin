@@ -15,6 +15,18 @@ sealed class Option<out A> {
     fun filter(p: (A) -> Boolean): Option<A> =
             flatMap { x -> if (p(x)) this else None }
 
+    fun orElse(default: () -> Option<@UnsafeVariance A>): Option<A> = map { this }.getOrElse(default)
+
+    fun getOrElse(default: @UnsafeVariance A): A = when (this) {
+        is None -> default
+        is Some -> value
+    }
+
+    fun getOrElse(default: () -> @UnsafeVariance A): A = when (this) {
+        is None -> default()
+        is Some -> value
+    }
+
     internal object None: Option<Nothing>() {
 
         override fun <B> map(f: (Nothing) -> B): Option<B> = None
@@ -63,16 +75,10 @@ sealed class Option<out A> {
     }
 }
 
-fun <A> Option<A>.getOrElse(default: A): A = Option.getOrElse(this, default)
-
-fun <A> Option<A>.getOrElse(default: () -> A): A = Option.getOrElse(this, default)
-
-fun <A> Option<A>.orElse(default: () -> Option<A>): Option<A> = map { this }.getOrElse(default)
-
 val mean: (List<Double>) -> Option<Double> = { list ->
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 }
 
@@ -87,7 +93,7 @@ val variance: (List<Double>) -> Option<Double> = { list ->
 fun mean(list: List<Double>): Option<Double> =
     when {
         list.isEmpty() -> Option()
-        else -> Option(list.sum() / list.size())
+        else -> Option(list.sum() / list.length())
     }
 
 
@@ -97,7 +103,6 @@ fun variance(list: List<Double>): Option<Double> =
             Math.pow((x - m), 2.0)
         }))
     }
-
 
 val abs: (Double) -> Double = { d -> if (d > 0) d else -d }
 

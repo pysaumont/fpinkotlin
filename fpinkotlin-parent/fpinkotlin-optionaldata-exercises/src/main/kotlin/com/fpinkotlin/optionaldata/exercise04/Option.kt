@@ -9,6 +9,16 @@ sealed class Option<out A> {
 
     fun <B> flatMap(f: (A) -> Option<B>): Option<B> = TODO("flatMap")
 
+    fun getOrElse(default: @UnsafeVariance A): A = when (this) {
+        is None -> default
+        is Some -> value
+    }
+
+    fun getOrElse(default: () -> @UnsafeVariance A): A = when (this) {
+        is None -> default()
+        is Some -> value
+    }
+
     internal object None: Option<Nothing>() {
 
         override fun <B> map(f: (Nothing) -> B): Option<B> = None
@@ -56,7 +66,3 @@ sealed class Option<out A> {
         }
     }
 }
-
-fun <A> Option<A>.getOrElse(default: A): A = Option.getOrElse(this, default)
-
-fun <A> Option<A>.getOrElse(default: () -> A): A = Option.getOrElse(this, default)

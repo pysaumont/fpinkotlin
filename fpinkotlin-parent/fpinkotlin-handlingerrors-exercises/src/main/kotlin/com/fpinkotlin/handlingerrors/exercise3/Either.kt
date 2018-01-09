@@ -6,6 +6,10 @@ sealed class Either<E, out A> {
 
     abstract fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B>
 
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = TODO("Implement this function")
+
+    fun orElse(defaultValue: () -> Either<E, @UnsafeVariance A>): Either<E, A> = TODO("Implement this function")
+
     internal class Left<E, out A>(private val value: E): Either<E, A>() {
 
         override fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B> = Left(value)
@@ -31,7 +35,3 @@ sealed class Either<E, out A> {
         fun <E, B> right(value: B): Either<E, B> = Right(value)
     }
 }
-
-fun <E, A> Either<E, A>.getOrElse(defaultValue: () -> A): A = TODO("Implement this function")
-
-fun <E, A> Either<E, A>.orElse(defaultValue: () -> Either<E, A>): Either<E, A> = TODO("Implement this function")
