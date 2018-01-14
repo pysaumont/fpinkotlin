@@ -1,7 +1,9 @@
 package com.fpinkotlin.trees.exercise11
 
-import com.fpinkotlin.common.*
 import com.fpinkotlin.common.List
+import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.getOrElse
+import com.fpinkotlin.common.orElse
 import kotlin.math.max
 
 
@@ -24,10 +26,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                g: (B) -> (B) -> B): B
 
     abstract fun merge(tree: Tree<@UnsafeVariance A>): Tree<A>
-
-    abstract fun remove(a: @UnsafeVariance A): Tree<A>
-
-    abstract protected fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A>
 
     abstract fun min(): Result<A>
 
@@ -53,6 +51,37 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B =
                         toListPreOrderLeft().foldLeft(identity, f)
 
+    fun remove(a: @UnsafeVariance A): Tree<A> = when(this) {
+        is Tree.Empty -> this
+        is Tree.T     ->  when {
+            a < value -> T(left.remove(a), value, right)
+            a > value -> T(left, value, right.remove(a))
+            else -> left.removeMerge(right)
+        }
+    }
+
+    fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
+        is Tree.Empty -> ta
+        is Tree.T     -> when (ta) {
+            is Empty -> this
+            is T -> when {
+                ta.value < value -> T(left.removeMerge(ta), value, right)
+                ta.value > value -> T(left, value, right.removeMerge(ta))
+                else             -> throw IllegalStateException("We shouldn't be here")
+
+            }
+        }
+    }
+
+    fun contains(a: @UnsafeVariance A): Boolean = when (this) {
+        is Empty -> false
+        is T -> when {
+            a < value -> left.contains(a)
+            a > value -> right.contains(a)
+            else -> value == a
+        }
+    }
+
     internal object Empty : Tree<Nothing>() {
 
         override fun toListPreOrderLeft(): List<Nothing> = List()
@@ -68,10 +97,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldLeft(identity: B, f: (B) -> (Nothing) -> B, g: (B) -> (B) -> B): B = identity
 
         override fun merge(tree: Tree<Nothing>): Tree<Nothing> = tree
-
-        override fun remove(a: Nothing): Tree<Nothing> = this
-
-        override fun removeMerge(ta: Tree<Nothing>): Tree<Nothing> = ta
 
         override fun min(): Result<Nothing> = Result()
 
@@ -114,22 +139,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                 tree.value > this.value -> T(left, value, right.merge(T(Empty, tree.value, tree.right))).merge(tree.left)
                 tree.value < this.value -> T(left.merge(T(tree.left, tree.value, Empty)), value, right).merge(tree.right)
                 else                    -> T(left.merge(tree.left), value, right.merge(tree.right))
-            }
-        }
-
-        override fun remove(a: @UnsafeVariance A): Tree<A> = when {
-            a < this.value -> T(left.remove(a), value, right)
-            a > this.value -> T(left, value, right.remove(a))
-            else           -> left.removeMerge(right)
-        }
-
-        override fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (ta) {
-            is Empty -> this
-            is T     -> when {
-                ta.value < value -> T(left.removeMerge(ta), value, right)
-                ta.value > value -> T(left, value, right.removeMerge(ta))
-                else             -> throw IllegalStateException("We shouldn't be here")
-
             }
         }
 
@@ -202,15 +211,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                      lt(lMax, a)
                                  }
                              }.getOrElse(false))
-    }
-}
-
-fun <A: Comparable<A>> Tree<A>.contains(a: @UnsafeVariance A): Boolean = when (this) {
-    is Tree.Empty -> false
-    is Tree.T<A> -> when {
-        a < value -> left.contains(a)
-        a > value -> right.contains(a)
-        else -> value == a
     }
 }
 

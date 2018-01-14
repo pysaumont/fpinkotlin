@@ -166,3 +166,17 @@ project(':fpinkotlin-trees-solutions') {
     }
 }
 
+project(':fpinkotlin-advancedtrees-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-advancedtrees-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+

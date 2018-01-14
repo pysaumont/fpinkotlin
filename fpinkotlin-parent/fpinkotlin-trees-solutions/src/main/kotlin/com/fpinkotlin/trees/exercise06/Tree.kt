@@ -20,6 +20,37 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
 
+    fun remove(a: @UnsafeVariance A): Tree<A> = when(this) {
+        is Tree.Empty -> this
+        is Tree.T     ->  when {
+            a < value -> T(left.remove(a), value, right)
+            a > value -> T(left, value, right.remove(a))
+            else -> left.removeMerge(right)
+        }
+    }
+
+    fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
+        is Tree.Empty -> ta
+        is Tree.T     -> when (ta) {
+            is Empty -> this
+            is T -> when {
+                ta.value < value -> T(left.removeMerge(ta), value, right)
+                ta.value > value -> T(left, value, right.removeMerge(ta))
+                else             -> throw IllegalStateException("We shouldn't be here")
+
+            }
+        }
+    }
+
+    fun contains(a: @UnsafeVariance A): Boolean = when (this) {
+        is Empty -> false
+        is T -> when {
+            a < value -> left.contains(a)
+            a > value -> right.contains(a)
+            else -> value == a
+        }
+    }
+
     internal object Empty : Tree<Nothing>() {
 
         override fun min(): Result<Nothing> = Result()
@@ -74,36 +105,5 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
             list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })
-    }
-}
-
-fun <A: Comparable<A>> Tree<A>.contains(a: @UnsafeVariance A): Boolean = when (this) {
-    is Tree.Empty -> false
-    is Tree.T<A> -> when {
-        a < value -> left.contains(a)
-        a > value -> right.contains(a)
-        else -> value == a
-    }
-}
-
-fun <A: Comparable<A>> Tree<A>.remove(a: @UnsafeVariance A): Tree<A> = when(this) {
-    is Tree.Empty -> this
-    is Tree.T     ->  when {
-        a < this.value -> Tree.T(left.remove(a), value, right)
-        a > this.value -> Tree.T(left, value, right.remove(a))
-        else -> left.removeMerge(right)
-    }
-}
-
-fun <A: Comparable<A>> Tree<A>.removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
-    is Tree.Empty -> ta
-    is Tree.T     -> when (ta) {
-        is Tree.Empty -> this
-        is Tree.T -> when {
-            ta.value < value -> Tree.T(left.removeMerge(ta), value, right)
-            ta.value > value -> Tree.T(left, value, right.removeMerge(ta))
-            else             -> throw IllegalStateException("We shouldn't be here")
-
-        }
     }
 }

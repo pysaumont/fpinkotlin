@@ -58,16 +58,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 }
 
-//fun <A: Comparable<A>> Tree<A>.contains(a: @UnsafeVariance A): Boolean = when (this) {
-//    is Tree.Empty -> false
-//    is Tree.T<A> -> when {
-//        a < value -> left.contains(a)
-//        a > value -> right.contains(a)
-//        else -> value == a
-//    }
-//}
-
-
 fun main(args: Array<String>) {
     val t1 = Tree<Int>() + 5 + 2 + 8
     println(t1)

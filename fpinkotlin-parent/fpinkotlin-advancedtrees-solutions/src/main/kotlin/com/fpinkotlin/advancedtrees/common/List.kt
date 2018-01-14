@@ -1,4 +1,4 @@
-package com.fpinkotlin.common
+package com.fpinkotlin.advancedtrees.common
 
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
@@ -122,10 +122,10 @@ sealed class List<out A> {
 
     fun getAt(index: Int): Result<A> {
         data class Pair<out A>(val first: Result<A>, val second: Int) {
-            override fun equals(other: Any?): Boolean {
+            override fun equals(o: Any?): Boolean {
                 return when {
-                    other == null -> false
-                    other.javaClass == this.javaClass -> (other as Pair<A>).second == second
+                    o == null -> false
+                    o.javaClass == this.javaClass -> (o as Pair<A>).second == second
                     else -> false
                 }
             }
@@ -167,10 +167,10 @@ sealed class List<out A> {
     fun startsWith(sub: List<@UnsafeVariance A>): Boolean {
         tailrec fun startsWith(list: List<A>, sub: List<A>): Boolean =
                 when (sub) {
-                    is List.Nil  -> true
-                    is List.Cons -> when (list) {
-                        is List.Nil  -> false
-                        is List.Cons -> if (list.head == sub.head)
+                    is Nil -> true
+                    is Cons -> when (list) {
+                        is Nil -> false
+                        is Cons -> if (list.head == sub.head)
                             startsWith(list.tail, sub.tail)
                         else
                             false
@@ -183,8 +183,8 @@ sealed class List<out A> {
         tailrec
         fun <A> hasSubList(list: List<A>, sub: List<A>): Boolean =
                 when (list) {
-                    is List.Nil -> sub.isEmpty()
-                    is List.Cons ->
+                    is Nil -> sub.isEmpty()
+                    is Cons ->
                         if (list.startsWith(sub))
                             true
                         else
@@ -202,7 +202,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.Companion.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -275,7 +275,7 @@ sealed class List<out A> {
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+            is Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -300,20 +300,20 @@ sealed class List<out A> {
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    is Nil -> identity
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
+                    is Nil -> acc
+                    is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
         tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
+                    is Nil -> acc
+                    is Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
 
@@ -334,25 +334,25 @@ fun triple(list: List<Int>): List<Int> =
         List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
+        List.foldRight(list, List()) { h -> { t: List<String> -> t.cons(h.toString()) } }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
-    is List.Nil  -> Result()
+    is List.Nil -> Result()
     is List.Cons<A> -> when (list.tail) {
-        is List.Nil  -> Result(list.head)
+        is List.Nil -> Result(list.head)
         is List.Cons -> lastSafe(list.tail)
     }
 }
 
 fun <A> flattenResult(list: List<Result<A>>): List<A> =
         flatten(list.foldRight(List()) { ra: Result<A> ->
-            { lla: List<List<A>> -> lla.cons(ra.map { List(it)}.getOrElse(List())) }
+            { lla: List<List<A>> -> lla.cons(ra.map { List(it) }.getOrElse(List())) }
         })
 
 fun <A> flattenResultLeft(list: List<Result<A>>): List<A> =
         flatten(list.foldLeft(List.Nil as List<List<A>>) { lla: List<List<A>> ->
             { ra: Result<A> ->
-                lla.cons(ra.map { List(it)}.getOrElse(List()))
+                lla.cons(ra.map { List(it) }.getOrElse(List()))
             }
         }).reverse()
 
