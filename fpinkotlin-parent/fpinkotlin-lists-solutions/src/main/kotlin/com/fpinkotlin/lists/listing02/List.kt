@@ -23,10 +23,6 @@ sealed class List<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
@@ -37,8 +33,8 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -48,30 +44,30 @@ sealed class List<out A> {
         fun <A> cons(a: A, list: List<A>): List<A> = Cons(a, list)
 
         tailrec fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
         }
 
         tailrec fun <A> dropWhile(list: List<A>, p: (A) -> Boolean): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
         fun <A> concat(list1: List<A>, list2: List<A>): List<A> = when (list1) {
-            is Nil -> list2
+            Nil -> list2
             is Cons -> Cons(list1.head, concat(list1.tail, list2))
         }
 
         tailrec fun <A> reverse(acc: List<A>, list: List<A>): List<A> = when (list) {
-            is Nil -> acc
+            Nil -> acc
             is Cons -> reverse(Cons(list.head, acc), list.tail)
         }
 
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    Nil -> identity
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         operator fun <A> invoke(vararg az: A): List<A> =
@@ -80,8 +76,8 @@ sealed class List<out A> {
 }
 
 fun <A> List<A>.setHead(a: A): List<A> = when (this) {
+    List.Nil -> throw IllegalStateException("setHead called on an empty list")
     is List.Cons -> List.Cons(a, this.tail)
-    is List.Nil -> throw IllegalStateException("setHead called on an empty list")
 }
 
 fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)

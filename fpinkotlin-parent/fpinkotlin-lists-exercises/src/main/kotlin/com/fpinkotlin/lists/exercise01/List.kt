@@ -6,25 +6,21 @@ sealed class List<A> {
 
     fun cons(a: A): List<A> = TODO("cons")
 
-    private class Nil<A> : List<A>() {
+    private object Nil: List<Nothing>() {
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil<*>
-
-        override fun hashCode(): Int = 0
     }
 
-    private class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
+    private class Cons<A>(internal val head: A, internal val tail: List<A>) : List<A>() {
 
         override fun isEmpty() = false
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -32,13 +28,6 @@ sealed class List<A> {
     companion object {
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
     }
-}
-
-fun main(args: Array<String>) {
-    println(List<Any>())
-    println(List(1, 2, 3))
-    val numbers: Array<Int> = arrayOf(1, 2, 3, 4, 5)
-    println(List(*numbers))
 }

@@ -7,7 +7,7 @@ sealed class List<A> {
     fun cons(a: A): List<A>  = Cons(a, this)
 
     fun setHead(a: A): List<A> = when (this) {
-        is Nil -> throw IllegalStateException("setHead called on an empty list")
+        Nil -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> tail.cons(a)
     }
 
@@ -16,10 +16,6 @@ sealed class List<A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     private class Cons<A>(internal val head: A, internal val tail: List<A>) : List<A>() {
@@ -28,8 +24,8 @@ sealed class List<A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }

@@ -52,10 +52,6 @@ sealed class List<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A,

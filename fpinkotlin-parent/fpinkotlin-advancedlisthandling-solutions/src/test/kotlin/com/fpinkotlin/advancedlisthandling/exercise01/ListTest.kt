@@ -18,7 +18,7 @@ class ListTest: StringSpec() {
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
 
     override fun generate(): Pair<Array<Int>, List<Int>> {
         val array: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()

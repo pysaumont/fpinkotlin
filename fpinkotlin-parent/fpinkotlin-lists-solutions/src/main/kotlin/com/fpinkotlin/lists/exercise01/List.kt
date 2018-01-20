@@ -1,7 +1,5 @@
 package com.fpinkotlin.lists.exercise01
 
-import sun.reflect.generics.tree.Tree
-
 sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
@@ -13,10 +11,6 @@ sealed class List<A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     private class Cons<A>(internal val head: A, internal val tail: List<A>) : List<A>() {
@@ -25,8 +19,8 @@ sealed class List<A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }

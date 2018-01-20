@@ -1,6 +1,10 @@
-package com.fpinkotlin.advancedtrees.exercise08
+package com.fpinkotlin.advancedtrees.exercise10
 
-import com.fpinkotlin.advancedtrees.common.*
+import com.fpinkotlin.advancedtrees.common.Option
+import com.fpinkotlin.advancedtrees.common.Result
+import com.fpinkotlin.advancedtrees.common.getOrElse
+import com.fpinkotlin.advancedtrees.common.range
+import com.fpinkotlin.advancedtrees.common.unfold
 import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.matchers.shouldBe

@@ -4,42 +4,42 @@ sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
-    fun cons(a: A): List<A>  = Cons(a, this)
+    fun cons(a: A): List<A> = Cons(a, this)
 
-    abstract fun setHead(a: A): List<A>
+    fun setHead(a: A): List<A> = when (this) {
+        Nil -> throw IllegalStateException("setHead called on an empty list")
+        is Cons -> tail.cons(a)
+    }
 
     fun drop(n: Int): List<A> = TODO("drop")
 
-    private class Nil<A> : List<A>() {
-
-        override fun setHead(a: A): List<A> = throw IllegalStateException("setHead called on an empty list")
+    internal object Nil: List<Nothing>() {
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil<*>
-
-        override fun hashCode(): Int = 0
     }
 
-    private class Cons<A>(private val head: A, private val tail: List<A>) : List<A>() {
-
-        override fun setHead(a: A): List<A> = tail.cons(a)
+    internal class Cons<A>(internal val head: A, internal val tail: List<A>): List<A>() {
 
         override fun isEmpty() = false
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil -> acc
+        private tailrec  fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
 
     companion object {
 
+        private tailrec  fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
+            Nil -> list
+            is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
+        }
+
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil(), { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
     }
 }

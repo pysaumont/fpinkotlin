@@ -20,10 +20,6 @@ sealed class Option<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "None"
-
-        override fun equals(other: Any?): Boolean = other is None
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Some<out A>(internal val value: A) : Option<A>() {
@@ -37,7 +33,7 @@ sealed class Option<out A> {
 
         override fun equals(other: Any?): Boolean = when (other) {
             is Some<*> -> value == other.value
-            else                                                             -> false
+            else -> false
         }
 
         override fun hashCode(): Int = value?.hashCode() ?: 0

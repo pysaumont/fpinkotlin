@@ -8,8 +8,8 @@ sealed class List<out A> {
     abstract fun init(): List<A>
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        Nil -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> Cons(a, this.tail)
-        is Nil -> throw IllegalStateException("setHead called on an empty list")
     }
 
     fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
@@ -40,7 +40,7 @@ sealed class List<out A> {
     fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t: List<B> -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = TODO("filter")
-
+    
     internal object Nil: List<Nothing>() {
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
@@ -48,10 +48,6 @@ sealed class List<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
@@ -62,8 +58,8 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -73,12 +69,12 @@ sealed class List<out A> {
         fun <A> cons(a: A, list: List<A>): List<A> = Cons(a, list)
 
         tailrec fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
         }
 
         tailrec fun <A> dropWhile(list: List<A>, p: (A) -> Boolean): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
@@ -88,20 +84,20 @@ sealed class List<out A> {
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    Nil -> identity
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
+                    Nil -> acc
+                    is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
         tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
+                    Nil -> acc
+                    is Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
         fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(Nil) { x -> x::concat }
@@ -120,3 +116,4 @@ fun triple(list: List<Int>): List<Int> =
 
 fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
+

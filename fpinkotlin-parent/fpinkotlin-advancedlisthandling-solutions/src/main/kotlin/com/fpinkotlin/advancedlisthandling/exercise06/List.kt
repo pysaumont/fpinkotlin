@@ -12,7 +12,7 @@ sealed class List<out A> {
 
     abstract fun init(): List<A>
 
-    abstract fun lengthMemoized(): Int
+    abstract val length: Int
 
     abstract fun headSafe(): Result<A>
 
@@ -61,17 +61,13 @@ sealed class List<out A> {
 
         override fun headSafe(): Result<Nothing> = Result()
 
-        override fun lengthMemoized(): Int = 0
+        override val length = 0
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A,
@@ -79,9 +75,7 @@ sealed class List<out A> {
 
         override fun headSafe(): Result<A> = Result(head)
 
-        private val length: Int = tail.lengthMemoized() + 1
-
-        override fun lengthMemoized() = length
+        override val length = tail.length + 1
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 

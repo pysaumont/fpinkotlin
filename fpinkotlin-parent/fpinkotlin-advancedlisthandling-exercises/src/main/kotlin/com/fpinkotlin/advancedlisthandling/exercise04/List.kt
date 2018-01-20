@@ -9,9 +9,10 @@ sealed class List<out A> {
 
     abstract fun init(): List<A>
 
-    abstract fun lengthMemoized(): Int
+    abstract val length: Int
 
     fun headSafe(): Result<A> = TODO("Implement this function")
+
     fun lastSafe(): Result<A> =
             foldLeft(Result()) { _: Result<A> ->
                 { y: A ->
@@ -55,25 +56,19 @@ sealed class List<out A> {
 
     internal object Nil: List<Nothing>() {
 
-        override fun lengthMemoized(): Int = 0
+        override val length = 0
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
 
-        private val length: Int = tail.lengthMemoized() + 1
-
-        override fun lengthMemoized() = length
+        override val length = tail.length + 1
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 

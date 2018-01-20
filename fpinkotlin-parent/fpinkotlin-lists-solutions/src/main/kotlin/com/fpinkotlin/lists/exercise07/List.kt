@@ -8,8 +8,8 @@ sealed class List<out A> {
     abstract fun init(): List<A>
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        Nil -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> Cons(a, this.tail)
-        is Nil -> throw IllegalStateException("setHead called on an empty list")
     }
 
     fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
@@ -24,7 +24,7 @@ sealed class List<out A> {
 
     fun reverse2(): List<A> {
         tailrec fun <A> reverse2(acc: List<A>, list: List<A>): List<A> = when (list) {
-            is Nil -> acc
+            Nil -> acc
             is Cons -> reverse2(Cons(list.head, acc), list.tail)
         }
         return reverse2(List.invoke(), this)
@@ -37,10 +37,6 @@ sealed class List<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
@@ -51,8 +47,8 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -62,22 +58,22 @@ sealed class List<out A> {
         fun <A> cons(a: A, list: List<A>): List<A> = Cons(a, list)
 
         tailrec fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
         }
 
         tailrec fun <A> dropWhile(list: List<A>, p: (A) -> Boolean): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
         fun <A> concat(list1: List<A>, list2: List<A>): List<A> = when (list1) {
-            is Nil -> list2
+            Nil -> list2
             is Cons -> Cons(list1.head, concat(list1.tail, list2))
         }
 
         tailrec fun <A> reverse(acc: List<A>, list: List<A>): List<A> = when (list) {
-            is Nil -> acc
+            Nil -> acc
             is Cons -> reverse(Cons(list.head, acc), list.tail)
         }
 
@@ -86,17 +82,12 @@ sealed class List<out A> {
     }
 }
 
-fun sum_(ints: List<Int>): Int = when (ints) {
-    is List.Nil -> 0
-    is List.Cons -> ints.head + sum_(ints.tail)
-}
-
 fun sum(ints: List<Int>): Int = when (ints) {
-    is List.Nil -> 0
+    List.Nil -> 0
     is List.Cons -> ints.head + sum(ints.tail)
 }
 
 fun product(ints: List<Double>): Double = when (ints) {
-    is List.Nil  -> 1.0
+    List.Nil  -> 1.0
     is List.Cons -> ints.head * product(ints.tail)
 }

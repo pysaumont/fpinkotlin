@@ -9,10 +9,6 @@ sealed class List<A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
-
-        override fun equals(other: Any?): Boolean = other is Nil
-
-        override fun hashCode(): Int = 0
     }
 
     private class Cons<A>(private val head: A, private val tail: List<A>) : List<A>() {
@@ -21,8 +17,8 @@ sealed class List<A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
