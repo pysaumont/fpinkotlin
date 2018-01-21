@@ -7,6 +7,8 @@ sealed class List<out A> {
 
     abstract fun init(): List<A>
 
+    fun lengthMemoized() = length
+
     abstract val length: Int
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {

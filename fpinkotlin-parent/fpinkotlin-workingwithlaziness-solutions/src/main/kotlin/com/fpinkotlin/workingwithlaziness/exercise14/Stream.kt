@@ -55,7 +55,7 @@ sealed class Stream<out A> {
 
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
             n > 0 -> when (stream) {
-                is Empty -> stream
+                Empty -> stream
                 is Cons -> dropAtMost(n - 1, stream.tl())
             }
             else -> stream
@@ -63,7 +63,7 @@ sealed class Stream<out A> {
 
         fun <A> toList(stream: Stream<A>) : List<A> {
             tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
-                is Empty -> list
+                Empty -> list
                 is Cons -> toList(list.cons(stream.hd()), stream.tl())
             }
             return toList(List(), stream).reverse()

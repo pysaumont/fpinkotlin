@@ -1,8 +1,8 @@
 package com.fpinkotlin.advancedtrees.exercise02
 
-import com.fpinkotlin.common.List
 import com.fpinkotlin.advancedtrees.common.Result
 import com.fpinkotlin.advancedtrees.common.getOrElse
+import com.fpinkotlin.common.List
 import kotlin.math.max
 
 internal typealias TB<A> = Tree.T.TB<A>
@@ -271,13 +271,13 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun toString(): String = "(T $color $left $value $right)"
 
         internal fun remove(): Tree<A> {
-            if (this is TR && left is E && right is Empty) {
+            if (this is TR && left == E && right is Empty) {
                 return E
             }
-            if (this is TB && left is E && right is Empty) {
+            if (this is TB && left == E && right is Empty) {
                 return EE
             }
-            if (this is TB && left is E && right is TR) {
+            if (this is TB && left == E && right is TR) {
                 return TB(right.left, right.value, right.right)
             }
             if (this is TB && left is TR && right is Empty) {
@@ -292,7 +292,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                             left: Tree<@UnsafeVariance A>,
                             elem: @UnsafeVariance A,
                             right: Tree<@UnsafeVariance A>): Tree<A> {
-            return if (left.color is DoubleBlack || right.color is DoubleBlack)
+            return if (left.color == DoubleBlack || right.color == DoubleBlack)
                 balance(color.blacker(), left.redder(), elem, right.redder())
             else
                 balance(color, left, elem, right)

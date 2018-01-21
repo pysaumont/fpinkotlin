@@ -40,7 +40,7 @@ sealed class List<out A> {
     fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t: List<B> -> f(h).concat(t) } }
 
     fun filter(p: (A) -> Boolean): List<A> = TODO("filter")
-    
+
     internal object Nil: List<Nothing>() {
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")

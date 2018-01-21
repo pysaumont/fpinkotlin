@@ -15,7 +15,22 @@ sealed class List<out A> {
 
     abstract fun headSafe(): Result<A>
 
-    fun getAt(index: Int): Result<A> = TODO("Implement this function")
+    fun getAt(index: Int): Result<A> = TODO("getAt")
+
+    fun getAtViaFoldLeft(index: Int): Result<A> =
+            Pair(Result.failure<A>("Index out of bound"), index).let {
+                if (index < 0 || index >= length())
+                    it
+                else
+                    foldLeft(it) { ta ->
+                        { a ->
+                            if (ta.second < 0)
+                                ta
+                            else
+                                Pair(Result(a), ta.second - 1)
+                        }
+                    }
+            }.first
 
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
             this.coFoldRight(Pair(Nil, Nil)) { a ->
@@ -34,8 +49,8 @@ sealed class List<out A> {
             }
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        Nil -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> Cons(a, this.tail)
-        is Nil -> throw IllegalStateException("setHead called on an empty list")
     }
 
     fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
@@ -93,8 +108,8 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -104,12 +119,12 @@ sealed class List<out A> {
         fun <A> cons(a: A, list: List<A>): List<A> = Cons(a, list)
 
         tailrec fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
         }
 
         tailrec fun <A> dropWhile(list: List<A>, p: (A) -> Boolean): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
@@ -119,20 +134,20 @@ sealed class List<out A> {
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    Nil -> identity
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
+                    Nil -> acc
+                    is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
         tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
+                    Nil -> acc
+                    is Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
 
@@ -154,9 +169,9 @@ fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
-    is List.Nil  -> Result()
+    List.Nil  -> Result()
     is List.Cons<A> -> when (list.tail) {
-        is List.Nil  -> Result(list.head)
+        List.Nil  -> Result(list.head)
         is List.Cons -> lastSafe(list.tail)
     }
 }
@@ -199,9 +214,9 @@ fun <A, B, C> zipWith(list1: List<A>,
                           list1: List<A>,
                           list2: List<B>,
                           f: (A) -> (B) -> C): List<C> = when (list1) {
-        is List.Nil -> acc
+        List.Nil -> acc
         is List.Cons -> when (list2) {
-            is List.Nil -> acc
+            List.Nil -> acc
             is List.Cons ->
                 zipWith(acc.cons(f(list1.head)(list2.head)),
                         list1.tail, list2.tail, f)

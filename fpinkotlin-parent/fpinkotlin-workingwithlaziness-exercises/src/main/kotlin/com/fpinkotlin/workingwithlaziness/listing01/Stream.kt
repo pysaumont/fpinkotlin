@@ -40,13 +40,3 @@ sealed class Stream<out A> { // <1>
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
     }
 }
-
-fun main(args: Array<String>) {
-    val stream = Stream.from(1)
-    stream.head().forEach({ println(it) })
-    stream.tail().flatMap { it.head() }.forEach({ println(it) })
-    stream.tail().flatMap { it.tail().flatMap { it.head() } }.forEach({ println(it) })
-    stream.head().forEach({ println(it) })
-    stream.tail().flatMap { it.head() }.forEach({ println(it) })
-    stream.tail().flatMap { it.tail().flatMap { it.head() } }.forEach({ println(it) })
-}

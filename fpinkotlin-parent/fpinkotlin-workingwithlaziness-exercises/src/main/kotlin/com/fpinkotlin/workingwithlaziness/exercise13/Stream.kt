@@ -52,7 +52,7 @@ sealed class Stream<out A> {
 
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
             n > 0 -> when (stream) {
-                is Empty -> stream
+                Empty -> stream
                 is Cons -> dropAtMost(n - 1, stream.tl())
             }
             else -> stream

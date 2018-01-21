@@ -119,7 +119,7 @@ sealed class Stream<out A> {
 
         tailrec fun <A> dropWhile(stream: Stream<A>,
                               p: (A) -> Boolean): Stream<A> = when (stream) {
-                is Empty -> stream
+                Empty -> stream
                 is Cons -> when {
                     p(stream.hd()) -> dropWhile(stream.tl(), p)
                     else -> stream
@@ -128,7 +128,7 @@ sealed class Stream<out A> {
 
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
             n > 0 -> when (stream) {
-                is Empty -> stream
+                Empty -> stream
                 is Cons -> dropAtMost(n - 1, stream.tl())
             }
             else -> stream
@@ -136,7 +136,7 @@ sealed class Stream<out A> {
 
         fun <A> toList(stream: Stream<A>) : List<A> {
             tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
-                is Empty -> list
+                Empty -> list
                 is Cons -> toList(list.cons(stream.hd()), stream.tl())
             }
             return toList(List(), stream).reverse()
@@ -148,7 +148,7 @@ sealed class Stream<out A> {
 
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
             when (stream) {
-                is Empty -> false
+                Empty -> false
                 is Cons  -> when {
                     p(stream.hd()) -> true
                     else           -> exists(stream.tl(), p)

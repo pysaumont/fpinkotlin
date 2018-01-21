@@ -18,17 +18,18 @@ sealed class List<out A> {
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): Pair<B, List<A>>
 
-    fun <B> groupBy(f: (A) -> B): Map<B, List<A>> = TODO("Implement this function")
+    fun <B> groupBy(f: (A) -> B): Map<B, List<A>> = TODO("groupBy")
 
     fun splitAt(index: Int): Pair<List<A>, List<A>> {
         tailrec fun splitAt(acc: List<A>,
                             list: List<A>, i: Int): Pair<List<A>, List<A>> =
                 when (list) {
-                    is Nil -> Pair(list.reverse(), acc)
-                    is Cons ->  if (i == 0)
-                        Pair(list.reverse(), acc)
-                    else
-                        splitAt(acc.cons(list.head), list.tail, i - 1)
+                    Nil -> Pair(list.reverse(), acc)
+                    is Cons ->
+                        if (i == 0)
+                            Pair(list.reverse(), acc)
+                        else
+                            splitAt(acc.cons(list.head), list.tail, i - 1)
                 }
         return when {
             index < 0        -> splitAt(0)
@@ -39,13 +40,14 @@ sealed class List<out A> {
 
     fun getAt(index: Int): Result<A> {
         data class Pair<out A>(val first: Result<A>, val second: Int) {
-            override fun equals(o: Any?): Boolean {
-                return when {
-                    o == null -> false
-                    o.javaClass == this.javaClass -> (o as Pair<A>).second == second
-                    else -> false
-                }
+            override fun equals(other: Any?): Boolean = when {
+                other == null -> false
+                other.javaClass == this.javaClass -> (other as Pair<A>).second == second
+                else -> false
             }
+
+            override fun hashCode(): Int =
+                    first.hashCode() + second.hashCode()
         }
 
         return Pair<A>(Result.failure("Index out of bound"), index).let { identity ->
@@ -84,13 +86,14 @@ sealed class List<out A> {
     fun startsWith(sub: List<@UnsafeVariance A>): Boolean {
         tailrec fun startsWith(list: List<A>, sub: List<A>): Boolean =
                 when (sub) {
-                    is List.Nil  -> true
-                    is List.Cons -> when (list) {
-                        is List.Nil  -> false
-                        is List.Cons -> if (list.head == sub.head)
-                            startsWith(list.tail, sub.tail)
-                        else
-                            false
+                    Nil  -> true
+                    is Cons -> when (list) {
+                        Nil  -> false
+                        is Cons ->
+                            if (list.head == sub.head)
+                                startsWith(list.tail, sub.tail)
+                            else
+                                false
                     }
                 }
         return startsWith(this, sub)
@@ -100,8 +103,8 @@ sealed class List<out A> {
         tailrec
         fun <A> hasSubList(list: List<A>, sub: List<A>): Boolean =
                 when (list) {
-                    is List.Nil -> sub.isEmpty()
-                    is List.Cons ->
+                    List.Nil -> sub.isEmpty()
+                    is Cons ->
                         if (list.startsWith(sub))
                             true
                         else
@@ -111,8 +114,8 @@ sealed class List<out A> {
     }
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
+        Nil -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> Cons(a, this.tail)
-        is Nil -> throw IllegalStateException("setHead called on an empty list")
     }
 
     fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
@@ -165,11 +168,12 @@ sealed class List<out A> {
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (A) -> B): Pair<B, List<A>> {
             fun <B> foldLeft(acc: B, zero: B, list: List<A>, f: (B) -> (A) -> B): Pair<B, List<A>> = when (list) {
-                is Nil -> Pair(acc, list)
-                is Cons -> if (acc == zero)
-                    Pair(acc, list)
-                else
-                    foldLeft(f(acc)(list.head), zero, list.tail, f)
+                Nil -> Pair(acc, list)
+                is Cons ->
+                    if (acc == zero)
+                        Pair(acc, list)
+                    else
+                        foldLeft(f(acc)(list.head), zero, list.tail, f)
             }
             return foldLeft(identity, zero, this, f)
         }
@@ -184,8 +188,8 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
-            is Nil  -> acc
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
+            Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -195,12 +199,12 @@ sealed class List<out A> {
         fun <A> cons(a: A, list: List<A>): List<A> = Cons(a, list)
 
         tailrec fun <A> drop(list: List<A>, n: Int): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (n <= 0) list else drop(list.tail, n - 1)
         }
 
         tailrec fun <A> dropWhile(list: List<A>, p: (A) -> Boolean): List<A> = when (list) {
-            is Nil -> list
+            Nil -> list
             is Cons -> if (p(list.head)) dropWhile(list.tail, p) else list
         }
 
@@ -210,20 +214,20 @@ sealed class List<out A> {
 
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    Nil -> identity
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
+                    Nil -> acc
+                    is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
         tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
-                    is List.Nil -> acc
-                    is List.Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
+                    Nil -> acc
+                    is Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
                 }
 
 
@@ -245,9 +249,9 @@ fun doubleToString(list: List<Double>): List<String> =
         List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(h.toString()) } }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
-    is List.Nil  -> Result()
+    List.Nil  -> Result()
     is List.Cons<A> -> when (list.tail) {
-        is List.Nil  -> Result(list.head)
+        List.Nil  -> Result(list.head)
         is List.Cons -> lastSafe(list.tail)
     }
 }
@@ -290,9 +294,9 @@ fun <A, B, C> zipWith(list1: List<A>,
                           list1: List<A>,
                           list2: List<B>,
                           f: (A) -> (B) -> C): List<C> = when (list1) {
-        is List.Nil -> acc
+        List.Nil -> acc
         is List.Cons -> when (list2) {
-            is List.Nil -> acc
+            List.Nil -> acc
             is List.Cons ->
                 zipWith(acc.cons(f(list1.head)(list2.head)),
                         list1.tail, list2.tail, f)

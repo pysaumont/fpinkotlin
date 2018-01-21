@@ -12,7 +12,7 @@ class ListTest: StringSpec() {
 
         "length" {
             forAll(IntListGenerator(), { (first, second) ->
-                second.length() == first.size
+                second.lengthMemoized() == first.size
             })
         }
     }
