@@ -9,14 +9,14 @@ class EitherTest: StringSpec() {
     init {
 
         "mapRight" {
-            forAll(Gen.int(), { z ->
-                Either.right<String, Int>(z).map { it / 2.0 }.toString() ==
-                        Either.right<String, Double>(z / 2.0).toString()
+            forAll(Gen.int(), {
+                Either.right<String, Int>(it).map { it / 2.0 }.toString() ==
+                        Either.right<String, Double>(it / 2.0).toString()
             })
         }
 
         "mapLeft" {
-            forAll(Gen.int(), { z ->
+            forAll(Gen.int(), {
                 Either.left<String, Int>("Error").map { it / 2.0 }.toString() ==
                         Either.left<String, Double>("Error").toString()
             })

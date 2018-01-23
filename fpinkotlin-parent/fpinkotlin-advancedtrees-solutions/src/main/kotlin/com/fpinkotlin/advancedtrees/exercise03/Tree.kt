@@ -56,7 +56,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         toListPreOrderLeft().foldLeft(identity, f)
 
     fun contains(a: @UnsafeVariance A): Boolean = when (this) {
-        is Empty -> false
+        Empty -> false
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
@@ -110,7 +110,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     internal fun delete(elem: @UnsafeVariance A): Tree<A> = when (this) {
-        is Empty -> this
+        Empty -> this
         is T -> when {
             elem < this.value -> bubble(this.color, this.left.delete(elem), this.value, this.right)
             elem > this.value -> bubble(this.color, this.left, this.value, this.right.delete(elem))

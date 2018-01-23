@@ -13,7 +13,7 @@ class ListTest: StringSpec() {
     init {
 
         "parMap" {
-            forAll(IntListGenerator(), { (array, list) ->
+            forAll(IntListGenerator(), { (_, list) ->
                 val f = { a: Int -> a * 2 }
                 val es = Executors.newFixedThreadPool(4)
                 list.parMap(es, f).getOrElse(Result.failure<List<Int>>("Error !")).toString() ==

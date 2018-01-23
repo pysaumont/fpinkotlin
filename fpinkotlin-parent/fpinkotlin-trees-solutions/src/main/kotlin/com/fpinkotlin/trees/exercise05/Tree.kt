@@ -21,7 +21,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
 
     fun contains(a: @UnsafeVariance A): Boolean = when (this) {
-        is Empty -> false
+        Empty -> false
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
@@ -65,7 +65,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
             return when(tree) {
-                is Empty -> T(tree, a, tree)
+                Empty -> T(tree, a, tree)
                 is T -> {
                     when {
                         a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
@@ -79,7 +79,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 
         operator fun <A: Comparable<A>> invoke(vararg az: A): Tree<A> =
-            az.foldRight(Empty, { a: A, tree: Tree<A> -> tree.plus(a) })
+            az.fold(Empty, { tree: Tree<A>, a: A -> tree.plus(a) })
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
             list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })

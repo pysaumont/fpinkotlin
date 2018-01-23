@@ -365,35 +365,6 @@ fun <A, B, C> product(list1: List<A>,
 
 fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { it }
 
-fun <A> List<A>.startsWith(sub: List<A>): Boolean {
-    tailrec fun startsWith(list: List<A>, sub: List<A>): Boolean =
-            when (sub) {
-                List.Nil  -> true
-                is List.Cons -> when (list) {
-                    List.Nil  -> false
-                    is List.Cons -> if (list.head == sub.head)
-                        startsWith(list.tail, sub.tail)
-                    else
-                        false
-                }
-            }
-    return startsWith(this, sub)
-}
-
-fun <A> List<A>.hasSubList(sub: List<A>): Boolean {
-    tailrec
-    fun <A> hasSubList(list: List<A>, sub: List<A>): Boolean =
-            when (list) {
-                List.Nil -> sub.isEmpty()
-                is List.Cons ->
-                    if (list.startsWith(sub))
-                        true
-                    else
-                        hasSubList(list.tail, sub)
-            }
-    return hasSubList(this, sub)
-}
-
 fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A>> {
     tailrec fun unfold(acc: List<A>, z: S): Result<List<A>> {
         val next = getNext(z)

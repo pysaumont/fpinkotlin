@@ -1,4 +1,4 @@
-package com.fpinkotlin.trees.exercise15
+package com.fpinkotlin.trees.exercise15.optimized
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.range
@@ -10,9 +10,66 @@ import kotlin.math.max
 
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
-    protected abstract fun rotateRight(): Tree<A>
+    abstract val size: Int
 
-    protected abstract fun rotateLeft(): Tree<A>
+    abstract val height: Int
+
+    internal abstract val value: A
+
+    internal abstract val left: Tree<A>
+
+    internal abstract val right: Tree<A>
+
+//    internal fun ins(a: @UnsafeVariance A): Tree<A> = when (this) {
+//        Empty -> T(this, a, this)
+//        is T -> if (a.compareTo(this.value) < 0)
+//            T(left.ins(a), this.value, right)
+//        else if (a.compareTo(this.value) > 0)
+//            T(left, this.value, right.ins(a))
+//        else
+//            T(this.left, value, this.right)
+//    }
+//
+//    internal fun insert(a: @UnsafeVariance A): Tree<A> = when (this) {
+//        Empty -> ins(a)
+//        is T -> {
+//            val t = ins(a)
+//            if (t.height() > log2nlz(t.size()) * 100) balance(t) else t
+//        }
+//    }
+    internal fun ins(a: @UnsafeVariance A): Tree<A> = when (this) {
+        Empty -> plus(a)
+        is T -> if (a.compareTo(this.value) < 0)
+            T(left.ins(a), this.value, right)
+        else if (a.compareTo(this.value) > 0)
+            T(left, this.value, right.ins(a))
+        else
+            T(this.left, a, this.right)
+    }
+
+    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
+        Empty -> T(Empty, a, Empty)
+        is T -> {
+            val t = ins(a)
+            if (t.height > log2nlz(t.size) * 100) balance(t) else t
+        }
+    }
+//    fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
+//        return when(tree) {
+//            Empty -> T(tree, a, tree)
+//            is T -> {
+//                when {
+//                    a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
+//                    a > tree.value -> Tree.T(tree.left, tree.value, plus(tree.right, a))
+//                    else -> tree
+//                }
+//            }
+//        }
+//    }
+
+    internal abstract fun rotateRight(): Tree<A>
+
+    internal abstract fun rotateLeft(): Tree<A>
 
     abstract fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B
 
@@ -36,46 +93,19 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract fun max(): Result<A>
 
-    abstract val size: Int
-
-    abstract val height: Int
-
-    internal abstract val value: A
-
-    internal abstract val left: Tree<A>
-
-    internal abstract val right: Tree<A>
-
     abstract fun isEmpty(): Boolean
 
     fun toListInOrderRight(): List<A> = unBalanceRight(List(), this)
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
-        Empty -> T(Empty, a, Empty)
-        is T -> {
-            val t = plusUnBalanced(a)
-            if (t.height > log2nlz(t.size) * 100) balance(t) else t
-        }
-    }
+    fun insert(a: @UnsafeVariance A): Tree<A> =
+            plusUnBalanced(a).let {
+                when {
+                    it.height > log2nlz(it.size) * 20 -> balance(it)
+                    else -> it
+                }
+            }
 
-    internal fun plusUnBalanced(a: @UnsafeVariance A): Tree<A> = when (this) {
-        Empty -> plus(a)
-        is T -> when {
-            a < this.value -> T(left.plusUnBalanced(a), this.value, right)
-            a > this.value -> T(left, this.value, right.plusUnBalanced(a))
-            else -> T(this.left, a, this.right)
-        }
-    }
-
-//    operator fun plus(a: @UnsafeVariance A): Tree<A> =
-//            plusUnBalanced(a).let {
-//                when {
-//                    it.height > log2nlz(it.size) * 20 -> balance(it)
-//                    else -> it
-//                }
-//            }
-//
-//    private fun plusUnBalanced(a: @UnsafeVariance A): Tree<A> = plus(this, a)
+    private fun plusUnBalanced(a: @UnsafeVariance A): Tree<A> = plus(this, a)
 
     fun <B: Comparable<B>> map(f: (A) -> B): Tree<B> =
         foldInOrder(Empty) { t1: Tree<B> ->
@@ -163,9 +193,9 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                                            override val value: A,
                                                            override val right: Tree<A>) : Tree<A>() {
 
-        override val size: Int = 1 + left.size + right.size
-
         override val height: Int = 1 + max(left.height, right.height)
+
+        override val size: Int = 1 + left.size + right.size
 
         override fun rotateRight(): Tree<A> = when (left) {
             Empty -> this
@@ -231,7 +261,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 
         operator fun <A: Comparable<A>> invoke(vararg az: A): Tree<A> =
-            az.foldRight(Empty, { a: A, tree: Tree<A> -> tree.plus(a) })
+            az.fold(Empty, { tree: Tree<A>, a: A -> tree.plus(a) })
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
             list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })
@@ -284,17 +314,8 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
 //        fun <A : Comparable<A>> isUnBalanced(tree: Tree<A>): Boolean = when (tree) {
 //            Empty -> false
-//            is T -> Math.abs(tree.left.height - tree.right.height) > (tree.size - 1) % 2
+//            is T -> Math.abs(tree.left.height() - tree.right.height()) > (tree.size() - 1) % 2
 //        }
-//
-//        private tailrec fun <A: Comparable<A>> unBalanceRight(acc: List<A>, tree: Tree<A>): List<A> =
-//                when (tree) {
-//                    Empty -> acc
-//                    is T -> when (tree.left) {
-//                        Empty -> unBalanceRight(acc.cons(tree.value), tree.right)
-//                        is T -> unBalanceRight(acc, tree.rotateRight())
-//                    }
-//                }
 //
 //        fun <A : Comparable<A>> balance(tree: Tree<A>): Tree<A> =
 //                balanceHelper(tree.toListInOrderRight()
@@ -303,8 +324,8 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 //        private fun <A : Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> = when (tree) {
 //            Empty -> tree
 //            is T -> when {
-//                tree.height > log2nlz(tree.size) &&
-//                        Math.abs(tree.left.height - tree.right.height) > 1 ->
+//                tree.height() > log2nlz(tree.size()) &&
+//                        Math.abs(tree.left.height() - tree.right.height()) > 1 ->
 //                    balanceHelper(balanceFirstLevel(tree))
 //                else -> T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
 //            }
@@ -314,7 +335,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 //                unfold(tree) { t: Tree<A> ->
 //                    when {
 //                        isUnBalanced(t) -> when {
-//                            tree.right.height > tree.left.height -> Result(t.rotateLeft() as T<A>)
+//                            tree.right.height() > tree.left.height() -> Result(t.rotateLeft() as T<A>)
 //                            else -> Result(t.rotateRight() as T<A>)
 //                        }
 //                        else -> Result()
@@ -334,25 +355,25 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             return balanceHelper(tree.toListInOrderRight().foldLeft(Empty) { t: Tree<A> -> { a: A -> T(Empty, a, t) } })
         }
 
-        fun <A: Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> {
-            return when {
-                !tree.isEmpty() && tree.height > log2nlz(tree.size) -> when {
-                    Math.abs(tree.left.height - tree.right.height) > 1 -> balanceHelper(balanceFirstLevel(tree))
-                    else -> T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
-                }
-                else -> tree
-            }
+        private fun <A: Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> {
+            return if (!tree.isEmpty() && tree.height > log2nlz(tree.size))
+                if (Math.abs(tree.left.height - tree.right.height) > 1)
+                    balanceHelper(balanceFirstLevel(tree))
+                else
+                    T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
+            else
+                tree
         }
 
         private fun <A: Comparable<A>> balanceFirstLevel(tree: Tree<A>): Tree<A> {
             return unfold(tree, { t: Tree<A> ->
-                when {
-                    isUnBalanced(t) -> when {
-                        tree.right.height > tree.left.height -> Result(t.rotateLeft())
-                        else -> Result(t.rotateRight())
-                    }
-                    else -> Result()
-                }
+                if (isUnBalanced(t))
+                    if (tree.right.height > tree.left.height)
+                        Result(t.rotateLeft())
+                    else
+                        Result(t.rotateRight())
+                else
+                    Result()
             })
         }
 

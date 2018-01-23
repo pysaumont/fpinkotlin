@@ -26,7 +26,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
             return when(tree) {
-                is Empty -> T(tree, a, tree)
+                Empty -> T(tree, a, tree)
                 is T -> {
                     when {
                         a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)

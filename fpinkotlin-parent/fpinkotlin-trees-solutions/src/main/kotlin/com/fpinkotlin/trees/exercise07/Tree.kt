@@ -114,7 +114,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 
         operator fun <A: Comparable<A>> invoke(vararg az: A): Tree<A> =
-            az.foldRight(Empty, { a: A, tree: Tree<A> -> tree.plus(a) })
+            az.fold(Empty, { tree: Tree<A>, a: A -> tree.plus(a) })
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
             list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })

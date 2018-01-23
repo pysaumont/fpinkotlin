@@ -1,13 +1,46 @@
-package com.fpinkotlin.trees.exercise14
+package benchmark
 
+import benchmark.Tree.Companion.balance
 import com.fpinkotlin.common.List
+import com.fpinkotlin.common.range
 import com.fpinkotlin.trees.common.Result
 import com.fpinkotlin.trees.common.getOrElse
 import com.fpinkotlin.trees.common.orElse
 import kotlin.math.max
 
 
-sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
+sealed class Tree<A: Comparable<A>> {
+
+    internal fun ins(a: A): Tree<A> = when (this) {
+        is Empty -> T(this, a, this)
+        is T -> if (a.compareTo(this.value) < 0)
+            T(left.ins(a), this.value, right)
+        else if (a.compareTo(this.value) > 0)
+            T(left, this.value, right.ins(a))
+        else
+            T(this.left, value, this.right)
+    }
+
+    internal fun insert(a: A): Tree<A> = when (this) {
+        is Empty -> ins(a)
+        is T -> {
+            val t = ins(a)
+            if (t.height() > log2nlz(t.size()) * 100) balance(t) else t
+        }
+    }
+
+//    fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
+//        return when(tree) {
+//            Empty -> T(tree, a, tree)
+//            is T -> {
+//                when {
+//                    a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
+//                    a > tree.value -> Tree.T(tree.left, tree.value, plus(tree.right, a))
+//                    else -> tree
+//                }
+//            }
+//        }
+//    }
 
     internal abstract fun rotateRight(): Tree<A>
 
@@ -29,7 +62,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                f: (A) -> (B) -> B,
                                g: (B) -> (B) -> B): B
 
-    abstract fun merge(tree: Tree<@UnsafeVariance A>): Tree<A>
+    abstract fun merge(tree: Tree<A>): Tree<A>
 
     abstract fun min(): Result<A>
 
@@ -43,22 +76,30 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun toListInOrderRight(): List<A> = unBalanceRight(List(), this)
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
-
-    fun <B: Comparable<B>> map(f: (A) -> B): Tree<B> =
-        foldInOrder(Empty) { t1: Tree<B> ->
-            { i: A ->
-                { t2: Tree<B> ->
-                    Tree(t1, f(i), t2)
+    operator fun plus(a: A): Tree<A> =
+            plusUnBalanced(a).let {
+                when {
+                    it.height() > log2nlz(it.size()) * 20 -> balance(it)
+                    else -> it
                 }
             }
-        }
+
+    private fun plusUnBalanced(a: A): Tree<A> = plus(this, a)
+
+//    fun <B: Comparable<B>> map(f: (A) -> B): Tree<B> =
+//        foldInOrder(Empty) { t1: Tree<B> ->
+//            { i: A ->
+//                { t2: Tree<B> ->
+//                    Tree(t1, f(i), t2)
+//                }
+//            }
+//        }
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B =
                         toListPreOrderLeft().foldLeft(identity, f)
 
-    fun remove(a: @UnsafeVariance A): Tree<A> = when(this) {
-        Empty -> this
+    fun remove(a: A): Tree<A> = when(this) {
+        is Empty -> this
         is Tree.T     ->  when {
             a < value -> T(left.remove(a), value, right)
             a > value -> T(left, value, right.remove(a))
@@ -66,10 +107,10 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
     }
 
-    fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
-        Empty -> ta
+    fun removeMerge(ta: Tree<A>): Tree<A> = when (this) {
+        is Empty -> ta
         is Tree.T     -> when (ta) {
-            Empty -> this
+            is Empty -> this
             is T -> when {
                 ta.value < value -> T(left.removeMerge(ta), value, right)
                 ta.value > value -> T(left, value, right.removeMerge(ta))
@@ -79,8 +120,8 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
     }
 
-    fun contains(a: @UnsafeVariance A): Boolean = when (this) {
-        Empty -> false
+    fun contains(a: A): Boolean = when (this) {
+        is Empty -> false
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
@@ -88,29 +129,29 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
     }
 
-    internal object Empty : Tree<Nothing>() {
+    internal class Empty<A: Comparable<A>> : Tree<A>() {
 
-        override fun rotateRight(): Tree<Nothing> = this
+        override fun rotateRight(): Tree<A> = this
 
-        override fun rotateLeft(): Tree<Nothing> = this
+        override fun rotateLeft(): Tree<A> = this
 
         override fun toListPreOrderLeft(): List<Nothing> = List()
 
-        override fun <B> foldInOrder(identity: B, f: (B) -> (Nothing) -> (B) -> B): B = identity
+        override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B = identity
 
-        override fun <B> foldPreOrder(identity: B, f: (Nothing) -> (B) -> (B) -> B): B = identity
+        override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B = identity
 
-        override fun <B> foldPostOrder(identity: B, f: (B) -> (B) -> (Nothing) -> B): B = identity
+        override fun <B> foldPostOrder(identity: B, f: (B) -> (B) -> (A) -> B): B = identity
 
-        override fun <B> foldRight(identity: B, f: (Nothing) -> (B) -> B, g: (B) -> (B) -> B): B = identity
+        override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B = identity
 
-        override fun <B> foldLeft(identity: B, f: (B) -> (Nothing) -> B, g: (B) -> (B) -> B): B = identity
+        override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B = identity
 
-        override fun merge(tree: Tree<Nothing>): Tree<Nothing> = tree
+        override fun merge(tree: Tree<A>): Tree<A> = tree
 
-        override fun min(): Result<Nothing> = Result()
+        override fun min(): Result<A> = Result()
 
-        override fun max(): Result<Nothing> = Result()
+        override fun max(): Result<A> = Result()
 
         override fun size(): Int = 0
 
@@ -121,17 +162,17 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun toString(): String = "E"
     }
 
-    internal class T<out A: Comparable<@UnsafeVariance A>>(internal val left: Tree<A>,
-                                                           internal val value: A,
-                                                           internal val right: Tree<A>) : Tree<A>() {
+    internal class T<A: Comparable<A>>(internal val left: Tree<A>,
+                                       internal val value: A,
+                                       internal val right: Tree<A>) : Tree<A>() {
 
         override fun rotateRight(): Tree<A> = when (left) {
-            Empty -> this
+            is Empty -> this
             is T -> Tree.T(left.left, left.value, Tree.T(left.right, value, right))
         }
 
         override fun rotateLeft(): Tree<A> = when (right) {
-            Empty -> this
+            is Empty -> this
             is T -> Tree.T(Tree.T(left, value, right.left), right.value, right.right)
         }
 
@@ -153,11 +194,11 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B =
             g(f(this.value)(left.foldRight(identity, f, g)))(right.foldRight(identity, f, g))
 
-        override fun merge(tree: Tree<@UnsafeVariance A>): Tree<A> = when (tree) {
-            Empty -> this
+        override fun merge(tree: Tree<A>): Tree<A> = when (tree) {
+            is Empty -> this
             is T ->   when  {
-                tree.value > this.value -> T(left, value, right.merge(T(Empty, tree.value, tree.right))).merge(tree.left)
-                tree.value < this.value -> T(left.merge(T(tree.left, tree.value, Empty)), value, right).merge(tree.right)
+                tree.value > this.value -> T(left, value, right.merge(T(Empty(), tree.value, tree.right))).merge(tree.left)
+                tree.value < this.value -> T(left.merge(T(tree.left, tree.value, Empty())), value, right).merge(tree.right)
                 else                    -> T(left.merge(tree.left), value, right.merge(tree.right))
             }
         }
@@ -179,7 +220,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
             return when(tree) {
-                Empty -> T(tree, a, tree)
+                is Empty -> T(tree, a, tree)
                 is T -> {
                     when {
                         a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
@@ -190,13 +231,13 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             }
         }
 
-        operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
+        operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty()
 
         operator fun <A: Comparable<A>> invoke(vararg az: A): Tree<A> =
-            az.fold(Empty, { tree: Tree<A>, a: A -> tree.plus(a) })
+            az.fold(Empty(), { tree: Tree<A>, a: A -> tree.plus(a) })
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
-            list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })
+            list.foldLeft(Empty(), { tree: Tree<A> -> { a: A -> tree.plus(a) } })
 
         operator fun <A: Comparable<A>> invoke(left: Tree<A>, a: A, right: Tree<A>): Tree<A> =
             when {
@@ -232,12 +273,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                  }
                              }.getOrElse(false))
 
-        tailrec
-        private fun <A: Comparable<A>> unBalanceRight(acc: List<A>, tree: Tree<A>): List<A> =
+
+        private tailrec fun <A: Comparable<A>> unBalanceRight(acc: List<A>, tree: Tree<A>): List<A> =
                 when (tree) {
-                    Empty -> acc
+                    is Empty -> acc
                     is T -> when (tree.left) {
-                        Empty -> unBalanceRight(acc.cons(tree.value), tree.right)
+                        is Empty -> unBalanceRight(acc.cons(tree.value), tree.right)
                         is T -> unBalanceRight(acc, tree.rotateRight())
                     }
                 }
@@ -255,16 +296,16 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
 
         fun <A : Comparable<A>> isUnBalanced(tree: Tree<A>): Boolean = when (tree) {
-            Empty -> false
+            is Empty -> false
             is T -> Math.abs(tree.left.height() - tree.right.height()) > (tree.size() - 1) % 2
         }
 
         fun <A : Comparable<A>> balance(tree: Tree<A>): Tree<A> =
                 balanceHelper(tree.toListInOrderRight()
-                        .foldLeft(Empty) { t: Tree<A> -> { a: A -> T(Empty, a, t) } })
+                        .foldLeft(Empty()) { t: Tree<A> -> { a: A -> T(Empty(), a, t) } })
 
         private fun <A : Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> = when (tree) {
-            Empty -> tree
+            is Empty -> tree
             is T -> when {
                 tree.height() > log2nlz(tree.size()) &&
                         Math.abs(tree.left.height() - tree.right.height()) > 1 ->
@@ -283,7 +324,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                         else -> Result()
                     }
                 }
-
     }
 }
 
@@ -292,4 +332,22 @@ fun log2nlz(n: Int): Int {
         0
     else
         31 - Integer.numberOfLeadingZeros(n)
+}
+
+fun main(args: Array<String>) {
+    val timeFactor = 500
+    val limit = 10_000
+    val maxTime = 2 * log2nlz(limit + 1) * timeFactor
+    val orderedTestList = range(0, limit)
+    val time = System.currentTimeMillis()
+    val temp = orderedTestList.foldLeft(Tree<Int>()) { t -> { i -> t + i } }
+    println(System.currentTimeMillis() - time)
+    val tree = balance(temp)
+    val duration = System.currentTimeMillis() - time
+    println(duration)
+    println(maxTime)
+    println(tree.size() == limit)
+    println(tree.height() <= 2 * log2nlz(tree.size() + 1))
+    println(duration < maxTime)
+
 }

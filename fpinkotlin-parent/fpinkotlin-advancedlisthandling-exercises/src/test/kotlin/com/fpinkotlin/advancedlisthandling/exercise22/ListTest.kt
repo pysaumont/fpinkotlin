@@ -12,7 +12,7 @@ class ListTest: StringSpec() {
     init {
 
         "splitListAt" {
-            forAll(IntListGenerator(), { (first, second) ->
+            forAll(IntListGenerator(), { (_, second) ->
                 val splitPosition = if (second.length() == 0) 0 else  IntGenerator(0, second.length()).generate()
                 val result = second.splitListAt(splitPosition)
                 result.flatMap { it }.toString() == second.toString()
@@ -20,7 +20,7 @@ class ListTest: StringSpec() {
         }
 
         "divide" {
-            forAll(IntListGenerator(), { (first, second) ->
+            forAll(IntListGenerator(), { (_, second) ->
                 val depth = IntGenerator(0, 8).generate()
                 val result = second.divide(depth)
                 result.flatMap { it }.toString() == second.toString()
