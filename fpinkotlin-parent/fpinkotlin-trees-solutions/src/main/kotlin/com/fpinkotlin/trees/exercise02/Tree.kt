@@ -6,7 +6,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract fun isEmpty(): Boolean
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
+    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
+        Empty -> T(Empty, a, Empty)
+        is T -> when {
+            a < this.value -> T(left + a, this.value, right)
+            a > this.value -> T(left, this.value, right + a)
+            else -> T(this.left, a, this.right)
+        }
+    }
 
     internal object Empty : Tree<Nothing>() {
 
@@ -25,19 +32,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     companion object {
-
-        fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
-            return when(tree) {
-                Empty -> T(tree, a, tree)
-                is T -> {
-                    when {
-                        a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
-                        a > tree.value -> Tree.T(tree.left, tree.value, plus(tree.right, a))
-                        else -> tree
-                    }
-                }
-            }
-        }
 
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 

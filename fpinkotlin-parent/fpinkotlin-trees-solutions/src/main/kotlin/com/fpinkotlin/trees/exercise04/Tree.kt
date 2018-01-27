@@ -5,13 +5,20 @@ import kotlin.math.max
 
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
-    abstract fun size(): Int
+    abstract val size: Int
 
-    abstract fun height(): Int
+    abstract val height: Int
 
     abstract fun isEmpty(): Boolean
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
+    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
+        Empty -> T(Empty, a, Empty)
+        is T -> when {
+            a < this.value -> T(left + a, this.value, right)
+            a > this.value -> T(left, this.value, right + a)
+            else -> T(this.left, a, this.right)
+        }
+    }
 
     fun contains(a: @UnsafeVariance A): Boolean = when (this) {
         Empty -> false
@@ -24,9 +31,9 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     internal object Empty : Tree<Nothing>() {
 
-        override fun size(): Int = 0
+        override val size: Int = 0
 
-        override fun height(): Int = -1
+        override val height: Int = -1
 
         override fun isEmpty(): Boolean = true
 
@@ -37,9 +44,9 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                                            internal val value: A,
                                                            internal val right: Tree<A>) : Tree<A>() {
 
-        override fun size(): Int = 1 + left.size() + right.size()
+        override val size: Int = 1 + left.size + right.size
 
-        override fun height(): Int = 1 + max(left.height(), right.height())
+        override val height: Int = 1 + max(left.height, right.height)
 
         override fun isEmpty(): Boolean = false
 
@@ -47,19 +54,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     companion object {
-
-        fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
-            return when(tree) {
-                Empty -> T(tree, a, tree)
-                is T -> {
-                    when {
-                        a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
-                        a > tree.value -> Tree.T(tree.left, tree.value, plus(tree.right, a))
-                        else -> tree
-                    }
-                }
-            }
-        }
 
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 

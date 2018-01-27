@@ -9,6 +9,10 @@ import kotlin.math.max
 
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
+    abstract val size: Int
+
+    abstract val height: Int
+
     internal abstract fun rotateRight(): Tree<A>
 
     internal abstract fun rotateLeft(): Tree<A>
@@ -35,13 +39,16 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract fun max(): Result<A>
 
-    abstract fun size(): Int
-
-    abstract fun height(): Int
-
     abstract fun isEmpty(): Boolean
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = plus(this, a)
+    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
+        Empty -> T(Empty, a, Empty)
+        is T -> when {
+            a < this.value -> T(left + a, this.value, right)
+            a > this.value -> T(left, this.value, right + a)
+            else -> T(this.left, a, this.right)
+        }
+    }
 
     fun <B: Comparable<B>> map(f: (A) -> B): Tree<B> =
         foldInOrder(Empty) { t1: Tree<B> ->
@@ -57,7 +64,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun remove(a: @UnsafeVariance A): Tree<A> = when(this) {
         Empty -> this
-        is Tree.T     ->  when {
+        is T  ->  when {
             a < value -> T(left.remove(a), value, right)
             a > value -> T(left, value, right.remove(a))
             else -> left.removeMerge(right)
@@ -66,13 +73,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
         Empty -> ta
-        is Tree.T     -> when (ta) {
+        is T  -> when (ta) {
             Empty -> this
             is T -> when {
                 ta.value < value -> T(left.removeMerge(ta), value, right)
                 ta.value > value -> T(left, value, right.removeMerge(ta))
                 else             -> throw IllegalStateException("We shouldn't be here")
-
             }
         }
     }
@@ -87,6 +93,10 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     internal object Empty : Tree<Nothing>() {
+
+        override val size: Int = 0
+
+        override val height: Int = -1
 
         override fun rotateRight(): Tree<Nothing> = this
 
@@ -110,10 +120,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun max(): Result<Nothing> = Result()
 
-        override fun size(): Int = 0
-
-        override fun height(): Int = -1
-
         override fun isEmpty(): Boolean = true
 
         override fun toString(): String = "E"
@@ -123,14 +129,18 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                                            internal val value: A,
                                                            internal val right: Tree<A>) : Tree<A>() {
 
+        override val size: Int = 1 + left.size + right.size
+
+        override val height: Int = 1 + max(left.height, right.height)
+
         override fun rotateRight(): Tree<A> = when (left) {
             Empty -> this
-            is T -> Tree.T(left.left, left.value, Tree.T(left.right, value, right))
+            is T -> T(left.left, left.value, T(left.right, value, right))
         }
 
         override fun rotateLeft(): Tree<A> = when (right) {
             Empty -> this
-            is T -> Tree.T(Tree.T(left, value, right.left), right.value, right.right)
+            is T -> T(T(left, value, right.left), right.value, right.right)
         }
 
         override fun toListPreOrderLeft(): List<A> =
@@ -164,29 +174,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun max(): Result<A> = right.max().orElse { Result(value) }
 
-        override fun size(): Int = 1 + left.size() + right.size()
-
-        override fun height(): Int = 1 + max(left.height(), right.height())
-
         override fun isEmpty(): Boolean = false
 
         override fun toString(): String = "(T $left $value $right)"
     }
 
     companion object {
-
-        fun <A: Comparable<A>> plus(tree: Tree<A>, a: A): Tree<A> {
-            return when(tree) {
-                Empty -> T(tree, a, tree)
-                is T -> {
-                    when {
-                        a < tree.value -> Tree.T(plus(tree.left, a), tree.value, tree.right)
-                        a > tree.value -> Tree.T(tree.left, tree.value, plus(tree.right, a))
-                        else -> tree
-                    }
-                }
-            }
-        }
 
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 
@@ -203,12 +196,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                 else                    -> Tree(a).merge(left).merge(right)
             }
 
-        fun <A: Comparable<A>> lt(first: A, second: A): Boolean = first < second
+        private fun <A: Comparable<A>> lt(first: A, second: A): Boolean = first < second
 
-        fun <A: Comparable<A>> lt(first: A, second: A, third: A): Boolean =
+        private fun <A: Comparable<A>> lt(first: A, second: A, third: A): Boolean =
                                        lt(first, second) && lt(second, third)
 
-        fun <A: Comparable<A>> ordered(left: Tree<A>,
+        private fun <A: Comparable<A>> ordered(left: Tree<A>,
                                        a: A, right: Tree<A>): Boolean =
             (left.max().flatMap { lMax ->
                 right.min().map { rMin ->
@@ -230,19 +223,4 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                                  }
                              }.getOrElse(false))
     }
-}
-
-fun main(args: Array<String>) {
-
-    val tree = Tree(4, 2, 6, 1, 3, 5, 7)
-    val result1 = tree.foldInOrder(Tree<Int>(),
-                     { t1 -> { i -> { t2 -> Tree(t1, i, t2) } } })
-    val result2 = tree.foldPostOrder(Tree<Int>(),
-                       { t1 -> { t2 -> { i -> Tree(t1, i, t2) } } })
-    val result3 = tree.foldPreOrder(Tree<Int>(),
-                      { i -> { t1 -> { t2 -> Tree(t1, i, t2) } } })
-    println(tree)
-    println(result1)
-    println(result2)
-    println(result3)
 }

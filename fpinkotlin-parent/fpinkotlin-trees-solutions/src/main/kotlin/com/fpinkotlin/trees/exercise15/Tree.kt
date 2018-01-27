@@ -1,7 +1,6 @@
 package com.fpinkotlin.trees.exercise15
 
 import com.fpinkotlin.common.List
-import com.fpinkotlin.common.range
 import com.fpinkotlin.trees.common.Result
 import com.fpinkotlin.trees.common.getOrElse
 import com.fpinkotlin.trees.common.orElse
@@ -50,32 +49,24 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun toListInOrderRight(): List<A> = unBalanceRight(List(), this)
 
-    operator fun plus(a: @UnsafeVariance A): Tree<A> = when (this) {
-        Empty -> T(Empty, a, Empty)
-        is T -> {
-            val t = plusUnBalanced(a)
-            if (t.height > log2nlz(t.size) * 100) balance(t) else t
+    operator fun plus(a: @UnsafeVariance A): Tree<A> {
+
+        fun plusUnBalanced(a: @UnsafeVariance A, t: Tree<A>): Tree<A> = when (t) {
+            Empty -> T(Empty, a, Empty)
+            is T -> when {
+                a < t.value -> T(plusUnBalanced(a, t.left), t.value, t.right)
+                a > t.value -> T(t.left, t.value, plusUnBalanced(a, t.right))
+                else -> T(t.left, a, t.right)
+            }
+        }
+
+        return plusUnBalanced(a, this).let {
+            when {
+                it.height > log2nlz(it.size) * 100 -> balance(it)
+                else -> it
+            }
         }
     }
-
-    internal fun plusUnBalanced(a: @UnsafeVariance A): Tree<A> = when (this) {
-        Empty -> plus(a)
-        is T -> when {
-            a < this.value -> T(left.plusUnBalanced(a), this.value, right)
-            a > this.value -> T(left, this.value, right.plusUnBalanced(a))
-            else -> T(this.left, a, this.right)
-        }
-    }
-
-//    operator fun plus(a: @UnsafeVariance A): Tree<A> =
-//            plusUnBalanced(a).let {
-//                when {
-//                    it.height > log2nlz(it.size) * 20 -> balance(it)
-//                    else -> it
-//                }
-//            }
-//
-//    private fun plusUnBalanced(a: @UnsafeVariance A): Tree<A> = plus(this, a)
 
     fun <B: Comparable<B>> map(f: (A) -> B): Tree<B> =
         foldInOrder(Empty) { t1: Tree<B> ->
@@ -91,7 +82,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun remove(a: @UnsafeVariance A): Tree<A> = when(this) {
         Empty -> this
-        is Tree.T     ->  when {
+        is T  ->  when {
             a < value -> T(left.remove(a), value, right)
             a > value -> T(left, value, right.remove(a))
             else -> left.removeMerge(right)
@@ -100,7 +91,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     fun removeMerge(ta: Tree<@UnsafeVariance A>): Tree<A> = when (this) {
         Empty -> ta
-        is Tree.T     -> when (ta) {
+        is T  -> when (ta) {
             Empty -> this
             is T -> when {
                 ta.value < value -> T(left.removeMerge(ta), value, right)
@@ -169,12 +160,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun rotateRight(): Tree<A> = when (left) {
             Empty -> this
-            is T -> Tree.T(left.left, left.value, Tree.T(left.right, value, right))
+            is T -> T(left.left, left.value, T(left.right, value, right))
         }
 
         override fun rotateLeft(): Tree<A> = when (right) {
             Empty -> this
-            is T -> Tree.T(Tree.T(left, value, right.left), right.value, right.right)
+            is T -> T(T(left, value, right.left), right.value, right.right)
         }
 
         override fun toListPreOrderLeft(): List<A> =
@@ -243,12 +234,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                 else                    -> Tree(a).merge(left).merge(right)
             }
 
-        fun <A: Comparable<A>> lt(first: A, second: A): Boolean = first < second
+        private fun <A: Comparable<A>> lt(first: A, second: A): Boolean = first < second
 
-        fun <A: Comparable<A>> lt(first: A, second: A, third: A): Boolean =
+        private fun <A: Comparable<A>> lt(first: A, second: A, third: A): Boolean =
                                        lt(first, second) && lt(second, third)
 
-        fun <A: Comparable<A>> ordered(left: Tree<A>,
+        private fun <A: Comparable<A>> ordered(left: Tree<A>,
                                        a: A, right: Tree<A>): Boolean =
             (left.max().flatMap { lMax ->
                 right.min().map { rMin ->
@@ -282,45 +273,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             return Result(a).let { unfold(Pair(it, it), f).second.getOrElse(a) }
         }
 
-//        fun <A : Comparable<A>> isUnBalanced(tree: Tree<A>): Boolean = when (tree) {
-//            Empty -> false
-//            is T -> Math.abs(tree.left.height - tree.right.height) > (tree.size - 1) % 2
-//        }
-//
-//        private tailrec fun <A: Comparable<A>> unBalanceRight(acc: List<A>, tree: Tree<A>): List<A> =
-//                when (tree) {
-//                    Empty -> acc
-//                    is T -> when (tree.left) {
-//                        Empty -> unBalanceRight(acc.cons(tree.value), tree.right)
-//                        is T -> unBalanceRight(acc, tree.rotateRight())
-//                    }
-//                }
-//
-//        fun <A : Comparable<A>> balance(tree: Tree<A>): Tree<A> =
-//                balanceHelper(tree.toListInOrderRight()
-//                        .foldLeft(Empty) { t: Tree<A> -> { a: A -> T(Empty, a, t) } })
-//
-//        private fun <A : Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> = when (tree) {
-//            Empty -> tree
-//            is T -> when {
-//                tree.height > log2nlz(tree.size) &&
-//                        Math.abs(tree.left.height - tree.right.height) > 1 ->
-//                    balanceHelper(balanceFirstLevel(tree))
-//                else -> T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
-//            }
-//        }
-//
-//        private fun <A : Comparable<A>> balanceFirstLevel(tree: T<A>): Tree<A> =
-//                unfold(tree) { t: Tree<A> ->
-//                    when {
-//                        isUnBalanced(t) -> when {
-//                            tree.right.height > tree.left.height -> Result(t.rotateLeft() as T<A>)
-//                            else -> Result(t.rotateRight() as T<A>)
-//                        }
-//                        else -> Result()
-//                    }
-//                }
-
         private tailrec fun <A: Comparable<A>> unBalanceRight(acc: List<A>, tree: Tree<A>): List<A> =
                 when (tree) {
                     Empty -> acc
@@ -330,59 +282,41 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                     }
                 }
 
-        fun <A: Comparable<A>> balance(tree: Tree<A>): Tree<A> {
-            return balanceHelper(tree.toListInOrderRight().foldLeft(Empty) { t: Tree<A> -> { a: A -> T(Empty, a, t) } })
+
+        private fun <A : Comparable<A>> isUnBalanced(tree: Tree<A>): Boolean = when (tree) {
+            Empty -> false
+            is T -> Math.abs(tree.left.height - tree.right.height) > (tree.size - 1) % 2
         }
 
-        fun <A: Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> {
-            return when {
-                !tree.isEmpty() && tree.height > log2nlz(tree.size) -> when {
-                    Math.abs(tree.left.height - tree.right.height) > 1 -> balanceHelper(balanceFirstLevel(tree))
-                    else -> T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
-                }
-                else -> tree
-            }
-        }
-
-        private fun <A: Comparable<A>> balanceFirstLevel(tree: Tree<A>): Tree<A> {
-            return unfold(tree, { t: Tree<A> ->
-                when {
-                    isUnBalanced(t) -> when {
-                        tree.right.height > tree.left.height -> Result(t.rotateLeft())
-                        else -> Result(t.rotateRight())
+        internal fun <A: Comparable<A>> balance(tree: Tree<A>): Tree<A> =
+                balanceHelper(tree.toListInOrderRight().foldLeft(Empty) {
+                    t: Tree<A> -> { a: A ->
+                        T(Empty, a, t)
                     }
-                    else -> Result()
-                }
-            })
+                })
+
+        private fun <A: Comparable<A>> balanceHelper(tree: Tree<A>): Tree<A> = when {
+            !tree.isEmpty() && tree.height > log2nlz(tree.size) -> when {
+                Math.abs(tree.left.height - tree.right.height) > 1 -> balanceHelper(balanceFirstLevel(tree))
+                else -> T(balanceHelper(tree.left), tree.value, balanceHelper(tree.right))
+            }
+            else -> tree
         }
 
-        private fun <A: Comparable<A>> isUnBalanced(tree: Tree<A>): Boolean {
-            // Difference must be 0 if total size of branches is even and 1 if size is odd
-            return Math.abs(tree.left.height - tree.right.height) > (tree.size - 1) % 2
-        }
+        private fun <A: Comparable<A>> balanceFirstLevel(tree: Tree<A>): Tree<A> =
+                unfold(tree, { t: Tree<A> ->
+                    when {
+                        isUnBalanced(t) -> when {
+                            tree.right.height > tree.left.height -> Result(t.rotateLeft())
+                            else -> Result(t.rotateRight())
+                        }
+                        else -> Result()
+                    }
+                })
     }
 }
 
-fun log2nlz(n: Int): Int {
-    return if (n == 0)
-        0
-    else
-        31 - Integer.numberOfLeadingZeros(n)
-}
-
-fun main(args: Array<String>) {
-    val timeFactor = 500
-    val limit = 100_000
-    val maxTime = 2 * log2nlz(limit + 1) * timeFactor
-    val orderedTestList = range(0, limit)
-    val time = System.currentTimeMillis()
-    val temp = orderedTestList.foldLeft(Tree<Int>()) { t -> { i -> t + i } }
-    println(System.currentTimeMillis() - time)
-    val tree = Tree.balance(temp)
-    val duration = System.currentTimeMillis() - time
-    println(duration)
-    println(maxTime)
-    println(tree.size == limit)
-    println(tree.height <= 2 * log2nlz(tree.size + 1))
-    println(duration < maxTime)
+fun log2nlz(n: Int): Int = when (n) {
+    0 -> 0
+    else -> 31 - Integer.numberOfLeadingZeros(n)
 }
