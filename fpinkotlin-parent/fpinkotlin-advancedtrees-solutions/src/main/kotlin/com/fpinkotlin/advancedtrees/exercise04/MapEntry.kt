@@ -2,7 +2,7 @@ package com.fpinkotlin.advancedtrees.exercise04
 
 import com.fpinkotlin.advancedtrees.common.Result
 
-class MapEntry<K: Any, V> private constructor(val key: K, val value: Result<V>): Comparable<MapEntry<K, V>> {
+class MapEntry<K: Any, V> private constructor(private val key: K, val value: Result<V>): Comparable<MapEntry<K, V>> {
 
     override fun compareTo(other: MapEntry<K, V>): Int = hashCode().compareTo(other.hashCode())
 

@@ -4,44 +4,39 @@ import com.fpinkotlin.advancedtrees.common.Result
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
-    protected abstract fun left(): Result<Heap<A>>  // <1>
-    protected abstract fun right(): Result<Heap<A>>  // <1>
-    protected abstract fun rank(): Int
-    abstract fun head(): Result<A>  // <1>
-    abstract fun length(): Int  // <2>
+    protected abstract val left: Result<Heap<A>>  // <1>
+    protected abstract val right: Result<Heap<A>>  // <1>
+    protected abstract val rank: Int
+    abstract val head: Result<A>  // <1>
+    abstract val length: Int  // <2>
     abstract fun isEmpty(): Boolean
 
     internal object Empty: Heap<Nothing>() {
 
-        override fun left(): Result<Heap<Nothing>> = Result(Empty)
+        override val left: Result<Heap<Nothing>> by lazy { Result(Empty) }
 
-        override fun right(): Result<Heap<Nothing>> = Result(Empty)
+        override val right: Result<Heap<Nothing>> by lazy { Result(Empty) }
 
-        override fun rank(): Int = 0
+        override val rank: Int = 0
 
-        override fun head(): Result<Nothing> =
-                Result.failure(NoSuchElementException("head() called on empty heap"))
+        override val head: Result<Nothing> by lazy { Result.failure<Nothing>("head() called on empty heap") }
 
-        override fun length(): Int = 0
+        override val length: Int = 0
 
         override fun isEmpty(): Boolean = true
     }
 
-    internal class H<out A: Comparable<@UnsafeVariance A>>(internal val length: Int, // <3>
-                                                           internal val rank: Int, // <3>
-                                                           internal val left: Heap<A>,
-                                                           internal val head: A,
-                                                           internal val right: Heap<A>): Heap<A>()  {
+    internal class H<out A: Comparable<@UnsafeVariance A>>(override val length: Int, // <3>
+                                                           override val rank: Int, // <3>
+                                                           private val lft: Heap<A>,
+                                                           private val hd: A,
+                                                           private val rght: Heap<A>): Heap<A>()  {
 
-        override fun left(): Result<Heap<A>> = Result(left)
+        override val left: Result<Heap<A>> = Result(lft)
 
-        override fun right(): Result<Heap<A>> = Result(right)
+        override val right: Result<Heap<A>> = Result(rght)
 
-        override fun rank(): Int = rank
-
-        override fun head(): Result<A> = Result(head)
-
-        override fun length(): Int = length
+        override val head: Result<A> = Result(hd)
 
         override fun isEmpty(): Boolean = false
     }

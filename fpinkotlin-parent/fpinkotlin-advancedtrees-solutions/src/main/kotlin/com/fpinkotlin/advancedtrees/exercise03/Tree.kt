@@ -1,6 +1,6 @@
 package com.fpinkotlin.advancedtrees.exercise03
 
-import com.fpinkotlin.common.List
+import com.fpinkotlin.advancedtrees.common.List
 import com.fpinkotlin.advancedtrees.common.Result
 import com.fpinkotlin.advancedtrees.common.getOrElse
 import kotlin.math.max
@@ -8,10 +8,6 @@ import kotlin.math.max
 internal typealias TB<A> = Tree.T.TB<A>
 internal typealias TR<A> = Tree.T.TR<A>
 internal typealias TNB<A> = Tree.T.TNB<A>
-internal typealias Black = Tree.Color.Black
-internal typealias Red = Tree.Color.Red
-internal typealias DoubleBlack = Tree.Color.DoubleBlack
-internal typealias NegativeBlack = Tree.Color.NegativeBlack
 
 /*
  * see http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf
@@ -20,13 +16,13 @@ internal typealias NegativeBlack = Tree.Color.NegativeBlack
  */
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
+    abstract val size: Int
+
+    abstract val height: Int
+
     internal abstract val color: Color
 
     abstract fun isEmpty(): Boolean
-
-    abstract fun size(): Int
-
-    abstract fun height(): Int
 
     abstract fun max(): A
 
@@ -53,10 +49,10 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     abstract operator fun get(element: @UnsafeVariance A): Result<A>
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B =
-        toListPreOrderLeft().foldLeft(identity, f)
+            toListPreOrderLeft().foldLeft(identity, f)
 
     fun contains(a: @UnsafeVariance A): Boolean = when (this) {
-        Empty -> false
+        is Empty -> false
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
@@ -77,10 +73,10 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     internal fun redder(): Tree<A> = when (this) {
         is Empty -> E
         is T -> when (color.redder()) {
-            is Black -> TB(left, value, right)
-            is NegativeBlack -> TNB(left, value, right)
-            is Red -> TR(left, value, right)
-            is DoubleBlack -> throw IllegalStateException("redder function will never result into DoubleBlack")
+            Tree.Color.Black -> TB(left, value, right)
+            Tree.Color.NegativeBlack -> TNB(left, value, right)
+            Tree.Color.Red -> TR(left, value, right)
+            Tree.Color.DoubleBlack -> throw IllegalStateException("redder function will never result into DoubleBlack")
         }
     }
 
@@ -110,7 +106,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     internal fun delete(elem: @UnsafeVariance A): Tree<A> = when (this) {
-        Empty -> this
+        is Empty -> this
         is T -> when {
             elem < this.value -> bubble(this.color, this.left.delete(elem), this.value, this.right)
             elem > this.value -> bubble(this.color, this.left, this.value, this.right.delete(elem))
@@ -130,7 +126,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                           left: Tree<@UnsafeVariance A>,
                           value: @UnsafeVariance A,
                           right: Tree<@UnsafeVariance A>): Tree<A> = when (color) {
-        is Black -> {
+        Tree.Color.Black -> {
             when {
             // (T B (T R (T R a x b) y c) z d) = (T R (T B a x b ) y (T B c z d))
                 left is TR && (left).left is TR ->
@@ -152,8 +148,8 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                 else -> TB(left, value, right)
             }
         }
-        // following patterns are added for removal of an element
-        is DoubleBlack -> {
+    // following patterns are added for removal of an element
+        Tree.Color.DoubleBlack -> {
             when {
             // balance BB (T R (T R a x b) y c) z d = T B (T B a x b) y (T B c z d)
                 left is TR && left.left is TR ->
@@ -161,22 +157,22 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             // balance BB (T R a x (T R b y c)) z d = T B (T B a x b) y (T B c z d)
                 left is TR && left.right is TR ->
                     TB(TB(left.left, left.value, left.right.left), left.right.value,
-                                TB(left.right.right, value, right))
+                            TB(left.right.right, value, right))
             // balance BB a x (T R (T R b y c) z d) = T B (T B a x b) y (T B c z d)
                 right is TR && right.left is TR ->
                     TB(TB(left, value, right.left.left), right.left.value,
-                                TB(right.left.right, right.value, right.right))
-                    // balance BB a x (T R b y (T R c z d)) = T B (T B a x b) y (T B c z d)
+                            TB(right.left.right, right.value, right.right))
+            // balance BB a x (T R b y (T R c z d)) = T B (T B a x b) y (T B c z d)
                 right is TR && right.right is TR ->
                     TB(TB(left, value, right.left), right.value, blacken(right.right))
             // balance BB a x (T NB (T B b y c) z d@(T B _ _ _)) = T B (T B a x b) y (balance B c z (redden d))
                 right is TNB && right.left is TB && right.right is TB ->
                     TB(TB(left, value, right.left.left), right.left.value,
-                                balance(Black, right.left.right, right.value, redden(right.right)))
+                            balance(Tree.Color.Black, right.left.right, right.value, redden(right.right)))
             // balance BB (T NB a@(T B _ _ _) x (T B b y c)) z d = T B (balance B (redden a) x b) y (T B c z d)
                 left is TNB && left.left is TB && left.right is TB ->
-                    TB(balance(Black, redden(left.left), left.value, left.right.left), left.right.value,
-                                TB(left.right.right, value, right))
+                    TB(balance(Tree.Color.Black, redden(left.left), left.value, left.right.left), left.right.value,
+                            TB(left.right.right, value, right))
             // (T color a x b) = (T color a x b)
                 else -> TB(left, value, right)
             }
@@ -189,9 +185,9 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun isEmpty(): Boolean = true
 
-        override fun size(): Int = 0
+        override val size: Int = 0
 
-        override fun height(): Int = -1
+        override val height: Int = -1
 
         override fun max(): Nothing = throw IllegalStateException("max called on Empty")
 
@@ -216,14 +212,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     internal object E: Empty() {
 
-        override val color: Color = Black
+        override val color: Color = Tree.Color.Black
 
         override fun toString(): String = "E"
     }
 
     internal object EE: Empty() {
 
-        override val color: Color = DoubleBlack
+        override val color: Color = Tree.Color.DoubleBlack
 
         override fun toString(): String = "EE"
     }
@@ -234,14 +230,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun isEmpty(): Boolean = false
 
-        override fun size(): Int = left.size() + 1 + right.size()
+        override val size: Int = left.size + 1 + right.size
 
-        override fun height(): Int = max(left.height(), right.height()) + 1
+        override val height: Int = max(left.height, right.height) + 1
 
         override fun max(): A = when (right) {
-                is Empty -> value
-                else -> right.max()
-            }
+            is Empty -> value
+            else -> right.max()
+        }
 
         override fun min(): A = when (left) {
             is Empty -> value
@@ -255,7 +251,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
 
         override fun toListPreOrderLeft(): List<A> =
-            left.toListPreOrderLeft().concat(right.toListPreOrderLeft()).cons(value)
+                left.toListPreOrderLeft().concat(right.toListPreOrderLeft()).cons(value)
 
         override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B =
                 f(left.foldInOrder(identity, f))(value)(right.foldInOrder(identity, f))
@@ -264,65 +260,61 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                 f(right.foldInReverseOrder(identity, f))(value)(left.foldInReverseOrder(identity, f))
 
         override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B =
-            f(value)(left.foldPreOrder(identity, f))(right.foldPreOrder(identity, f))
+                f(value)(left.foldPreOrder(identity, f))(right.foldPreOrder(identity, f))
 
         override fun <B> foldPostOrder(identity: B, f: (B) -> (B) -> (A) -> B): B =
-            f(left.foldPostOrder(identity, f))(right.foldPostOrder(identity, f))(value)
+                f(left.foldPostOrder(identity, f))(right.foldPostOrder(identity, f))(value)
 
         override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
-            g(right.foldLeft(identity, f, g))(f(left.foldLeft(identity, f, g))(this.value))
+                g(right.foldLeft(identity, f, g))(f(left.foldLeft(identity, f, g))(this.value))
 
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B =
-            g(f(this.value)(left.foldRight(identity, f, g)))(right.foldRight(identity, f, g))
+                g(f(this.value)(left.foldRight(identity, f, g)))(right.foldRight(identity, f, g))
 
         override fun toString(): String = "(T $color $left $value $right)"
 
         internal fun remove(): Tree<A> {
-            if (this is TR && left is E && right is Empty) {
-                return E
+            return when {
+                this is TR && left == E && right is Empty -> E
+                this is TB && left == E && right is Empty -> EE
+                this is TB && left == E && right is TR -> TB(right.left, right.value, right.right)
+                this is TB && left is TR && right is Empty -> TB(left.left, left.value, left.right)
+                else -> when {
+                    left is Empty && right is T -> bubble(right.color, right.left, right.value, right.right)
+                    else -> bubble(color, left.removeMax(), left.max(), right)
+                }
             }
-            if (this is TB && left is E && right is Empty) {
-                return EE
-            }
-            if (this is TB && left is E && right is TR) {
-                return TB(right.left, right.value, right.right)
-            }
-            if (this is TB && left is TR && right is Empty) {
-                return TB(left.left, left.value, left.right)
-            }
-            return if (left is Empty && right is T) {
-                bubble(right.color, right.left, right.value, right.right)
-            } else bubble(color, left.removeMax(), left.max(), right)
         }
 
         internal fun bubble(color: Color,
                             left: Tree<@UnsafeVariance A>,
                             elem: @UnsafeVariance A,
-                            right: Tree<@UnsafeVariance A>): Tree<A> {
-            return if (left.color is DoubleBlack || right.color is DoubleBlack)
-                balance(color.blacker(), left.redder(), elem, right.redder())
-            else
-                balance(color, left, elem, right)
+                            right: Tree<@UnsafeVariance A>): Tree<A> =
+                when {
+                    left.color == Tree.Color.DoubleBlack ||
+                            right.color == Tree.Color.DoubleBlack ->
+                        balance(color.blacker(), left.redder(), elem, right.redder())
+                    else -> balance(color, left, elem, right)
+                }
+
+        internal class TR<out A: Comparable<@UnsafeVariance A>>(l: Tree<A>,
+                                                                internal val v: A,
+                                                                r: Tree<A>) : T<A>(l, v, r) {
+
+            override val color: Color = Tree.Color.Red
+
         }
 
-        internal class TR<out A: Comparable<@UnsafeVariance A>>(internal val l: Tree<A>,
-                                                                     internal val v: A,
-                                                                     internal val r: Tree<A>) : T<A>(l, v, r) {
-
-            override val color: Color = Red
-
+        internal class TB<out A: Comparable<@UnsafeVariance A>>(l: Tree<A>,
+                                                                internal val v: A,
+                                                                r: Tree<A>) : T<A>(l, v, r) {
+            override val color: Color = Tree.Color.Black
         }
 
-        internal class TB<out A: Comparable<@UnsafeVariance A>>(internal val l: Tree<A>,
-                                                                     internal val v: A,
-                                                                     internal val r: Tree<A>) : T<A>(l, v, r) {
-            override val color: Color = Black
-        }
-
-        internal class TNB<out A: Comparable<@UnsafeVariance A>>(internal val l: Tree<A>,
-                                                                     internal val v: A,
-                                                                     internal val r: Tree<A>) : T<A>(l, v, r) {
-            override val color: Color = NegativeBlack
+        internal class TNB<out A: Comparable<@UnsafeVariance A>>(l: Tree<A>,
+                                                                 internal val v: A,
+                                                                 r: Tree<A>) : T<A>(l, v, r) {
+            override val color: Color = Tree.Color.NegativeBlack
         }
     }
 
@@ -386,17 +378,4 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
     }
 
-}
-
-fun log2nlz(n: Int): Int {
-    return if (n == 0)
-        0
-    else
-        31 - Integer.numberOfLeadingZeros(n)
-}
-
-fun main(args: Array<String>) {
-    val tree = Tree<Int>() + 4 + 2 + 1 + 3 + 6 + 5 + 7
-    println(tree)
-    println(tree)
 }

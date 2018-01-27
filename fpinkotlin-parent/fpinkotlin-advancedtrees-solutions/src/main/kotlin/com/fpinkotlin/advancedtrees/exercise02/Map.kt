@@ -2,7 +2,7 @@ package com.fpinkotlin.advancedtrees.exercise02
 
 import com.fpinkotlin.advancedtrees.common.Result
 
-class Map<out K: Comparable<@UnsafeVariance K>, V>(val delegate: Tree<MapEntry<@UnsafeVariance K, V>> = Tree()) {
+class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<MapEntry<@UnsafeVariance K, V>> = Tree()) {
 
     operator fun plus(entry: Pair<@UnsafeVariance K, V>): Map<K, V> = Map(delegate + MapEntry(entry))
 
