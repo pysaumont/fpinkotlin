@@ -8,11 +8,11 @@ import com.fpinkotlin.advancedtrees.common.getOrElse
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
-    protected abstract val left: Result<Heap<A>>
+    internal abstract val left: Result<Heap<A>>
 
-    protected abstract val right: Result<Heap<A>>
+    internal abstract val right: Result<Heap<A>>
 
-    protected abstract val rank: Int
+    internal abstract val rank: Int
 
     abstract val head: Result<A>
 

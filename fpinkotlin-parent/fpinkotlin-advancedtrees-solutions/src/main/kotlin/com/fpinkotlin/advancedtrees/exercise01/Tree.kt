@@ -1,99 +1,131 @@
 package com.fpinkotlin.advancedtrees.exercise01
 
+import com.fpinkotlin.advancedtrees.exercise01.Tree.Color.B
+import com.fpinkotlin.advancedtrees.exercise01.Tree.Color.R
 import kotlin.math.max
-
-internal typealias TB<A> = Tree.T.TB<A>
-internal typealias TR<A> = Tree.T.TR<A>
 
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract val size: Int
+
     abstract val height: Int
 
-    protected fun add(newVal: @UnsafeVariance A): Tree<A> {
+    abstract val color: Color
 
-        return when (this) {
-            E -> TR(E, newVal, E)
-            is T ->  when {
-                newVal < value -> balance(color, left.add(newVal), value, right)
-                newVal > value -> balance(color, left, value, right.add(newVal))
-                else           -> when (color) {
-                    Tree.Color.Black -> TB(left, newVal, right)
-                    Tree.Color.Red -> TR(left, newVal, right)
-                }
-            }
-        }
+    internal abstract val isTB: Boolean
+
+    internal abstract val isTR: Boolean
+
+    internal abstract val right: Tree<A>
+
+    internal abstract val left: Tree<A>
+
+    internal abstract val value: A
+
+    operator fun plus(value: @UnsafeVariance A): Tree<A> = add(value).blacken()
+
+    protected abstract fun blacken(): Tree<A>
+
+    protected abstract fun add(newVal: @UnsafeVariance A): Tree<A>
+
+    protected fun balance(color: Color,
+                          left: Tree<@UnsafeVariance A>,
+                          value: @UnsafeVariance A,
+                          right: Tree<@UnsafeVariance A>): Tree<A> = when {
+
+    // balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
+        color == B && left.isTR && left.left.isTR ->
+            T(R, left.left.blacken(), left.value, T(B, left.right, value, right))
+
+    // balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
+        color == B && left.isTR && left.right.isTR ->
+            T(R, T(B, left.left, left.value, left.right.left), left.right.value,
+              T(B, left.right.right, value, right))
+
+    // balance B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
+        color == B && right.isTR && right.left.isTR ->
+            T(R, T(B, left, value, right.left.left), right.left.value,
+              T(B, right.left.right, right.value, right.right))
+
+    // balance B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
+        color == B && right.isTR && right.right.isTR ->
+            T(R, T(B, left, value, right.left), right.value, right.right.blacken())
+
+    // balance color a x b = T color a x b
+        else -> T(color, left, value, right)
     }
 
-    private fun <A: Comparable<A>> blacken(t: Tree<A>): Tree<A> = when (t) {
-        E -> E
-        is T -> T.TB(t.left, t.value, t.right)
-    }
+    internal open class Empty<out A: Comparable<@UnsafeVariance A>>: Tree<A>() {
 
-    operator fun plus(value: @UnsafeVariance A): Tree<A> {
-        return blacken(add(value))
-    }
+        override val isTB: Boolean = false
 
-    private fun balance(color: Color, left: Tree<A>, value: A, right: Tree<A>): Tree<A> = when (color) {
-        Tree.Color.Black -> {
-            when {
-            // (T B (T R (T R a x b) y c) z d) = (T R (T B a x b ) y (T B c z d))
-                left is TR && (left).left is TR ->
-                    TR(TB((left.left as T).left, left.left.value, left.left.right),
-                            left.value, TB(left.right, value, right))
-            // (T B (T R a x (T R b y c)) z d) = (T R (T B a x b) y (T B c z d))
-                left is TR && left.right is TR ->
-                    TR(TB(left.left, left.value, left.right.left),
-                            left.right.value, TB(left.right.right, value, right))
-            // (T B a x (T R (T R b y c) z d)) = (T R (T B a x b) y (T B c z d))
-                right is TR && right.left is TR ->
-                    TR(TB(left, value, right.left.left), right.left.value,
-                            TB(right.left.right, right.value, right.right))
-            // (T B a x (T R b y (T R c z d))) = (T R (T B a x b) y (T B c z d))
-                right is TR && right.right is TR ->
-                    TR(TB(left, value, right.left), right.value,
-                            TB(right.right.left, right.right.value, right.right.right))
-            // (T color a x b) = (T color a x b)
-                else -> TB(left, value, right)
-            }
-        }
-    // (T color a x b) = (T color a x b)
-        Tree.Color.Red -> TR(left, value, right)
-    }
+        override val isTR: Boolean = false
 
+        override val right: Tree<Nothing> by lazy { throw IllegalStateException("right called on Empty tree") }
 
-    internal object E: Tree<Nothing>() {
+        override val left: Tree<Nothing> by lazy { throw IllegalStateException("left called on Empty tree") }
+
+        override val value: Nothing by lazy { throw IllegalStateException("value called on Empty tree") }
+
+        override val color: Color = B
 
         override val size: Int = 0
 
         override val height: Int = -1
 
+        override fun blacken(): Tree<A> = E
+
+        override fun add(newVal: @UnsafeVariance A): Tree<A> = T(R, E, newVal, E)
+
         override fun toString(): String = "E"
     }
 
-    sealed class T<out A: Comparable<@UnsafeVariance A>>(internal val left: Tree<A>,
-                                                         internal val value: A,
-                                                         internal val right: Tree<A>) : Tree<A>() {
-        internal abstract val color: Color
+    internal object E: Empty<Nothing>() {
+//
+//        override val isTB: Boolean = false
+//
+//        override val isTR: Boolean = false
+//
+//        override val right: Tree<Nothing> by lazy { throw IllegalStateException("right called on Empty tree") }
+//
+//        override val left: Tree<Nothing> by lazy { throw IllegalStateException("left called on Empty tree") }
+//
+//        override val value: Nothing by lazy { throw IllegalStateException("value called on Empty tree") }
+//
+//        override val color: Color = B
+//
+//        override val size: Int = 0
+//
+//        override val height: Int = -1
+//
+//        override fun toString(): String = "E"
+    }
+
+    internal class T<out A: Comparable<@UnsafeVariance A>>(override val color: Color,
+                                                           override val left: Tree<A>,
+                                                           override val value: A,
+                                                           override val right: Tree<A>) : Tree<A>() {
+
+        override val isTB: Boolean = color == B
+
+        override val isTR: Boolean = color == R
 
         override val size: Int = left.size + 1 + right.size
 
         override val height: Int = max(left.height, right.height) + 1
 
+        override fun blacken(): Tree<A> = T(B, left, value, right)
+
+        override fun add(newVal: @UnsafeVariance A): Tree<A> = when {
+                newVal < value -> balance(color, left.add(newVal), value, right)
+                newVal > value -> balance(color, left, value, right.add(newVal))
+                else           -> when (color) {
+                    B -> T(B, left, newVal, right)
+                    R -> T(R, left, newVal, right)
+                }
+            }
+
         override fun toString(): String = "(T $color $left $value $right)"
-
-        internal data class TR<out A: Comparable<@UnsafeVariance A>>(private val l: Tree<A>,
-                                                                     internal val v: A,
-                                                                     private val r: Tree<A>) : T<A>(l, v, r) {
-            override val color: Color = Tree.Color.Red
-        }
-
-        internal data class TB<out A: Comparable<@UnsafeVariance A>>(private val l: Tree<A>,
-                                                                     internal val v: A,
-                                                                     private val r: Tree<A>) : T<A>(l, v, r) {
-            override val color: Color = Tree.Color.Black
-        }
-
     }
 
     companion object {
@@ -104,20 +136,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     sealed class Color {
 
-        internal object Black : Color() {
-
-            override fun toString() = "B"
+        // Red
+        internal object R: Color() {
+            override fun toString(): String = "R"
         }
 
-        internal object Red : Color() {
-
-            override fun toString() = "R"
+        // Black
+        internal object B: Color() {
+            override fun toString(): String = "B"
         }
     }
-
-}
-
-fun log2nlz(n: Int): Int = when (n) {
-    0 -> 0
-    else -> 31 - Integer.numberOfLeadingZeros(n)
 }

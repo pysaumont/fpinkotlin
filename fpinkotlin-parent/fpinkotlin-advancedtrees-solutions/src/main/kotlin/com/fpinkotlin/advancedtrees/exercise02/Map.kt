@@ -1,6 +1,6 @@
 package com.fpinkotlin.advancedtrees.exercise02
 
-import com.fpinkotlin.advancedtrees.common.Result
+import com.fpinkotlin.common.Result
 
 class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<MapEntry<@UnsafeVariance K, V>> = Tree()) {
 
@@ -12,7 +12,11 @@ class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<Ma
 
     fun get(key: @UnsafeVariance K): Result<MapEntry<@UnsafeVariance K, V>> = delegate[MapEntry(key)]
 
-    fun isEmpty(): Boolean = delegate.isEmpty()
+    fun isEmpty(): Boolean = delegate.isEmpty
+
+    fun size() = delegate.size
+
+    override fun toString() = delegate.toString()
 
     companion object {
 

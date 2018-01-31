@@ -29,18 +29,18 @@ fun <T>  forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000)
 }
 
 class IntGenerator(private val min: Int = 0, val max: Int = Int.MAX_VALUE): Gen<Int> {
-    val RANDOM = Random()
-    override fun generate(): Int = RANDOM.nextInt(max - min) + min
+    val random = Random()
+    override fun generate(): Int = random.nextInt(Math.abs(max) - Math.max(0, min)) + Math.max(0, min)
 }
 
 class DoubleGenerator(private val min: Double = 0.0, val max: Double = Double.MAX_VALUE): Gen<Double> {
-    val RANDOM = Random()
-    override fun generate(): Double = RANDOM.nextDouble() % max
+    val random = Random()
+    override fun generate(): Double = random.nextDouble() % max
 }
 
 class CharGenerator(private val min: Char = ' ', val max: Char = '~'): Gen<Char> {
-    val RANDOM = Random()
-    override fun generate(): Char = (RANDOM.nextInt(max.toInt() - min.toInt()) + min.toInt()).toChar()
+    val random = Random()
+    override fun generate(): Char = (random.nextInt(max.toInt() - min.toInt()) + min.toInt()).toChar()
 }
 
 class IntPairGenerator(private val min: Int = 0, private val max: Int = 100) : Gen<Pair<Int, Int>> {
@@ -75,11 +75,14 @@ class IntKListGenerator(private val minLength: Int = 0, private val maxLength: I
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>,
+class IntListGenerator(private val minLength: Int = 0,
+                       private val maxLength: Int = 100,
+                       private val minValue: Int = Int.MIN_VALUE,
+                       private val maxValue: Int = Int.MAX_VALUE) : Gen<Pair<Array<Int>,
         com.fpinkotlin.common.List<Int>>> {
 
     override fun generate(): Pair<Array<Int>, com.fpinkotlin.common.List<Int>> {
-        val array: Array<Int> = list(IntGenerator(), minLength, maxLength).generate().toTypedArray()
+        val array: Array<Int> = list(IntGenerator(minValue, maxValue), minLength, maxLength).generate().toTypedArray()
         return Pair(array, com.fpinkotlin.common.List(*array))
     }
 }

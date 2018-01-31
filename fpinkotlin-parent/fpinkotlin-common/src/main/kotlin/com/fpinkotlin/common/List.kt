@@ -252,7 +252,7 @@ sealed class List<out A> {
                                internal val tail: List<A>): List<A>() {
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (A) -> B): Pair<B, List<A>> {
-            fun <B> foldLeft(acc: B, zero: B, list: List<A>, f: (B) -> (A) -> B): Pair<B, List<A>> = when (list) {
+            tailrec fun <B> foldLeft(acc: B, zero: B, list: List<A>, f: (B) -> (A) -> B): Pair<B, List<A>> = when (list) {
                 Nil -> Pair(acc, list)
                 is Cons ->
                     if (acc == zero)

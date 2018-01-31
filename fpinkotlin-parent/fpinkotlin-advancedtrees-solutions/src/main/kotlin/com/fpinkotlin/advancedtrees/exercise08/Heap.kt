@@ -1,10 +1,7 @@
 package com.fpinkotlin.advancedtrees.exercise08
 
+import com.fpinkotlin.advancedtrees.common.*
 import com.fpinkotlin.advancedtrees.common.List
-import com.fpinkotlin.advancedtrees.common.Option
-import com.fpinkotlin.advancedtrees.common.Result
-import com.fpinkotlin.advancedtrees.common.getOrElse
-import com.fpinkotlin.advancedtrees.common.unfold
 
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
@@ -116,5 +113,4 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
                     else -> first
                 })
     }
-
 }
