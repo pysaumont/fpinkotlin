@@ -17,6 +17,8 @@ sealed class List<out A> {
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): Pair<B, List<A>>
 
+    operator fun plus(a: @UnsafeVariance A): List<A> = cons(a)
+
     fun <B> parMap(es: ExecutorService, g: (A) -> B): Result<List<B>> =
             try {
                 val result = this.map { x ->

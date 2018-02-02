@@ -1,36 +1,39 @@
 package com.fpinkotlin.advancedtrees.listing03
 
-import com.fpinkotlin.advancedtrees.common.Result
+import com.fpinkotlin.common.Result
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
-    protected abstract val left: Result<Heap<A>>  // <1>
-    protected abstract val right: Result<Heap<A>>  // <1>
+    internal abstract val left: Result<Heap<A>>  // <1>
+    internal abstract val right: Result<Heap<A>>  // <1>
+    internal abstract val head: Result<A>  // <1>
     protected abstract val rank: Int
-    abstract val head: Result<A>  // <1>
-    abstract val length: Int  // <2>
-    abstract fun isEmpty(): Boolean
+    abstract val size: Int  // <2>
+    abstract val isEmpty: Boolean
 
-    internal object Empty: Heap<Nothing>() {
+    abstract class Empty<out A: Comparable<@UnsafeVariance A>>: Heap<A>() { // <3>
 
-        override val left: Result<Heap<Nothing>> by lazy { Result(Empty) }
+        override val isEmpty: Boolean = true
 
-        override val right: Result<Heap<Nothing>> by lazy { Result(Empty) }
+        override val left: Result<Heap<A>> = Result(E)
+
+        override val right: Result<Heap<A>> = Result(E)
+
+        override val head: Result<A> = Result.failure("head() called on empty heap")
 
         override val rank: Int = 0
 
-        override val head: Result<Nothing> by lazy { Result.failure<Nothing>("head() called on empty heap") }
-
-        override val length: Int = 0
-
-        override fun isEmpty(): Boolean = true
+        override val size: Int = 0
     }
 
-    internal class H<out A: Comparable<@UnsafeVariance A>>(override val length: Int, // <3>
-                                                           override val rank: Int, // <3>
+    internal object E: Empty<Nothing>() // <4>
+
+    internal class H<out A: Comparable<@UnsafeVariance A>>(override val rank: Int, // <5>
                                                            private val lft: Heap<A>,
                                                            private val hd: A,
                                                            private val rght: Heap<A>): Heap<A>()  {
+
+        override val isEmpty: Boolean = false
 
         override val left: Result<Heap<A>> = Result(lft)
 
@@ -38,7 +41,11 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
         override val head: Result<A> = Result(hd)
 
-        override fun isEmpty(): Boolean = false
+        override val size: Int = lft.size + rght.size + 1
     }
 
+    companion object {
+
+        operator fun <A: Comparable<A>> invoke(): Heap<A> = E // <6>
+    }
 }

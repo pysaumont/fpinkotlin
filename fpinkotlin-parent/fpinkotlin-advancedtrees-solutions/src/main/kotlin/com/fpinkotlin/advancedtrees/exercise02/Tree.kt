@@ -10,6 +10,11 @@ import com.fpinkotlin.common.List.Companion.cons
 import com.fpinkotlin.common.Result
 
 
+/*
+ * see http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf
+ * see http://matt.might.net/papers/germane2014deletion.pdf
+ * see http://matt.might.net/articles/red-black-delete/
+ */
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract val size: Int
@@ -46,7 +51,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     abstract fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B
     abstract fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B
     abstract fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B
-    abstract fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B
     abstract fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B
     abstract fun <B> foldPostOrder(identity: B, f: (B) -> (B) -> (A) -> B): B
 
@@ -109,8 +113,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B = identity
 
         override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B = identity
-
-        override fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B = identity
 
         override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B = identity
 
@@ -297,9 +299,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B =
             f(left.foldInOrder(identity, f))(value)(right.foldInOrder(identity, f))
 
-        override fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B =
-            f(right.foldInReverseOrder(identity, f))(value)(left.foldInReverseOrder(identity, f))
-
         override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B =
             f(value)(left.foldPreOrder(identity, f))(right.foldPreOrder(identity, f))
 
@@ -324,6 +323,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     }
 
     sealed class Color {
+
         internal abstract val blacker: Color
         internal abstract val redder: Color
 
@@ -368,20 +368,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
     }
 
-
     companion object {
 
         operator fun <A: Comparable<A>> invoke(): Tree<A> = E
 
-        fun log2nlz(n: Int): Int = when (n) {
-            0    -> 0
-            else -> 31 - Integer.numberOfLeadingZeros(n)
-        }
-
         fun <A: Comparable<A>> toString(ree: Tree<A>): String {
             val tableHeight = ree.height + 1
             val tableWidth = Math.pow(2.0, (ree.height + 1).toDouble()).toInt() - 1
-            val table: Array<Array<String>> = Array(tableHeight) { Array(tableWidth) { "" } }
+            val table: Array<Array<String>> = Array(tableHeight) { Array(tableWidth) { "    " } }
             val hPosition = tableWidth / 2
             val vPosition = ree.height
             val result = makeTable(table, ree, hPosition, vPosition)
@@ -395,15 +389,11 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             return sb.toString()
         }
 
-        private fun makeCell(string: String?): String = when (string) {
-            null -> "    "
-            else -> when (string.length) {
-                0    -> "    "
-                1    -> " $string  "
-                2    -> " $string "
-                3    -> string + " "
-                else -> string
-            }
+        private fun makeCell(string: String): String = when (string.length) {
+            1    -> " $string  "
+            2    -> " $string "
+            3    -> string + " "
+            else -> string
         }
 
         private fun <A: Comparable<A>> makeTable(table: Array<Array<String>>,

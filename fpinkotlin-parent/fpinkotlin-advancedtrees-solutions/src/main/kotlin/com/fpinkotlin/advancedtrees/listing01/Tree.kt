@@ -1,20 +1,49 @@
 package com.fpinkotlin.advancedtrees.listing01
 
 
+import com.fpinkotlin.advancedtrees.listing01.Tree.Color.B
+import com.fpinkotlin.advancedtrees.listing01.Tree.Color.R
 import kotlin.math.max
-
-internal typealias TB<A> = Tree.T.TB<A> // <1> These type alias will simplify the code
-internal typealias TR<A> = Tree.T.TR<A>
 
 sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract val size: Int
 
-    abstract val height: Int
+    abstract val height: Int // <2> Abstract properties are defined in the parent class
 
-    internal object E: Tree<Nothing>() {
+    internal abstract val color: Color
 
-        internal val color: Color = Tree.Color.Black // <2> The empty tree is Black
+    internal abstract val isTB: Boolean
+
+    internal abstract val isTR: Boolean
+
+    internal abstract val right: Tree<A>
+
+    internal abstract val left: Tree<A>
+
+    internal abstract val value: A
+
+    internal abstract class Empty<out A: Comparable<@UnsafeVariance A>>: Tree<A>() { // <3> Empty is an abstract class, which will
+        // allow
+        // implementing functions in in this class instead of using pattern matching in the Tree parent class
+
+        override val isTB: Boolean = false
+
+        override val isTR: Boolean = false
+
+        override val right: Tree<Nothing> by lazy { // <4> Properties that make no sense in the Empty class are lazily initialised.
+            throw IllegalStateException("right called on Empty tree")
+        }
+
+        override val left: Tree<Nothing> by lazy {
+            throw IllegalStateException("left called on Empty tree")
+        }
+
+        override val value: Nothing by lazy {
+            throw IllegalStateException("value called on Empty tree")
+        }
+
+        override val color: Color = B
 
         override val size: Int = 0
 
@@ -23,51 +52,39 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun toString(): String = "E"
     }
 
-    sealed class T<out A: Comparable<@UnsafeVariance A>>(internal val left: Tree<A>, // <3> T is the parent class of non empty trees
-                                                         internal val value: A,
-                                                         internal val right: Tree<A>) : Tree<A>() {
+    internal object E: Empty<Nothing>() // <5> The empty tree is represented by the E singleton
 
-        internal abstract val color: Color // <4> color is an abstract property that will be overridden in extending classes
+    internal class T<out A: Comparable<@UnsafeVariance A>>(override val color: Color,
+                                                           override val left: Tree<A>,
+                                                           override val value: A,
+                                                           override val right: Tree<A>) : Tree<A>() {
+        override val isTB: Boolean = color == B
+
+        override val isTR: Boolean = color == R
 
         override val size: Int = left.size + 1 + right.size
 
         override val height: Int = max(left.height, right.height) + 1
 
-        internal data class TR<out A: Comparable<@UnsafeVariance A>>(internal val l: Tree<A>, // <5> TR represents a red non empty tree
-                                                                     internal val v: A,
-                                                                     internal val r: Tree<A>) : T<A>(l, v, r) {
-
-            override val color: Color = Tree.Color.Red
-
-            override fun toString(): String = "(T $color $left $value $right)"
-        }
-
-        internal data class TB<out A: Comparable<@UnsafeVariance A>>(internal val l: Tree<A>, // <6> TB represents a black non empty tree
-                                                                     internal val v: A,
-                                                                     internal val r: Tree<A>) : T<A>(l, v, r) {
-            override val color: Color = Tree.Color.Black
-
-            override fun toString(): String = "(T $color $left $value $right)"
-        }
-
+        override fun toString(): String = "(T $color $left $value $right)"
     }
 
     companion object {
 
-        operator fun <A: Comparable<A>> invoke(): Tree<A> = E // <7> This function creates an emtpy tree
+        operator fun <A: Comparable<A>> invoke(): Tree<A> = E
 
     }
 
-    sealed class Color {
+    sealed class Color { // <5> These are the colors used for coloring the nodes
 
-        internal object Black : Color() { // <8> Colors are singleton objects.
-
-            override fun toString() = "B"
+        // Red
+        internal object R: Color() {
+            override fun toString(): String = "R"
         }
 
-        internal object Red : Color() {
-
-            override fun toString() = "R"
+        // Black
+        internal object B: Color() {
+            override fun toString(): String = "B"
         }
     }
 }

@@ -1,19 +1,18 @@
 package com.fpinkotlin.advancedtrees.exercise04
 
-import com.fpinkotlin.advancedtrees.common.List
-import com.fpinkotlin.advancedtrees.common.Result
-import com.fpinkotlin.advancedtrees.common.getOrElse
+import com.fpinkotlin.common.List
+import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.getOrElse
 
 class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<MapEntry<Int, List<Pair<K, V>>>> = Tree()) {
 
-    private fun getAll(key: @UnsafeVariance K): Result<List<Pair<K, V>>> {
-        return delegate[MapEntry(key.hashCode())]
-                .flatMap { x ->
-                    x.value.map { lt ->
-                        lt.map { t -> t }
-                    }
+    private fun getAll(key: @UnsafeVariance K): Result<List<Pair<K, V>>> =
+        delegate[MapEntry(key.hashCode())]
+            .flatMap { x ->
+                x.value.map { lt ->
+                    lt.map { t -> t }
                 }
-    }
+            }
 
     operator fun plus(entry: Pair<@UnsafeVariance K, V>): Map<K, V> {
         val list = getAll(entry.first).map { lt ->
@@ -34,10 +33,10 @@ class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<Ma
                 }
             }
         }.getOrElse { List() }
-        return when {
-            list.isEmpty() -> Map(delegate - MapEntry(key.hashCode()))
-            else -> Map(delegate + MapEntry.of(key.hashCode(), list))
-        }
+            return when {
+                list.isEmpty() -> Map(delegate - MapEntry(key.hashCode()))
+                else -> Map(delegate + MapEntry.of(key.hashCode(), list))
+            }
     }
 
     fun contains(key: @UnsafeVariance K): Boolean =
@@ -47,14 +46,14 @@ class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<Ma
                 }
             }.getOrElse( false)
 
-    fun get(key: @UnsafeVariance K): Result<Pair<K, V>> =
+    operator fun get(key: @UnsafeVariance K): Result<Pair<K, V>> =
             getAll(key).flatMap { list ->
                 list.filter { pair ->
                     pair.first == key
                 }.headSafe()
             }
 
-    fun isEmpty(): Boolean = delegate.isEmpty()
+    fun isEmpty(): Boolean = delegate.isEmpty
 
 //    fun <B> foldLeft(identity: B, f: (B) -> (MapEntry<@UnsafeVariance K, V>) -> B, g: (B) -> (B) -> B): B =
 //            delegate.foldLeft(identity, { b ->

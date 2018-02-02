@@ -66,7 +66,7 @@ class TreeTest: StringSpec() {
         }
     }
 
-    fun log2nlz(n: Int): Int = when (n) {
+    private fun log2nlz(n: Int): Int = when (n) {
         0 -> 0
         else -> 31 - Integer.numberOfLeadingZeros(n)
     }

@@ -1,9 +1,9 @@
 package com.fpinkotlin.advancedtrees.exercise03
 
-import com.fpinkotlin.advancedtrees.common.List
-import com.fpinkotlin.advancedtrees.common.Result
-import com.fpinkotlin.advancedtrees.common.getOrElse
-import com.fpinkotlin.advancedtrees.common.sequence
+import com.fpinkotlin.common.List
+import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.getOrElse
+import com.fpinkotlin.common.sequence
 
 class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<MapEntry<@UnsafeVariance K, V>> = Tree()) {
 
@@ -13,9 +13,9 @@ class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<Ma
 
     fun contains(key: @UnsafeVariance K): Boolean = delegate.contains(MapEntry(key))
 
-    fun get(key: @UnsafeVariance K): Result<MapEntry<@UnsafeVariance K, V>> = delegate[MapEntry(key)]
+    operator fun get(key: @UnsafeVariance K): Result<MapEntry<@UnsafeVariance K, V>> = delegate[MapEntry(key)]
 
-    fun isEmpty(): Boolean = delegate.isEmpty()
+    fun isEmpty(): Boolean = delegate.isEmpty
 
     fun <B> foldLeft(identity: B, f: (B) -> (MapEntry<@UnsafeVariance K, V>) -> B, g: (B) -> (B) -> B): B =
             delegate.foldLeft(identity, { b ->

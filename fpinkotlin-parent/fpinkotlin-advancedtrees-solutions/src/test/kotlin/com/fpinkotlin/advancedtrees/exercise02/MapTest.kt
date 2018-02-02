@@ -27,7 +27,7 @@ class MapTest: StringSpec() {
                 val duration2 = System.currentTimeMillis() - time2
                 val map2 = set.fold(map) { m, i -> m - i }
                 val result: List<Result<Boolean>> = list.map { i ->
-                    map.get(i).flatMap { x -> x.value }
+                    map[i].flatMap { x -> x.value }
                         .map { y ->
                             y == NumbersToEnglish.convertUS(i) } }
                 (duration < maxTime) &&

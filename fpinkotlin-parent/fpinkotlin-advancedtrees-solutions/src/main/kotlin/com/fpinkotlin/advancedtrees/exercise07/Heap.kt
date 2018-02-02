@@ -1,107 +1,104 @@
 package com.fpinkotlin.advancedtrees.exercise07
 
-import com.fpinkotlin.advancedtrees.common.Result
-import com.fpinkotlin.advancedtrees.common.getOrElse
-
+import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.getOrElse
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
-    protected abstract fun left(): Result<Heap<A>>
+    internal abstract val left: Result<Heap<A>>
 
-    protected abstract fun right(): Result<Heap<A>>
+    internal abstract val right: Result<Heap<A>>
 
-    protected abstract fun rank(): Int
+    protected abstract val rank: Int
 
-    abstract fun head(): Result<A>
+    abstract val head: Result<A>
 
-    abstract fun length(): Int
+    abstract val size: Int
 
-    abstract fun isEmpty(): Boolean
-
-    operator fun plus(element: @UnsafeVariance A): Heap<A> = merge(this, Heap(element))
+    abstract val isEmpty: Boolean
 
     abstract fun tail(): Result<Heap<A>>
 
     abstract fun get(index: Int): Result<A>
 
-    internal object Empty: Heap<Nothing>() {
+    operator fun plus(element: @UnsafeVariance A): Heap<A> = merge(this, Heap(element))
 
-        override fun get(index: Int): Result<Nothing> = Result.failure(NoSuchElementException("Index out of bounds"))
+    abstract class Empty<out A: Comparable<@UnsafeVariance A>>: Heap<A>() {
 
-        override fun tail(): Result<Heap<Nothing>> = Result.failure(IllegalStateException("tail() called on empty heap"))
+        override val isEmpty: Boolean = true
 
-        override fun left(): Result<Heap<Nothing>> = Result(Empty)
+        override val left: Result<Heap<A>> = Result(E)
 
-        override fun right(): Result<Heap<Nothing>> = Result(Empty)
+        override val right: Result<Heap<A>> = Result(E)
 
-        override fun rank(): Int = 0
+        override val head: Result<A> = Result.failure("head() called on empty heap")
 
-        override fun head(): Result<Nothing> =
-                Result.failure(NoSuchElementException("head() called on empty heap"))
+        override val rank: Int = 0
 
-        override fun length(): Int = 0
+        override val size: Int = 0
 
-        override fun isEmpty(): Boolean = true
+        override fun tail(): Result<Heap<A>> = Result.failure(IllegalStateException("tail() called on empty heap"))
+
+        override fun get(index: Int): Result<A> = Result.failure(NoSuchElementException("Index out of bounds"))
+
     }
 
-    internal class H<out A: Comparable<@UnsafeVariance A>>(internal val length: Int,
-                                                           internal val rank: Int,
-                                                           internal val left: Heap<A>,
-                                                           internal val head: A,
-                                                           internal val right: Heap<A>): Heap<A>()  {
+    internal object E: Empty<Nothing>()
+
+    internal class H<out A: Comparable<@UnsafeVariance A>>(override val rank: Int, // <3>
+                                                           private val lft: Heap<A>,
+                                                           private val hd: A,
+                                                           private val rght: Heap<A>): Heap<A>()  {
+
+        override val isEmpty: Boolean = false
+
+        override val left: Result<Heap<A>> = Result(lft)
+
+        override val right: Result<Heap<A>> = Result(rght)
+
+        override val head: Result<A> = Result(hd)
+
+        override val size: Int = lft.size + rght.size + 1
+
+        override fun tail(): Result<Heap<A>> = Result(merge(lft, rght))
 
         override fun get(index: Int): Result<A> = when (index) {
-            0 -> Result(head)
+            0 -> Result(hd)
             else -> tail().flatMap { it.get(index - 1) }
         }
-
-        override fun tail(): Result<Heap<A>> = Result(merge(left, right))
-
-        override fun left(): Result<Heap<A>> = Result(left)
-
-        override fun right(): Result<Heap<A>> = Result(right)
-
-        override fun rank(): Int = rank
-
-        override fun head(): Result<A> = Result(head)
-
-        override fun length(): Int = length
-
-        override fun isEmpty(): Boolean = false
     }
 
     companion object {
 
-        operator fun <A: Comparable<A>> invoke(element: A): Heap<A> = H(1, 1, Empty, element, Empty)
+        operator fun <A: Comparable<A>> invoke(): Heap<A> = E
+
+        operator fun <A: Comparable<A>> invoke(element: A): Heap<A> = H(1, E, element, E)
 
         protected fun <A : Comparable<A>> merge(head: A, first: Heap<A>, second: Heap<A>): Heap<A> =
             when {
-                first.rank() >= second.rank() -> H(first.length() + second.length() + 1,
-                        second.rank() + 1, first, head, second)
-                else -> H(first.length() + second.length() + 1,
-                        first.rank() + 1, second, head, first)
+                first.rank >= second.rank -> H(second.rank + 1, first, head, second)
+                else -> H(first.rank + 1, second, head, first)
             }
 
         fun <A: Comparable<A>> merge(first: Heap<A>, second: Heap<A>): Heap<A> =
-                first.head().flatMap { fh ->
-                    second.head().flatMap { sh ->
-                        when {
-                            fh <= sh -> first.left().flatMap { fl ->
-                                first.right().map { fr ->
-                                    merge(fh, fl, merge(fr, second))
-                                }
+            first.head.flatMap { fh ->
+                second.head.flatMap { sh ->
+                    when {
+                        fh <= sh -> first.left.flatMap { fl ->
+                            first.right.map { fr ->
+                                merge(fh, fl, merge(fr, second))
                             }
-                            else -> second.left().flatMap { sl ->
-                                second.right().map { sr ->
-                                    merge(sh, sl, merge(first, sr))
-                                }
+                        }
+                        else -> second.left.flatMap { sl ->
+                            second.right.map { sr ->
+                                merge(sh, sl, merge(first, sr))
                             }
                         }
                     }
-                }.getOrElse(when (first) {
-                    is Empty -> second
-                    else -> first
-                })
+                }
+            }.getOrElse(when (first) {
+                            E -> second
+                            else -> first
+                        })
     }
-
 }

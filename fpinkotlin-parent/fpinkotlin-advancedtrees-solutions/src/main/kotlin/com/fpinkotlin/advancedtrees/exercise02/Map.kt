@@ -10,7 +10,7 @@ class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<Ma
 
     fun contains(key: @UnsafeVariance K): Boolean = delegate.contains(MapEntry(key))
 
-    fun get(key: @UnsafeVariance K): Result<MapEntry<@UnsafeVariance K, V>> = delegate[MapEntry(key)]
+    operator fun get(key: @UnsafeVariance K): Result<MapEntry<@UnsafeVariance K, V>> = delegate[MapEntry(key)]
 
     fun isEmpty(): Boolean = delegate.isEmpty
 

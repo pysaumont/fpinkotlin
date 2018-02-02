@@ -1,6 +1,6 @@
 package com.fpinkotlin.advancedtrees.exercise03
 
-import com.fpinkotlin.advancedtrees.common.Result
+import com.fpinkotlin.common.Result
 
 class MapEntry<K: Comparable<@UnsafeVariance K>, V>
 
