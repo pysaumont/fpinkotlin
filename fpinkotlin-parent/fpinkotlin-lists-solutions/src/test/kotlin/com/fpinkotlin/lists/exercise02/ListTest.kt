@@ -1,6 +1,7 @@
 package com.fpinkotlin.lists.exercise02
 
 import com.fpinkotlin.generators.list
+import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
@@ -15,6 +16,11 @@ class ListTest: StringSpec() {
                 second.setHead(i).toString() ==
                         "[$i, ${first.joinToString(", ", "", ", NIL]").substringAfter(", ")}"
             })
+        }
+
+        "setHeadEmpty" {
+            val list = List<Int>()
+            shouldThrow<IllegalStateException> { list.setHead(1) }
         }
     }
 }
