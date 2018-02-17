@@ -21,7 +21,9 @@ include 'fpinkotlin-common',
         'fpinkotlin-trees-solutions',
         'fpinkotlin-trees-exercises',
         'fpinkotlin-advancedtrees-solutions',
-        'fpinkotlin-advancedtrees-exercises'
+        'fpinkotlin-advancedtrees-exercises',
+        'fpinkotlin-effects-solutions',
+        'fpinkotlin-effects-exercises'
 
 
 
