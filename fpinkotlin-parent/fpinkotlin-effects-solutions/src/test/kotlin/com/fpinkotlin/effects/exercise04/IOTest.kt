@@ -1,45 +1,58 @@
 package com.fpinkotlin.effects.exercise04
 
 import com.fpinkotlin.common.List
+import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class IOTest: StringSpec() {
 
+    var result = ""
+
     init {
 
         "add" {
-            val name = getName()
 
             // These three lines do nothing. each line returns a program with a
-            val instruction1 = show("Hello, ")
-            val instruction2 = show(name)
-            val instruction3 = show("!\n")
+            val instruction0 = reset()
+            val instruction1 = append("Hello, ")
+            val instruction2 = append(getName())
+            val instruction3 = append("!")
 
             // Write a script
-            val script = instruction1.add(instruction2).add(instruction3)
+            val script = instruction0 + instruction1 + instruction2 + instruction3
+
             // execute it
             script()
+            result.shouldBe("Hello, Mickey!")
 
-            // Or simpler:
-            show("Hello, ").add(show(name)).add(show("!\n"))()
+            // Or:
+            (reset() + append("Hello, ") + append("Donald") + append("!"))()
+            result.shouldBe("Hello, Donald!")
 
             // We can make a script from a list of instructions:
-
             val script2 = List(
-                    show("Hello, "), // Doesn't this look like an imperative program?
-                    show(name),
-                    show("!\n")
+                    append("Hello, "), // Doesn't this look like an imperative program?
+                    append(getName()),
+                    append("!")
             )
-            // We can sort of "compile" it, then execute it
-            script2.foldRight(IO.empty, { io -> { io.add(it) } })()
-            script2.foldLeft(IO.empty, { acc -> { acc.add(it) } })()
+
+            // We can sort of "compile" it, then execute it using a left fold:
+            script2.foldLeft(reset(), { acc -> { acc + it } })()
+            result.shouldBe("Hello, Mickey!")
+
+            // We can also use a right fold but beware that with foldRight,
+            // the identity will be applied last. So using reset() as the identity
+            // would result into an empty string
+            reset()()
+            script2.foldRight(IO.empty, { io -> { io + it } })()
+            result.shouldBe("Hello, Mickey!")
         }
 
     }
 
-    private fun show(message: String): IO = object : IO {
-        override fun invoke() { println(message) }
-    }
+    private fun reset(): IO = IO { result = "" }
+
+    private fun append(message: String): IO = IO { result += message }
 
     private fun getName(): String = "Mickey"
 

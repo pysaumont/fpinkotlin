@@ -123,6 +123,15 @@ sealed class Stream<out A> {
 
         operator fun <A> invoke(): Stream<A> = Empty
 
+        operator fun <A> invoke(array: Array<A>): Stream<A> = invoke(List(*array))
+
+        operator fun <A> invoke(list: List<A>): Stream<A> {
+            return when (list) {
+                List.Nil -> invoke()
+                is List.Cons -> cons(Lazy { list.head }, Lazy { invoke(list.tail)})
+            }
+        }
+
         tailrec fun <A> dropWhile(stream: Stream<A>,
                               p: (A) -> Boolean): Stream<A> = when (stream) {
                 Empty -> stream
@@ -151,6 +160,14 @@ sealed class Stream<out A> {
         fun <A> iterate(seed: Lazy<A>, f: (A) -> A): Stream<A> = cons(seed, Lazy { iterate(f(seed()), f) })
 
         fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
+
+        fun <A> fill(n: Int, elem: Lazy<A>): Stream<A> {
+            tailrec fun <A> fill(acc: Stream<A>, n: Int, elem: Lazy<A>): Stream<A> = when {
+                n <= 0 -> acc
+                else -> fill(Cons(elem, Lazy { acc }), n - 1, elem)
+            }
+            return fill(Empty, n, elem)
+        }
 
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
             when (stream) {
