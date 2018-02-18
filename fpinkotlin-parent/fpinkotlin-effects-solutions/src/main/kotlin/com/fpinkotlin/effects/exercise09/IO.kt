@@ -98,7 +98,6 @@ class IO<out A>(private val f: () -> A) {
 }
 
 fun main(args: Array<String>) {
-    val program = forever<String, String>(IO { "Hi again!" })
-            .flatMap { Console.println(it) }
+    val program = forever<String, String>(IO { "Hi again!" }).flatMap { Console.println(it) }
     program()
 }
