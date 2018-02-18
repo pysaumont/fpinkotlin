@@ -101,7 +101,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun pathLengths(currentDepth: Int, depths: List<Int>): List<Int> = List()
 
-        override fun get(element: A): Result<A> = TODO("get")
+        override fun get(element: A): Result<A> = Result()
 
         override fun getT(element: A): Result<T<A>> = Result()
 

@@ -1,7 +1,9 @@
 package com.fpinkotlin.advancedtrees.exercise10
 
-import com.fpinkotlin.advancedtrees.common.*
 import com.fpinkotlin.advancedtrees.common.List
+import com.fpinkotlin.advancedtrees.common.Option
+import com.fpinkotlin.advancedtrees.common.Result
+import com.fpinkotlin.advancedtrees.common.orElse
 
 sealed class Heap<out A> {
 
@@ -23,7 +25,7 @@ sealed class Heap<out A> {
 
     abstract fun get(index: Int): Result<A>
 
-    operator fun plus(element: @UnsafeVariance A): Heap<A> = merge(this, Heap(element, comparator))
+    operator fun plus(element: @UnsafeVariance A): Heap<A> = TODO("plus")
 
     abstract fun pop(): Option<Pair<A, Heap<A>>>
 
@@ -94,20 +96,17 @@ sealed class Heap<out A> {
 
     companion object {
 
-        operator fun <A: Comparable<A>> invoke(): Heap<A> = Empty()
+        operator fun <A> invoke(): Heap<A> = TODO("invoke (change type as necessary)")
 
-        operator fun <A> invoke(comparator: Comparator<A>): Heap<A> = Empty(Result(comparator))
+        operator fun <A> invoke(comparator: Comparator<A>): Heap<A> = TODO("invoke")
 
-        operator fun <A> invoke(comparator: Result<Comparator<A>>): Heap<A> = Empty(comparator)
+        operator fun <A> invoke(comparator: Result<Comparator<A>>): Heap<A> = TODO("invoke")
 
-        operator fun <A> invoke(element: A, comparator: Result<Comparator<A>>): Heap<A> =
-            H(1, Empty(comparator), element, Empty(comparator), comparator)
+        operator fun <A> invoke(element: A, comparator: Result<Comparator<A>>): Heap<A> =TODO("invoke")
 
-        operator fun <A: Comparable<A>> invoke(element: A): Heap<A> =
-            invoke(element, Comparator { o1: A, o2: A ->  o1.compareTo(o2) })
+        operator fun <A: Comparable<A>> invoke(element: A): Heap<A> = TODO("invoke")
 
-        operator fun <A> invoke(element: A, comparator: Comparator<A>): Heap<A> =
-            H(1, Empty(Result(comparator)), element, Empty(Result(comparator)), Result(comparator))
+        operator fun <A> invoke(element: A, comparator: Comparator<A>): Heap<A> = TODO("invoke")
 
         protected fun <A> merge(head: A, first: Heap<A>, second: Heap<A>): Heap<A> =
             first.comparator.orElse { second.comparator }.let {
@@ -119,30 +118,7 @@ sealed class Heap<out A> {
 
         fun <A> merge(first: Heap<A>, second: Heap<A>,
                       comparator: Result<Comparator<A>> =
-                      first.comparator.orElse { second.comparator }): Heap<A> =
-            first.head.flatMap { fh ->
-                second.head.flatMap { sh ->
-                    when {
-                        compare(fh, sh, comparator) <= 0 -> first.left.flatMap { fl ->
-                            first.right.map { fr ->
-                                merge(fh, fl, merge(fr, second, comparator))
-                            }
-                        }
-                        else -> second.left.flatMap { sl ->
-                            second.right.map { sr ->
-                                merge(sh, sl, merge(first, sr, comparator))
-                            }
-                        }
-                    }
-                }
-            }.getOrElse(when (first) {
-                            is Empty -> second
-                            else -> first
-                        })
+                      first.comparator.orElse { second.comparator }): Heap<A> = TODO("merge")
 
-        private fun <A> compare(first: A, second: A, comparator: Result<Comparator<A>>): Int =
-            comparator.map { comp ->
-                comp.compare(first, second)
-            }.getOrElse { (first as Comparable<A>).compareTo(second) }
     }
 }

@@ -1,6 +1,9 @@
-package com.fpinkotlin.advancedtrees.exercise02
+package com.fpinkotlin.advancedtrees.exercise04
 
-import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.*
+import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.B
+import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.BB
+import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.NB
+import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.R
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.List.Companion.concat
 import com.fpinkotlin.common.List.Companion.cons
@@ -48,6 +51,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
     abstract fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B
     abstract fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B
     abstract fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B
+    abstract fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B
     abstract fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B
     abstract fun <B> foldPostOrder(identity: B, f: (B) -> (B) -> (A) -> B): B
 
@@ -101,7 +105,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun pathLengths(currentDepth: Int, depths: List<Int>): List<Int> = List()
 
-        override fun get(element: A): Result<A> = TODO("get")
+        override fun get(element: A): Result<A> = Result()
 
         override fun getT(element: A): Result<T<A>> = Result()
 
@@ -110,6 +114,8 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B = identity
 
         override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B = identity
+
+        override fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B = identity
 
         override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B = identity
 
@@ -176,53 +182,53 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         private fun balance(color: Color, left: Tree<A>, value: A, right: Tree<A>): Tree<A> = when {
 
-            // balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
+        // balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
             color == B && left.isTR && left.left.isTR ->
                 T(R, left.left.blacken(), left.value, T(B, left.right, value,right))
 
-            // balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
+        // balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
             color == B && left.isTR && left.right.isTR ->
                 T(R, T(B, left.left, left.value, left.right.left), left.right.value,
                   T(B, left.right.right, value, right))
 
-            // balance B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
+        // balance B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
             color == B && right.isTR && right.left.isTR ->
                 T(R, T(B, left, value, right.left.left), right.left.value,
                   T(B, right.left.right, right.value, right.right))
 
-            // balance B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
+        // balance B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
             color == B && right.isTR && right.right.isTR ->
                 T(R, T(B, left, value, right.left), right.value, right.right.blacken())
 
-            // balance BB (T R (T R a x b) y c) z d = T B (T B a x b) y (T B c z d)
+        // balance BB (T R (T R a x b) y c) z d = T B (T B a x b) y (T B c z d)
             color == BB && left.isTR && left.left.isTR ->
                 T(B, left.left.blacken(), left.value, T(B, left.right, value, right))
 
-            // balance BB (T R a x (T R b y c)) z d = T B (T B a x b) y (T B c z d)
+        // balance BB (T R a x (T R b y c)) z d = T B (T B a x b) y (T B c z d)
             color == BB && left.isTR && left.right.isTR ->
                 T(B, T(B, left.left, left.value, left.right.left), left.right.value,
                   T(B, left.right.right, value, right))
 
-            // balance BB a x (T R (T R b y c) z d) = T B (T B a x b) y (T B c z d)
+        // balance BB a x (T R (T R b y c) z d) = T B (T B a x b) y (T B c z d)
             color == BB && right.isTR && right.left.isTR ->
                 T(B, T(B, left, value, right.left.left), right.left.value,
                   T(B, right.left.right, right.value, right.right))
 
-            // balance BB a x (T R b y (T R c z d)) = T B (T B a x b) y (T B c z d)
+        // balance BB a x (T R b y (T R c z d)) = T B (T B a x b) y (T B c z d)
             color == BB && right.isTR && right.right.isTR ->
                 T(B, T(B, left, value, right.left), right.value, right.right.blacken())
 
-            // balance BB a x (T NB (T B b y c) z d@(T B _ _ _)) = T B (T B a x b) y (balance B c z (redden d))
+        // balance BB a x (T NB (T B b y c) z d@(T B _ _ _)) = T B (T B a x b) y (balance B c z (redden d))
             color == BB && right.isTNB && right.left.isTB && right.right.isTB ->
                 T(B, T(B, left, value, right.left.left), right.left.value,
                   balance(B, right.left.right, right.value, right.right.redden()))
 
-            // balance BB (T NB a@(T B _ _ _) x (T B b y c)) z d = T B (balance B (redden a) x b) y (T B c z d)
+        // balance BB (T NB a@(T B _ _ _) x (T B b y c)) z d = T B (balance B (redden a) x b) y (T B c z d)
             color == BB && left.isTNB && left.left.isTB && left.right.isTB ->
                 T(B, balance(B, left.left.redden(), left.value, left.right.left), left.right.value,
                   T(B, left.right.right, value, right))
 
-            // balance color a x b = T color a x b
+        // balance color a x b = T color a x b
             else -> T(color, left, value, right)
         }
 
@@ -295,6 +301,9 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun <B> foldInOrder(identity: B, f: (B) -> (A) -> (B) -> B): B =
             f(left.foldInOrder(identity, f))(value)(right.foldInOrder(identity, f))
+
+        override fun <B> foldInReverseOrder(identity: B, f: (B) -> (A) -> (B) -> B): B =
+            f(right.foldInReverseOrder(identity, f))(value)(left.foldInReverseOrder(identity, f))
 
         override fun <B> foldPreOrder(identity: B, f: (A) -> (B) -> (B) -> B): B =
             f(value)(left.foldPreOrder(identity, f))(right.foldPreOrder(identity, f))
@@ -387,11 +396,11 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
 
         private fun makeCell(string: String): String = when (string.length) {
-            1    -> " $string  "
-            2    -> " $string "
-            3    -> string + " "
-            else -> string
-        }
+                1    -> " $string  "
+                2    -> " $string "
+                3    -> string + " "
+                else -> string
+            }
 
         private fun <A: Comparable<A>> makeTable(table: Array<Array<String>>,
                                                  tree: Tree<A>,
@@ -410,3 +419,4 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             }
     }
 }
+
