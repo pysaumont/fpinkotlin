@@ -1,5 +1,7 @@
 package com.fpinkotlin.common
 
+import java.math.BigInteger
+
 
 sealed class Stream<out A> {
 
@@ -184,6 +186,16 @@ sealed class Stream<out A> {
                       }).getOrElse(Stream.Empty)
 
         fun from(n: Int): Stream<Int> = unfold(n) { x -> Result(Pair(x, x + 1)) }
+
+        fun range(start: Int, end: Int): Stream<Int> = when {
+            start > end -> Stream.invoke()
+            else        -> cons(Lazy { start }, Lazy { range(start + 1, end) })
+        }
+
+        fun range(start: BigInteger, end: BigInteger): Stream<BigInteger> = when {
+            start > end -> Stream.invoke()
+            else        -> cons(Lazy { start }, Lazy { range(start + BigInteger.ONE, end) })
+        }
     }
 }
 

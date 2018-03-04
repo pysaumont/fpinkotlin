@@ -88,19 +88,12 @@ class IO<out A>(private val f: () -> A) {
             return sequence(Stream(array))
         }
 
-        fun <A, B> forever(ioa: IO<A>): IO<B> {
-            val t: () -> IO<B> = { forever(ioa) }
-            return ioa.flatMap { t() }
-        }
+        fun <A, B> forever(ioa: IO<A>): IO<B> = TODO("forever")
 
     }
 }
 
 fun main(args: Array<String>) {
-//    val program = forever<String, String>(IO { "Hi again!" })
-//        .flatMap { Console.println(it) }
-//    program()
-
     IO.forever<Unit, String>(Console.println("Hi again!"))()
 }
 
