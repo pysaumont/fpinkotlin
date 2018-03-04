@@ -180,3 +180,17 @@ project(':fpinkotlin-advancedtrees-solutions') {
     }
 }
 
+project(':fpinkotlin-effects-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-effects-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
