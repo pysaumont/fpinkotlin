@@ -2,7 +2,7 @@ group 'com.fpinkotlin'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.30'
     ext.kotlintest_version = '2.0.5'
 
     repositories {
@@ -188,6 +188,21 @@ project(':fpinkotlin-effects-exercises') {
 }
 
 project(':fpinkotlin-effects-solutions') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+
+project(':fpinkotlin-actors-exercises') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+    }
+}
+
+project(':fpinkotlin-actors-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')

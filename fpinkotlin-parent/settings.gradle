@@ -23,7 +23,9 @@ include 'fpinkotlin-common',
         'fpinkotlin-advancedtrees-solutions',
         'fpinkotlin-advancedtrees-exercises',
         'fpinkotlin-effects-solutions',
-        'fpinkotlin-effects-exercises'
+        'fpinkotlin-effects-exercises',
+        'fpinkotlin-actors-solutions',
+        'fpinkotlin-actors-exercises'
 
 
 
