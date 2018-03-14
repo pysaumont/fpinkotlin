@@ -28,7 +28,7 @@ IntelliJ offers the best support for Kotlin development, plus full Gradle integr
 
 To import the project into IntelliJ:
  
- - open the _File_ menu and select _Project from exisiting sources_. 
+ - open the _File_ menu and select _New_ > _Project from exisiting sources_. 
  
  - In the file chooser dialog box, select the _fpinkotlin-parent_ directory and click _OK_
  
