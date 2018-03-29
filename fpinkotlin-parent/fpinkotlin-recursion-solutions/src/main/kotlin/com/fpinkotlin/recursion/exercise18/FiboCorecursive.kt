@@ -51,3 +51,19 @@ fun fiboCorecursive(number: Int): String {
     val list = map(listOfPairs) { p -> p.first }
     return makeString(list, ", ")
 }
+
+fun main(args: Array<String>) {
+    val cache = mutableMapOf<Int, Int>()
+    fun double(x: Int) =
+        if (cache.containsKey(x)) { // <2>
+            println("from cache")
+            cache[x] // <3>
+        } else {
+            println("not in cache")
+            val result = x * 2 // <4>
+            cache.put(x, result) // <5>
+            result // <6>
+        }
+    println(double(10))
+    println(double(10))
+}

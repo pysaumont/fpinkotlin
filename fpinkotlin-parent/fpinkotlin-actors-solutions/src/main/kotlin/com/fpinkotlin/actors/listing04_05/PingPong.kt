@@ -1,7 +1,7 @@
 package com.fpinkotlin.actors.listing04_05
 
-import com.fpinkotlin.actors.listing01_02_03.AbstractActor
-import com.fpinkotlin.actors.listing01_02_03.Actor
+import com.fpinkotlin.actors.listing01_03.AbstractActor
+import com.fpinkotlin.actors.listing01_03.Actor
 import com.fpinkotlin.common.Result
 import java.util.concurrent.Semaphore
 

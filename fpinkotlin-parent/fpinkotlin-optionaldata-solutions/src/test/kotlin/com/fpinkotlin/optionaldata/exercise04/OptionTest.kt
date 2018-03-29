@@ -19,5 +19,17 @@ class OptionTest: StringSpec() {
                 (Option<Int>(null).flatMap { Option(it * x) }).isEmpty()
             }, 1)
         }
+
+        "map" {
+
+            forAll(Gen.int(), { x ->
+                val expected = Option(x / 4)
+                val result =  Option(x).map { it / 2 }.map { it / 2 }
+                println(result)
+                println(expected)
+                result == expected
+            })
+
+        }
     }
 }

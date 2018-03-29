@@ -1,4 +1,4 @@
-package com.fpinkotlin.actors.listing01_02_03
+package com.fpinkotlin.actors.listing06_10
 
 import com.fpinkotlin.common.Result
 import java.util.concurrent.ExecutorService

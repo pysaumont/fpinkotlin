@@ -97,7 +97,6 @@ fun main(args: Array<String>) {
     IO.forever<Unit, String>(Console.println("Hi again!"))()
 }
 
-
 fun <A, B> forever(ioa: IO<A>): IO<B> {
     return ioa.flatMap { { ioa.flatMap { { forever<A, B>(ioa) }() } }() }
 }

@@ -24,8 +24,10 @@ fun <T, U> foldLeft(list: List<T>, z: U, f: (U, T) -> U): U {
 }
 
 fun fibo(number: Int): String {
-    tailrec fun fibo_(acc: List<BigInteger>, acc1: BigInteger,
-                      acc2: BigInteger, x: BigInteger): List<BigInteger> =
+    tailrec fun fibo_(acc: List<BigInteger>,
+                      acc1: BigInteger,
+                      acc2: BigInteger,
+                      x: BigInteger): List<BigInteger> =
         when (x) {
             BigInteger.ZERO -> acc
             BigInteger.ONE -> acc + (acc1 + acc2)

@@ -16,10 +16,15 @@ sealed class List<out A> {
 
     abstract fun headSafe(): Result<A>
 
+    abstract fun tailSafe(): Result<List<A>>
+
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): Pair<B, List<A>>
 
     operator fun plus(a: @UnsafeVariance A): List<A> = cons(a)
+
+    fun zipWithPosition(): List<Pair<A, Int>> =
+        zipWith(this, range(0, this.length)) { a -> { i: Int -> Pair(a, i) } }
 
     fun <B> parMap(es: ExecutorService, g: (A) -> B): Result<List<B>> =
             try {
@@ -223,7 +228,7 @@ sealed class List<out A> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
 
-    fun length(): Int = foldLeft(0) { { _ -> it + 1} }
+    fun length(): Int = length
 
     fun <B> foldRightViaFoldLeft(identity: B, f: (A) -> (B) -> B): B =
             this.reverse().foldLeft(identity) { x -> { y -> f(y)(x) } }
@@ -237,6 +242,8 @@ sealed class List<out A> {
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
     internal object Nil: List<Nothing>() {
+
+        override fun tailSafe(): Result<List<Nothing>> = Result.Empty
 
         override fun forEach(ef: (Nothing) -> Unit) {}
 
@@ -256,6 +263,8 @@ sealed class List<out A> {
 
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
+
+        override fun tailSafe(): Result<List<A>> = Result(tail)
 
         override fun forEach(ef: (A) -> Unit) {
             tailrec fun forEach(list: List<A>) {

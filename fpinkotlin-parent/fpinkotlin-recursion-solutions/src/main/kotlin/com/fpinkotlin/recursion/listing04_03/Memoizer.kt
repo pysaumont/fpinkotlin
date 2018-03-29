@@ -40,5 +40,5 @@ fun main(args: Array<String>) {
     val time3 = System.currentTimeMillis() - startTime3
     println("Call to non memoized function: result = $result1, time = $time1")
     println("First call memoized function: result = $result2, time = $time2")
-    println("Second call to non memoized function: result = $result3, time = $time3")
+    println("Second call to nonmemoized function: result = $result3, time = $time3")
 }
