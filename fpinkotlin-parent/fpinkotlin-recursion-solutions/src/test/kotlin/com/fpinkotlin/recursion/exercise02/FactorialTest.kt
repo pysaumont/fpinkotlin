@@ -11,7 +11,7 @@ class FactorialTest: StringSpec() {
 
         "factorial" {
             forAll(IntGenerator(1, 30), { n ->
-                factorial(n + 1) == factorial(n) * n + 1
+                factorial(n + 1) == factorial(n) * (n + 1)
             })
         }
     }
