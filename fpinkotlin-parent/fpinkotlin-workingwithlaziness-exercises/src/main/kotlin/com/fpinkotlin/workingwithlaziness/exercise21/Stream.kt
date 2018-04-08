@@ -19,15 +19,7 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-        foldRight(Lazy { Empty }, { a ->
-            { b: Lazy<Stream<A>> ->
-                if (p(a))
-                    cons(Lazy { a }, b)
-                else
-                    Empty
-            }
-        })
+    fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> = TODO("takeWhileViaFoldRight")
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 

@@ -41,18 +41,17 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 
@@ -198,4 +197,4 @@ fun <A, B, C, D> lift3(f: (A) -> (B) -> (C) -> D): (Result<A>) -> (Result<B>) ->
 
 fun <A, B, C> map2(a: Result<A>,
                    b: Result<B>,
-                   f: (A) -> (B) -> C): Result<C> = TODO("Implement this function")
+                   f: (A) -> (B) -> C): Result<C> = TODO("map2")

@@ -23,7 +23,7 @@ sealed class Result<out A>: Serializable {
             failure(message)
     }
 
-    fun exists(p: (A) -> Boolean): Boolean = TODO("Implement this function")
+    fun exists(p: (A) -> Boolean): Boolean = TODO("exists")
 
     fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
         is Success -> this.value
@@ -35,18 +35,17 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 

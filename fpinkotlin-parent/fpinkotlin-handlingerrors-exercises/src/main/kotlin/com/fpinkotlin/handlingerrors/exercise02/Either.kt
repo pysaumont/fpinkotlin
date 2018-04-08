@@ -8,7 +8,7 @@ sealed class Either<E, out A> {
 
     internal class Left<E, out A>(private val value: E): Either<E, A>() {
 
-        override fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B> = TODO("Implement this function")
+        override fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B> = TODO("flatMap")
 
         override fun <B> map(f: (A) -> B): Either<E, B> = Left(value)
 
@@ -17,7 +17,7 @@ sealed class Either<E, out A> {
 
     internal class Right<E, out A>(private val value: A) : Either<E, A>() {
 
-        override fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B> = TODO("Implement this function")
+        override fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B> = TODO("flatMap")
 
         override fun <B> map(f: (A) -> B): Either<E, B> = Right(f(value))
 

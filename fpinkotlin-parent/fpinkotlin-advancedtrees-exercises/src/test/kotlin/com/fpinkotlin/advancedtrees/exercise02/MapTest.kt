@@ -1,8 +1,5 @@
 package com.fpinkotlin.advancedtrees.exercise02
 
-import com.fpinkotlin.common.List
-import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec
@@ -26,14 +23,15 @@ class MapTest: StringSpec() {
                 val time2 = System.currentTimeMillis()
                 val duration2 = System.currentTimeMillis() - time2
                 val map2 = set.fold(map) { m, i -> m - i }
-                val result: List<Result<Boolean>> = list.map { i ->
-                    map[i].flatMap { x -> x.value }
-                        .map { y ->
-                            y == NumbersToEnglish.convertUS(i) } }
-                (duration < maxTime) &&
-                    result.forAll { it.map { true }.getOrElse(false) } &&
-                    duration2 < maxTime &&
-                    map2.isEmpty()
+//                val result: List<Result<Boolean>> = list.map { i ->
+//                    map[i].flatMap { x -> x.value }
+//                        .map { y ->
+//                            y == NumbersToEnglish.convertUS(i) } }
+//                (duration < maxTime) &&
+//                    result.forAll { it.map { true }.getOrElse(false) } &&
+//                    duration2 < maxTime &&
+//                    map2.isEmpty()
+                TODO("Uncomment previous code after implementing MapEntry")
             }, 1)
         }
     }

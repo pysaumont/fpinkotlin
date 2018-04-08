@@ -39,18 +39,17 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 

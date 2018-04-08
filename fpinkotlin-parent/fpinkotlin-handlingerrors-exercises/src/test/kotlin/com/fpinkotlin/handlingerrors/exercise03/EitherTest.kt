@@ -1,4 +1,4 @@
-package com.fpinkotlin.handlingerrors.exercise3
+package com.fpinkotlin.handlingerrors.exercise03
 
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.properties.Gen

@@ -14,7 +14,7 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun toList(): List<A> = toList(this)
+    fun toList(): List<A> = TODO("toList")
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
@@ -59,14 +59,6 @@ sealed class Stream<out A> {
                 is Cons -> dropAtMost(n - 1, stream.tl())
             }
             else -> stream
-        }
-
-        fun <A> toList(stream: Stream<A>) : List<A> {
-            tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
-                Empty -> list
-                is Cons -> toList(list.cons(stream.hd()), stream.tl())
-            }
-            return toList(List(), stream).reverse()
         }
     }
 }

@@ -5,6 +5,8 @@ buildscript {
     ext.kotlin_version = '1.2.31'
     ext.kotlintest_version = '2.0.5'
 
+//    kotlin { experimental { coroutines 'enable' } }
+
     repositories {
         //maven { url "http://pkgarti2:7000/artifactory/all" }
         mavenCentral()

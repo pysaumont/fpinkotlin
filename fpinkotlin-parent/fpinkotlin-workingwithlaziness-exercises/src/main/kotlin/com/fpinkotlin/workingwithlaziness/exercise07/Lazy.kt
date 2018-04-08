@@ -9,7 +9,7 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     fun <B> map(f: (A) -> B): Lazy<B> = Lazy { f(value) }
 
-    fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = Lazy { f(value)() }
+    fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = TODO("flatMap")
 
     companion object {
 

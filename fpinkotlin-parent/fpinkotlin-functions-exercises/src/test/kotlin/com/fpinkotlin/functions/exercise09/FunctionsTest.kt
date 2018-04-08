@@ -3,6 +3,7 @@ package com.fpinkotlin.functions.exercise09
 
 import com.fpinkotlin.generators.IntDoublePairGenerator
 import com.fpinkotlin.generators.forAll
+//import io.kotlintest.properties.Gen
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
@@ -11,7 +12,7 @@ class FunctionsTest: StringSpec() {
 
         "curried" {
             forAll(IntDoublePairGenerator(), { (a, b) ->
-                TODO("Implement function currying, then remove this line an uncomment the following lines")
+                TODO("Implement function currying, then remove this line an uncomment the following lines as well as the Gen import")
                 // val c = Gen.string().generate()
                 // val d = Gen.bool().generate()
                 // curried<Int, Double, String, Boolean>()(a)(b)(c)(d) == "$a, $b, $c, $d"

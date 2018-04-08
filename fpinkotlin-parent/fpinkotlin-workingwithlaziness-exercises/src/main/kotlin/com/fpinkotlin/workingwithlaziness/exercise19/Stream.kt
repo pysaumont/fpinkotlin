@@ -16,7 +16,7 @@ sealed class Stream<out A> {
 
     abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
 
-    fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
+    fun exists(p: (A) -> Boolean): Boolean = TODO("exists")
 
     fun dropWhile(p: (A) -> Boolean): Stream<A> = dropWhile(this, p)
 
@@ -94,14 +94,5 @@ sealed class Stream<out A> {
         fun <A> iterate(seed: Lazy<A>, f: (A) -> A): Stream<A> = cons(seed, Lazy { iterate(f(seed()), f) })
 
         fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
-
-        tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
-            when (stream) {
-                Empty -> false
-                is Cons  -> when {
-                    p(stream.hd()) -> true
-                    else           -> exists(stream.tl(), p)
-                }
-            }
     }
 }

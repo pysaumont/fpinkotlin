@@ -6,14 +6,14 @@ sealed class Either<out E, out A> {
 
     internal class Left<out E, out A>(private val value: E): Either<E, A>() {
 
-        override fun <B> map(f: (A) -> B): Either<E, B> = TODO("Implement this function")
+        override fun <B> map(f: (A) -> B): Either<E, B> = TODO("map")
 
         override fun toString(): String = "Left($value)"
     }
 
     internal class Right<out E, out A>(private val value: A) : Either<E, A>() {
 
-        override fun <B> map(f: (A) -> B): Either<E, B> = TODO("Implement this function")
+        override fun <B> map(f: (A) -> B): Either<E, B> = TODO("map")
 
         override fun toString(): String = "Right($value)"
     }

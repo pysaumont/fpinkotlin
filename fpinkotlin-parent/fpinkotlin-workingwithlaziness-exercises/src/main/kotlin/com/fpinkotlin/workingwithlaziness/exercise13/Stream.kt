@@ -13,7 +13,7 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
+    fun dropAtMost(n: Int): Stream<A> = TODO("dropAtMost")
 
     private object Empty: Stream<Nothing>() {
 
@@ -49,13 +49,5 @@ sealed class Stream<out A> {
         operator fun <A> invoke(): Stream<A> = Empty
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
-
-        tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
-            n > 0 -> when (stream) {
-                Empty -> stream
-                is Cons -> dropAtMost(n - 1, stream.tl())
-            }
-            else -> stream
-        }
     }
 }

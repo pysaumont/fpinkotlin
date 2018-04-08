@@ -43,26 +43,23 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 
         override fun forEachOrElse(onSuccess: (Nothing) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) {
-            onEmpty()
-        }
+                                   onEmpty: () -> Unit) = onEmpty()
 
         override fun forEach(effect: (Nothing) -> Unit) {}
 
@@ -79,20 +76,15 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) {
-            onFailure(exception)
-        }
+                                   onEmpty: () -> Unit) = onFailure(exception)
 
         override fun forEach(effect: (A) -> Unit) {}
 
-        override fun <B> map(f: (A) -> B): Result<B> = Failure(
-            exception)
+        override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(
-            exception)
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(exception)
 
-        override fun mapFailure(message: String): Result<A> = Failure(
-            RuntimeException(message, exception))
+        override fun mapFailure(message: String): Result<A> = Failure(RuntimeException(message, exception))
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -101,13 +93,9 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) {
-            onSuccess(value)
-        }
+                                   onEmpty: () -> Unit) = onSuccess(value)
 
-        override fun forEach(effect: (A) -> Unit) {
-            effect(value)
-        }
+        override fun forEach(effect: (A) -> Unit) = effect(value)
 
         override fun <B> map(f: (A) -> B): Result<B> = try {
             Success(f(value))

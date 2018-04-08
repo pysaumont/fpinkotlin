@@ -69,6 +69,6 @@ sealed class Stream<out A> {
             return toList(List(), stream).reverse()
         }
 
-        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = cons(Lazy { seed }, Lazy { iterate(f(seed), f) })
+        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = TODO("iterate")
     }
 }

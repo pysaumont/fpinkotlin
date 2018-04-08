@@ -9,26 +9,26 @@ sealed class Result<out A>: Serializable {
 
     abstract fun <B> flatMap(f: (A) ->  Result<B>): Result<B>
 
-    fun getOrElse(defaultValue: @UnsafeVariance A): A = TODO("Implement this function")
+    fun getOrElse(defaultValue: @UnsafeVariance A): A = TODO("getOrElse")
 
-    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = TODO("Implement this function")
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = TODO("getOrElse")
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = TODO("Implement this function")
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = TODO("orElse")
 
     internal class Failure<out A>(private val exception: RuntimeException): Result<A>() {
 
-        override fun <B> map(f: (A) -> B): Result<B> = TODO("Implement this function")
+        override fun <B> map(f: (A) -> B): Result<B> = TODO("map")
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = TODO("Implement this function")
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = TODO("flatMap")
 
         override fun toString(): String = "Failure(${exception.message})"
     }
 
     internal class Success<out A>(internal val value: A) : Result<A>() {
 
-        override fun <B> map(f: (A) -> B): Result<B> = TODO("Implement this function")
+        override fun <B> map(f: (A) -> B): Result<B> = TODO("map")
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = TODO("Implement this function")
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = TODO("flatMap")
 
         override fun toString(): String = "Success($value)"
     }

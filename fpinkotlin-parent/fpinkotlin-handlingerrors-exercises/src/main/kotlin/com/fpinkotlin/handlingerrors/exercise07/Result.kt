@@ -37,18 +37,17 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 
@@ -56,7 +55,7 @@ sealed class Result<out A>: Serializable {
 
         override fun <B> flatMap(f: (Nothing) -> Result<B>): Result<B> = Empty
 
-        override fun mapFailure(message: String): Result<Nothing> = TODO("Implement this function")
+        override fun mapFailure(message: String): Result<Nothing> = TODO("mapFailure")
 
         override fun toString(): String = "Empty"
     }
@@ -67,7 +66,7 @@ sealed class Result<out A>: Serializable {
 
         override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(exception)
 
-        override fun mapFailure(message: String): Result<A> = TODO("Implement this function")
+        override fun mapFailure(message: String): Result<A> = TODO("mapFailure")
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -90,7 +89,7 @@ sealed class Result<out A>: Serializable {
             Failure(RuntimeException(e))
         }
 
-        override fun mapFailure(message: String): Result<A> = TODO("Implement this function")
+        override fun mapFailure(message: String): Result<A> = TODO("mapFailure")
 
         override fun toString(): String = "Success($value)"
     }

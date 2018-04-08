@@ -43,24 +43,23 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 
         override fun forEachOrElse(onSuccess: (Nothing) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("Implement this function")
+                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
 
         override fun forEach(effect: (Nothing) -> Unit) {}
 
@@ -77,7 +76,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("Implement this function")
+                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
 
         override fun forEach(effect: (A) -> Unit) {}
 
@@ -97,7 +96,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("Implement this function")
+                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
 
         override fun forEach(effect: (A) -> Unit) {
             effect(value)

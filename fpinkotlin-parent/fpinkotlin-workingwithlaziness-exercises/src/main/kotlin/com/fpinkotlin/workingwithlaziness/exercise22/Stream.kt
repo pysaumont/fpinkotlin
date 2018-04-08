@@ -19,8 +19,7 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun headSafeViaFoldRight(): Result<A> =
-          foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
+    fun headSafeViaFoldRight(): Result<A> = TODO("headSafeViaFoldRight")
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
         foldRight(Lazy { Empty }, { a ->

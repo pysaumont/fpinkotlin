@@ -64,9 +64,9 @@ fun <A> Result<A>.getOrElse(defaultValue: () -> A): A = when (this) {
     is Result.Failure -> defaultValue()
 }
 
-fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this }.let {
-    when (it) {
-        is Result.Success -> it.value
+fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> =
+    when (this) {
+        is Result.Success -> this
         is Result.Failure -> try {
             defaultValue()
         } catch (e: RuntimeException) {
@@ -75,4 +75,4 @@ fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this 
             Result.failure<A>(RuntimeException(e))
         }
     }
-}
+

@@ -1,7 +1,7 @@
 package com.fpinkotlin.lists.exercise06
 
 
-sealed class List<out A> {
+sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
@@ -39,7 +39,7 @@ sealed class List<out A> {
         override fun toString(): String = "[NIL]"
     }
 
-    internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
+    internal class Cons<A>(internal val head: A, internal val tail: List<A>): List<A>() {
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 
@@ -77,8 +77,9 @@ sealed class List<out A> {
             is Cons -> reverse(Cons(list.head, acc), list.tail)
         }
 
-        operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+        operator fun <A> invoke(vararg az: A): List<A> = TODO("invoke")
+        // Uncomment this implementation after adding variance handling to the class
+                // az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
     }
 }
 

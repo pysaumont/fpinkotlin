@@ -37,18 +37,17 @@ sealed class Result<out A>: Serializable {
         else -> defaultValue()
     }
 
-    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> = map { this }.let {
-        when (it) {
-            is Success -> it.value
-            else -> try {
-                defaultValue()
-            } catch (e: RuntimeException) {
-                Result.failure<A>(e)
-            } catch (e: Exception) {
-                Result.failure<A>(RuntimeException(e))
+    fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
+            when (this) {
+                is Success -> this
+                else -> try {
+                    defaultValue()
+                } catch (e: RuntimeException) {
+                    Result.failure<A>(e)
+                } catch (e: Exception) {
+                    Result.failure<A>(RuntimeException(e))
+                }
             }
-        }
-    }
 
     internal object Empty: Result<Nothing>() {
 
@@ -110,10 +109,10 @@ sealed class Result<out A>: Serializable {
 
         fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
 
-        operator fun <A> invoke(a: A? = null, message: String): Result<A> = TODO("Implement this function")
+        operator fun <A> invoke(a: A? = null, message: String): Result<A> = TODO("invoke")
 
-        operator fun <A> invoke(a: A? = null, p: (A) -> Boolean): Result<A> = TODO("Implement this function")
+        operator fun <A> invoke(a: A? = null, p: (A) -> Boolean): Result<A> = TODO("invoke")
 
-        operator fun <A> invoke(a: A? = null, message: String, p: (A) -> Boolean): Result<A> = TODO("Implement this function")
+        operator fun <A> invoke(a: A? = null, message: String, p: (A) -> Boolean): Result<A> = TODO("invoke")
     }
 }

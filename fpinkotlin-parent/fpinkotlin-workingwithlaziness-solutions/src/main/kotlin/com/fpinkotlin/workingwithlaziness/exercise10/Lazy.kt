@@ -3,6 +3,7 @@ package com.fpinkotlin.workingwithlaziness.exercise10
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
 import com.fpinkotlin.common.sequence
+import java.util.*
 
 class Lazy<out A>(function: () -> A): () -> A {
 
@@ -14,17 +15,17 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = Lazy { f(value)() }
 
-    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: () -> Unit = {}) =
-            if (condition)
-                ifTrue(value)
-            else
-                ifFalse()
-
-    fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit) =
-            if (condition)
-                ifTrue()
-            else
-                ifFalse(value)
+//    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: () -> Unit = {}) =
+//            if (condition)
+//                ifTrue(value)
+//            else
+//                ifFalse()
+//
+//    fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit) =
+//            if (condition)
+//                ifTrue()
+//            else
+//                ifFalse(value)
 
     fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: (A) -> Unit) =
             if (condition)
@@ -49,3 +50,17 @@ fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = Lazy { lst.map { it() } }
 
 fun <A> sequenceResult(lst: List<Lazy<A>>): Lazy<Result<List<A>>> =
         Lazy { sequence(lst.map { Result.of(it) }) }
+
+
+fun main(args: Array<String>) {
+    val value = Lazy{ getValue() }
+    val rnd = Random()
+    val ifTrue: (Any) -> Unit = { println(it) }
+    val ifFalse = { s: String ->  println("No value") }
+    value.forEach(rnd.nextBoolean(), ifTrue, ifFalse)
+}
+
+fun getValue(): String {
+    println("in getValue")
+    return "Value"
+}

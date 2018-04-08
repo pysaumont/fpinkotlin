@@ -1,4 +1,4 @@
-package com.fpinkotlin.handlingerrors.exercise3
+package com.fpinkotlin.handlingerrors.exercise03
 
 sealed class Either<E, out A> {
 
@@ -6,9 +6,9 @@ sealed class Either<E, out A> {
 
     abstract fun <B> flatMap(f: (A) -> Either<E, B>): Either<E, B>
 
-    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = TODO("Implement this function")
+    fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = TODO("getOrElse")
 
-    fun orElse(defaultValue: () -> Either<E, @UnsafeVariance A>): Either<E, A> = TODO("Implement this function")
+    fun orElse(defaultValue: () -> Either<E, @UnsafeVariance A>): Either<E, A> = TODO("orElse")
 
     internal class Left<E, out A>(private val value: E): Either<E, A>() {
 

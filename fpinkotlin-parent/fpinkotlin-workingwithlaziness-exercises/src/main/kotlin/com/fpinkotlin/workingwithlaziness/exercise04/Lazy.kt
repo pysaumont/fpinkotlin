@@ -12,13 +12,7 @@ class Lazy<out A>(function: () -> A): () -> A {
         operator fun <A> invoke(function: () -> A): Lazy<A> = Lazy(function)
 
         val lift2: ((String) -> (String) -> String) -> (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
-                { f ->
-                    { ls1 ->
-                        { ls2 ->
-                            Lazy { f(ls1())(ls2()) }
-                        }
-                    }
-                }
+                TODO("lift2")
     }
 }
 

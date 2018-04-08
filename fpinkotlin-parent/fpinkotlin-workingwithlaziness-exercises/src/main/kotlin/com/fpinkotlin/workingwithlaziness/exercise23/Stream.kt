@@ -19,12 +19,7 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun <B> map(f: (A) -> B): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
-            { b: Lazy<Stream<B>> ->
-                cons(Lazy { f(a) }, b)
-            }
-        })
+    fun <B> map(f: (A) -> B): Stream<B> = TODO("map")
 
     fun headSafeViaFoldRight(): Result<A> =
           foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
