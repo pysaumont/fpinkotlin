@@ -3,7 +3,6 @@ package com.fpinkotlin.actors.listing12
 import com.fpinkotlin.common.Heap
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.common.sequence
 
 class Manager(id: String, list: List<Int>,

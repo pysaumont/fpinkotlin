@@ -11,7 +11,7 @@ private class Player(id: String,
              private val referee: Actor<Int>) : AbstractActor<Int>(id) { // <2>
 
     override fun onReceive(message: Int, sender: Result<Actor<Int>>) {
-        println(sound + " - " + message) // <3>
+        println("$sound - $message") // <3>
         if (message >= 10) {
             referee.tell(message, sender) // <4>
         } else {
@@ -19,6 +19,23 @@ private class Player(id: String,
                 { actor: Actor<Int> -> actor.tell(message + 1, self())}, // <5>
                 { referee.tell(message, sender) } // <6>
             )
+        }
+    }
+}
+
+fun player(id: String,
+           sound: String, // <1>
+           referee: Actor<Int>) = object : AbstractActor<Int>("id") {
+
+    override fun onReceive(message: Int, sender: Result<Actor<Int>>) {
+        println("$sound - $message") // <3>
+        if (message >= 10) {
+            referee.tell(message, sender) // <4>
+        } else {
+            sender.forEach(
+                { actor: Actor<Int> -> actor.tell(message + 1, self())}, // <5>
+                { referee.tell(message, sender) } // <6>
+                          )
         }
     }
 }
@@ -34,8 +51,8 @@ fun main(args: Array<String>) {
         }
     }
 
-    val player1 = Player("Player1", "Ping", referee)
-    val player2 = Player("Player2", "Pong", referee)
+    val player1 = player("Player1", "Ping", referee)
+    val player2 = player("Player2", "Pong", referee)
 
     semaphore.acquire() // <2>
     player1.tell(1, Result(player2))

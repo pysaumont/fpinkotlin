@@ -15,4 +15,3 @@ fun add_(a: Int, b: Int): Int {
 
 fun inc(n: Int) = n + 1
 fun dec(n: Int) = n - 1
-
