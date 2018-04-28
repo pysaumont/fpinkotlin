@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
     val minnie = toons.getOption("Minnie").flatMap { it.email }
     val goofy = toons.getOption("Goofy").flatMap { it.email }
 
-    println(mickey.getOrElse({ "No data" }))
-    println(minnie.getOrElse({ "No data" }))
-    println(goofy.getOrElse({ "No data" }))
+    println(mickey.getOrElse { "No data" })
+    println(minnie.getOrElse { "No data" })
+    println(goofy.getOrElse { "No data" })
 }

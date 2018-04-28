@@ -40,20 +40,11 @@ sealed class Option<out A> {
         override fun hashCode(): Int = 0
     }
 
-    internal class Some<out A>(internal val value: A) : Option<A>() {
+    internal data class Some<out A>(internal val value: A) : Option<A>() {
 
         override fun <B> map(f: (A) -> B): Option<B> = Some(f(value))
 
         override fun isEmpty() = false
-
-        override fun toString(): String = "Some($value)"
-
-        override fun equals(other: Any?): Boolean = when (other) {
-            is Some<*> -> value == other.value
-            else -> false
-        }
-
-        override fun hashCode(): Int = value?.hashCode() ?: 0
     }
 
     companion object {

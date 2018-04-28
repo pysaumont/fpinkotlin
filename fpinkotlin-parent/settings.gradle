@@ -24,8 +24,8 @@ include 'fpinkotlin-common',
         'fpinkotlin-advancedtrees-exercises',
         'fpinkotlin-effects-solutions',
         'fpinkotlin-effects-exercises',
-        'fpinkotlin-actors-solutions',
-        'fpinkotlin-actors-exercises'
+        'fpinkotlin-actors',
+        'fpinkotlin-commonproblems'
 
 
 

@@ -9,7 +9,8 @@ sealed class Option<out A> {
 
     fun <B> flatMap(f: (A) -> Option<B>): Option<B> = map(f).getOrElse(None)
 
-    fun orElse(default: () -> Option<@UnsafeVariance A>): Option<A> = map { this }.getOrElse(default)
+    fun orElse(default: () -> Option<@UnsafeVariance A>): Option<A> =
+            map { this }.getOrElse(default)
 
     fun getOrElse(default: @UnsafeVariance A): A = when (this) {
         is None -> default
@@ -34,20 +35,11 @@ sealed class Option<out A> {
         override fun hashCode(): Int = 0
     }
 
-    internal class Some<out A>(internal val value: A) : Option<A>() {
+    internal data class Some<out A>(internal val value: A) : Option<A>() {
 
         override fun <B> map(f: (A) -> B): Option<B> = Some(f(value))
 
         override fun isEmpty() = false
-
-        override fun toString(): String = "Some($value)"
-
-        override fun equals(other: Any?): Boolean = when (other) {
-            is Some<*> -> value == other.value
-            else -> false
-        }
-
-        override fun hashCode(): Int = value?.hashCode() ?: 0
     }
 
     companion object {

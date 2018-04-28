@@ -87,7 +87,7 @@ sealed class List<out A> {
                     is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
-        tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
+        private tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
                     Nil -> acc
                     is Cons -> coFoldRight(f(list.head)(acc), list.tail, identity, f)
