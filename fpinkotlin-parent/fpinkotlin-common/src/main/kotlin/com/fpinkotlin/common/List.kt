@@ -4,6 +4,8 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 
 
+
+
 sealed class List<out A> {
 
     abstract fun forEach(ef: (A) -> Unit)
@@ -22,6 +24,14 @@ sealed class List<out A> {
                               f: (B) -> (A) -> B): Pair<B, List<A>>
 
     operator fun plus(a: @UnsafeVariance A): List<A> = cons(a)
+
+    fun toArrayList(): java.util.ArrayList<@UnsafeVariance A> =
+            foldLeft(ArrayList()) { list ->
+                { a ->
+                    list.add(a)
+                    list
+                }
+            }
 
     fun zipWithPosition(): List<Pair<A, Int>> =
         zipWith(this, range(0, this.length)) { a -> { i: Int -> Pair(a, i) } }
@@ -346,6 +356,8 @@ sealed class List<out A> {
 
         operator fun <A> invoke(vararg az: A): List<A> =
                 az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+
+        fun fromSeparated(string: String, separator: String): List<String> = List(*string.split(separator).toTypedArray())
     }
 }
 

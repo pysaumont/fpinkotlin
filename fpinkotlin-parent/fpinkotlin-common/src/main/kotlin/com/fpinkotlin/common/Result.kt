@@ -171,7 +171,7 @@ sealed class Result<out A>: Serializable {
             else -> when {
                 p(a) -> Success(a)
                 else -> Failure(
-                    IllegalArgumentException("Argument $a does not match condition: $message"))
+                        IllegalArgumentException("Argument $a does not match condition: $message"))
             }
         }
 
@@ -182,6 +182,18 @@ sealed class Result<out A>: Serializable {
                 Result.failure(e)
             } catch (e: Exception) {
                 Result.failure(e)
+            }
+
+        fun <T> of(predicate: (T) -> Boolean,
+                   value: T,
+                   message: String): Result<T> =
+             try {
+                if (predicate(value))
+                    Result(value)
+                else
+                    Result.failure("Assertion failed for value $value with message: $message")
+            } catch (e: Exception) {
+                Result.failure(IllegalStateException("Exception while validating $value", e))
             }
     }
 }

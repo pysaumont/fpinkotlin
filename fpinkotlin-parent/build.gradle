@@ -2,7 +2,7 @@ group 'com.fpinkotlin'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.40'
+    ext.kotlin_version = '1.2.41'
     ext.kotlintest_version = '2.0.5'
 
 //    kotlin { experimental { coroutines 'enable' } }
@@ -46,7 +46,6 @@ project(':fpinkotlin-common') {
         compile "io.kotlintest:kotlintest:$kotlintest_version"
         compile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     }
-
 }
 
 project(':fpinkotlin-makingprogramssafer') {
@@ -209,5 +208,6 @@ project(':fpinkotlin-commonproblems') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
     }
 }
