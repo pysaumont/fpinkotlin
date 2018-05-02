@@ -17,11 +17,11 @@ fun readXmlFile(sPath: () -> Result<String>,
     val path = sPath()
     val rDoc = path.flatMap(::readFile2String)
     val rRoot = sRootName()
-    val result = rDoc.flatMap({ doc ->
+    val result = rDoc.flatMap { doc ->
         rRoot.flatMap { rootElementName ->
             readDocument(rootElementName, doc) }
                 .map { list -> toStringList(list, format) }
-    })
+    }
     return {
         result.forEach(onSuccess = { effect(it) },
                 onFailure = { it.printStackTrace() })

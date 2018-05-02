@@ -6,7 +6,7 @@ fun <A> processList(list: List<A>) = list.forEach(::println)
 
 fun getRootElementName(): ElementName = ElementName("staff") // Simulating a computation that may fail.
 
-fun getXmlFilePath(): FilePath = FilePath("/run/media/pysaumont/KINGSTON2/fpinkotlin/fpinkotlin/fpinkotlin-parent/fpinkotlin-commonproblems/src/main/kotlin/com/fpinkotlin/commonproblems/xml/example02/file.xml") // <- adjust path
+fun getXmlFilePath(): FilePath = FilePath("/path/to/file.xml") // <- adjust path
 
 private val format = Pair("First Name : %s\n" +
         "\tLast Name : %s\n" +
@@ -14,6 +14,9 @@ private val format = Pair("First Name : %s\n" +
         "\tSalary : %s", List("firstName", "lastName", "email", "salary"))
 
 fun main(args: Array<String>) {
-    val program = readXmlFile( { getXmlFilePath() }, { getRootElementName() }, format, { processList(it) })
+    val program = readXmlFile(::getXmlFilePath,
+                              ::getRootElementName,
+                              format,
+                              ::processList)
     program()
 }

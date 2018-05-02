@@ -1,4 +1,4 @@
-package com.fpinkotlin.commonproblems.xml.example04
+package com.fpinkotlin.commonproblems.xml.example05
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
@@ -10,21 +10,21 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.StringReader
 
-fun readXmlFile(sPath: () -> FilePath,
+fun <T> readXmlFile(sPath: () -> FilePath, // <1>
                 sRootName: () -> ElementName,
-                format: Pair<String, List<String>>,
-                effect: (List<String>) -> Unit): () -> Unit {
+                function: (Element) -> T,
+                effect: (List<T>) -> Unit): () -> Unit {
     val path = sPath().value
     val rDoc = path.flatMap(::readFile2String)
     val rRoot = sRootName().value
-    val result = rDoc.flatMap { doc ->
+    val result = rDoc.flatMap({ doc ->
         rRoot.flatMap { rootElementName ->
             readDocument(rootElementName, doc) }
-                .map { list -> toStringList(list, format) }
-    }
+                .map { list -> list.map(function) } // <4>
+    })
     return {
         result.forEach(onSuccess = { effect(it) },
-                onFailure = { it.printStackTrace() })
+                onFailure = { throw it })
     }
 }
 
@@ -55,15 +55,6 @@ fun readDocument(rootElementName: String, stringDoc: String): Result<List<Elemen
             Result.failure("Unexpected error while reading XML data $stringDoc: ${e.message}")
         }
     }
-
-fun toStringList(list: List<Element>, format: Pair<String, List<String>>): List<String> =
-        list.map { e -> processElement(e, format) }
-
-fun processElement(element: Element, format: Pair<String, List<String>>): String { // <4>
-    val formatString = format.first
-    val parameters = format.second.map { element.getChildText(it) }
-    return String.format(formatString, *parameters.toArrayList().toArray())
-}
 
 data class FilePath private constructor(val value: Result<String>) {
 
