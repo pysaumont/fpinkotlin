@@ -2,7 +2,6 @@ package com.fpinkotlin.advancedlisthandling.exercise06
 
 import com.fpinkotlin.advancedlisthandling.exercise06.List.Companion.flatten
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.common.map2
 
 

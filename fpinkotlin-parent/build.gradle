@@ -2,13 +2,12 @@ group 'com.fpinkotlin'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.41'
+    ext.kotlin_version = '1.2.50'
     ext.kotlintest_version = '2.0.5'
 
 //    kotlin { experimental { coroutines 'enable' } }
 
     repositories {
-        //maven { url "http://pkgarti2:7000/artifactory/all" }
         mavenCentral()
         jcenter()
     }
@@ -24,7 +23,6 @@ allprojects{
     sourceCompatibility = 1.8
 
     repositories {
-        //maven { url "http://pkgarti2:7000/artifactory/all" }
         mavenCentral()
         jcenter()
     }

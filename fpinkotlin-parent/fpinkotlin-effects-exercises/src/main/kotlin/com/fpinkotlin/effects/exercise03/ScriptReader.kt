@@ -2,7 +2,6 @@ package com.fpinkotlin.effects.exercise03
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 
 
 class ScriptReader : Input {

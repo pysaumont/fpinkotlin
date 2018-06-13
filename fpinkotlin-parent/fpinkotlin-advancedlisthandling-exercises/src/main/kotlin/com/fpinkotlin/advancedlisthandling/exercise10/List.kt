@@ -1,7 +1,6 @@
 package com.fpinkotlin.advancedlisthandling.exercise10
 
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.common.map2
 
 

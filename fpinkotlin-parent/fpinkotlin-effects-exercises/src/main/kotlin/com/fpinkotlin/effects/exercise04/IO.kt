@@ -1,7 +1,6 @@
 package com.fpinkotlin.effects.exercise04
 
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 
 
 class IO(private val f: () -> Unit) {

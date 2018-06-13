@@ -3,7 +3,6 @@ package com.fpinkotlin.effects.listing08
 import com.fpinkotlin.common.Lazy
 import com.fpinkotlin.common.Stream
 import com.fpinkotlin.common.Stream.Companion.fill
-import com.fpinkotlin.common.getOrElse
 
 
 sealed class IO<out A> {
@@ -46,7 +45,7 @@ sealed class IO<out A> {
 
         fun get(): IO<A> = unit(value)
 
-        fun modify(f: (A) -> A): IO<A> = get().flatMap({ a -> set(f(a)) })
+        fun modify(f: (A) -> A): IO<A> = get().flatMap { a -> set(f(a)) }
     }
 
     internal class Return<out A>(val value: A): IO<A>()

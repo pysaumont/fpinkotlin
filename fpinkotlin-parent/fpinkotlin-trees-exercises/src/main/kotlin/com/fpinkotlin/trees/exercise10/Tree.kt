@@ -2,7 +2,6 @@ package com.fpinkotlin.trees.exercise10
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.orElse
 import kotlin.math.max
 
 

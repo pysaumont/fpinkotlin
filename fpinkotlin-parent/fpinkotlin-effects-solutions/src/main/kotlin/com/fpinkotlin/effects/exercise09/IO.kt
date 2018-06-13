@@ -4,7 +4,6 @@ import com.fpinkotlin.common.Lazy
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.List.Companion.cons
 import com.fpinkotlin.common.Stream
-import com.fpinkotlin.common.getOrElse
 
 
 class IO<out A>(private val f: () -> A) {

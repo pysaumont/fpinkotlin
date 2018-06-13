@@ -1,6 +1,5 @@
 package com.fpinkotlin.trees.exercise05
 
-import com.fpinkotlin.common.getOrElse
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 
@@ -10,7 +9,7 @@ class TreeTest: StringSpec() {
 
         "max0" {
             val tree = Tree<Int>()
-            tree.max().getOrElse(false) shouldBe false
+            tree.max().getOrElse(-1) shouldBe -1
         }
 
         "max1" {
@@ -25,7 +24,7 @@ class TreeTest: StringSpec() {
 
         "min0" {
             val tree = Tree<Int>()
-            tree.min().getOrElse(false) shouldBe false
+            tree.min().getOrElse(-1) shouldBe -1
         }
 
         "min1" {

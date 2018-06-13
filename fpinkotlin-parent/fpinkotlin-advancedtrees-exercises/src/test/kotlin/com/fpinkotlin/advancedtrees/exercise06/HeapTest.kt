@@ -3,7 +3,6 @@ package com.fpinkotlin.advancedtrees.exercise06
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 

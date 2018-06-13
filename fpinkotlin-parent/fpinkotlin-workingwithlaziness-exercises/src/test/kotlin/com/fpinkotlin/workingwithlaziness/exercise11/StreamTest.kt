@@ -1,6 +1,5 @@
 package com.fpinkotlin.workingwithlaziness.exercise11
 
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.generators.IntGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec

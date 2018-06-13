@@ -2,7 +2,6 @@ package com.fpinkotlin.advancedlisthandling.exercise05
 
 import com.fpinkotlin.advancedlisthandling.exercise05.List.Companion.flatten
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 
 
 sealed class List<out A> {

@@ -2,7 +2,6 @@ package com.fpinkotlin.advancedtrees.exercise03
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.common.sequence
 
 class Map<out K: Comparable<@UnsafeVariance K>, V>(private val delegate: Tree<MapEntry<@UnsafeVariance K, V>> = Tree()) {

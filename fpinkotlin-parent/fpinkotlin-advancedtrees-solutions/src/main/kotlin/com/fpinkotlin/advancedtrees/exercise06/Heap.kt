@@ -1,7 +1,6 @@
 package com.fpinkotlin.advancedtrees.exercise06
 
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 
 sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 

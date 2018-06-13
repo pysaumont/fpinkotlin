@@ -3,7 +3,6 @@ package com.fpinkotlin.advancedtrees.exercise04
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec

@@ -2,7 +2,6 @@ package com.fpinkotlin.effects.listing07
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.effects.listing02.Input
 
 

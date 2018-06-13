@@ -1,7 +1,6 @@
 package com.fpinkotlin.advancedlisthandling.exercise03
 
 
-import com.fpinkotlin.common.getOrElse
 import com.fpinkotlin.generators.forAll
 import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen

@@ -2,7 +2,6 @@ package com.fpinkotlin.workingwithlaziness.exercise30
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.common.getOrElse
 
 
 sealed class Stream<out A> {
@@ -23,11 +22,11 @@ sealed class Stream<out A> {
     fun find(p: (A) -> Boolean): Result<A> = filter(p).head()
 
     fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
-            foldRight(Lazy { Empty as Stream<B> }, { a ->
+            foldRight(Lazy { Empty as Stream<B> }) { a ->
                 { b: Lazy<Stream<B>> ->
                     f(a).append(b)
                 }
-            })
+            }
 
     fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
             this.foldRight(stream2) { a: A ->
@@ -39,24 +38,24 @@ sealed class Stream<out A> {
     fun filter(p: (A) -> Boolean): Stream<A>  = TODO("Implement this function")
 
     fun <B> map(f: (A) -> B): Stream<B> =
-            foldRight(Lazy { Empty }, { a ->
+            foldRight(Lazy { Empty }) { a ->
                 { b: Lazy<Stream<B>> ->
                     cons(Lazy { f(a) }, b)
                 }
-            })
+            }
 
     fun headSafeViaFoldRight(): Result<A> =
-            foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
+            foldRight(Lazy { Result<A>() }) { a -> { Result(a) } }
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-            foldRight(Lazy { Empty }, { a ->
+            foldRight(Lazy { Empty }) { a ->
                 { b: Lazy<Stream<A>> ->
                     if (p(a))
                         cons(Lazy { a }, b)
                     else
                         Empty
                 }
-            })
+            }
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 
