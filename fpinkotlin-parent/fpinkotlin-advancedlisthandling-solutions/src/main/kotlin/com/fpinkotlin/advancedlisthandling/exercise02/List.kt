@@ -22,13 +22,13 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.Companion.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
 
-    fun reverse(): List<A> = foldLeft(Nil as List<A>, { acc -> { acc.cons(it) } })
+    fun reverse(): List<A> = foldLeft(Nil as List<A>) { acc -> { acc.cons(it) } }
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
@@ -118,13 +118,13 @@ sealed class List<out A> {
         fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(Nil) { x -> x::concat }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }
 
 fun triple(list: List<Int>): List<Int> =
         List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }

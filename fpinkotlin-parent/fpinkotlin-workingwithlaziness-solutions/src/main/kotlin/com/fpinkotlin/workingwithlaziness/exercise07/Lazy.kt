@@ -24,3 +24,4 @@ fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
                 Lazy { f(ls1())(ls2()) }
             }
         }
+

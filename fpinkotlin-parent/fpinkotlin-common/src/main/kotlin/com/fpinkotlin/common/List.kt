@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 
 
-
-
 sealed class List<out A> {
 
     abstract fun forEach(ef: (A) -> Unit)
@@ -226,13 +224,13 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.Companion.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
 
-    fun reverse(): List<A> = foldLeft(Nil as List<A>, { acc -> { acc.cons(it) } })
+    fun reverse(): List<A> = foldLeft(Nil as List<A>) { acc -> { acc.cons(it) } }
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
@@ -355,7 +353,7 @@ sealed class List<out A> {
 
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
 
         fun fromSeparated(string: String, separator: String): List<String> = List(*string.split(separator).toTypedArray())
     }
@@ -363,13 +361,13 @@ sealed class List<out A> {
 
 fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(List.Nil) { x -> x::concat }
 
-fun List<Int>.sum(): Int = foldRight(0, { x -> { y -> x + y } })
+fun List<Int>.sum(): Int = foldRight(0) { x -> { y -> x + y } }
 
-fun List<Double>.sum(): Double = foldRight(1.0, { x -> { y -> x + y } })
+fun List<Double>.sum(): Double = foldRight(1.0) { x -> { y -> x + y } }
 
-fun List<Int>.product(): Int = foldRight(1, { x -> { y -> x * y } })
+fun List<Int>.product(): Int = foldRight(1) { x -> { y -> x * y } }
 
-fun List<Double>.product(): Double = foldRight(1.0, { x -> { y -> x * y } })
+fun List<Double>.product(): Double = foldRight(1.0) { x -> { y -> x * y } }
 
 fun triple(list: List<Int>): List<Int> =
         List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
@@ -418,7 +416,7 @@ fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> =
         }
 
 fun <A> sequence(list: List<Result<A>>): Result<List<A>> =
-        traverse(list, { x: Result<A> -> x })
+        traverse(list) { x: Result<A> -> x }
 
 fun <A, B, C> zipWith(list1: List<A>,
                       list2: List<B>,
