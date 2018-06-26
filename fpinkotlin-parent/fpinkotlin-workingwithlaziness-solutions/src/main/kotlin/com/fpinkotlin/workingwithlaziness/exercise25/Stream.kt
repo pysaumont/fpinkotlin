@@ -27,31 +27,31 @@ sealed class Stream<out A> {
             }
 
     fun filter(p: (A) -> Boolean): Stream<A> =
-         foldRight(Lazy { Empty }, { a ->
+         foldRight(Lazy { Empty }) { a ->
              { b: Lazy<Stream<A>> ->
                  if (p(a)) cons(Lazy { a }, b) else b()
              }
-         })
+         }
 
     fun <B> map(f: (A) -> B): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty }) { a ->
             { b: Lazy<Stream<B>> ->
                 cons(Lazy { f(a) }, b)
             }
-        })
+        }
 
     fun headSafeViaFoldRight(): Result<A> =
-          foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
+          foldRight(Lazy { Result<A>() }) { a -> { Result(a) } }
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty }) { a ->
             { b: Lazy<Stream<A>> ->
                 if (p(a))
                     cons(Lazy { a }, b)
                 else
                     Empty
             }
-        })
+        }
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 

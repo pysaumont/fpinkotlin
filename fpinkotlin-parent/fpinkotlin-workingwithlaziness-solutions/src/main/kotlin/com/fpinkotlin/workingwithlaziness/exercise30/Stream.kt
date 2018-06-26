@@ -22,11 +22,11 @@ sealed class Stream<out A> {
     fun find(p: (A) -> Boolean): Result<A> = filter(p).head()
 
     fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
-            foldRight(Lazy { Empty as Stream<B> }, { a ->
+            foldRight(Lazy { Empty as Stream<B> }) { a ->
                 { b: Lazy<Stream<B>> ->
                     f(a).append(b)
                 }
-            })
+            }
 
     fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
             this.foldRight(stream2) { a: A ->
@@ -47,31 +47,31 @@ sealed class Stream<out A> {
         dropWhile { x -> !p(x) }.let { stream ->
             when (stream) {
                 Empty -> stream
-                is Cons -> stream.head().map({ a ->
-                     cons(Lazy { a }, Lazy { stream.tl().filter(p) })
-                 }).getOrElse(Empty)
+                is Cons -> stream.head().map { a ->
+                    cons(Lazy { a }, Lazy { stream.tl().filter(p) })
+                }.getOrElse(Empty)
             }
         }
 
     fun <B> map(f: (A) -> B): Stream<B> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty }) { a ->
             { b: Lazy<Stream<B>> ->
                 cons(Lazy { f(a) }, b)
             }
-        })
+        }
 
     fun headSafeViaFoldRight(): Result<A> =
-          foldRight(Lazy { Result<A>() }, { a -> { Result(a) } })
+          foldRight(Lazy { Result<A>() }) { a -> { Result(a) } }
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty }) { a ->
             { b: Lazy<Stream<A>> ->
                 if (p(a))
                     cons(Lazy { a }, b)
                 else
                     Empty
             }
-        })
+        }
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 
@@ -165,9 +165,9 @@ sealed class Stream<out A> {
             }
 
         fun <A, S> unfold(z: S, f: (S) -> Result<Pair<A, S>>): Stream<A> =
-             f(z).map({ x ->
-                          Stream.cons(Lazy { x.first }, Lazy { unfold(x.second, f) })
-                      }).getOrElse(Stream.Empty)
+             f(z).map { x ->
+                 Stream.cons(Lazy { x.first }, Lazy { unfold(x.second, f) })
+             }.getOrElse(Stream.Empty)
 
         fun from(n: Int): Stream<Int> = unfold(n) { x -> Result(Pair(x, x + 1)) }
     }

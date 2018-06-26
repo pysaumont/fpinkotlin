@@ -158,18 +158,18 @@ sealed class Result<out A>: Serializable {
 
 fun <A> Result<A>.getOrElse(defaultValue: A): A = when (this) {
     is Result.Success -> this.value
-    else                                                             -> defaultValue
+    else              -> defaultValue
 }
 
 fun <A> Result<A>.getOrElse(defaultValue: () -> A): A = when (this) {
     is Result.Success -> this.value
-    else                                                             -> defaultValue()
+    else              -> defaultValue()
 }
 
 fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this }.let {
     when (it) {
         is Result.Success -> it.value
-        else                                                             -> try {
+        else              -> try {
             defaultValue()
         } catch (e: RuntimeException) {
             Result.failure<A>(e)
@@ -215,5 +215,4 @@ fun <A, B, C, D> lift3(f: (A) -> (B) -> (C) -> D): (Result<A>) -> (Result<B>) ->
 
 fun <A, B, C> map2(a: Result<A>,
                    b: Result<B>,
-                   f: (A) -> (B) -> C): Result<C> = lift2(
-    f)(a)(b)
+                   f: (A) -> (B) -> C): Result<C> = lift2(f)(a)(b)

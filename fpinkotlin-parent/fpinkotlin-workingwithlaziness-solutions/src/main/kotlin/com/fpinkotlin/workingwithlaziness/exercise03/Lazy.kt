@@ -13,7 +13,6 @@ class Lazy<out A>(function: () -> A): () -> A {
     }
 }
 
-
 val constructMessage: (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
         { greetings ->
             { name ->

@@ -222,10 +222,10 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
 
         operator fun <A: Comparable<A>> invoke(vararg az: A): Tree<A> =
-            az.foldRight(Empty, { a: A, tree: Tree<A> -> tree.plus(a) })
+            az.foldRight(Empty) { a: A, tree: Tree<A> -> tree.plus(a) }
 
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
-            list.foldLeft(Empty as Tree<A>, { tree: Tree<A> -> { a: A -> tree.plus(a) } })
+            list.foldLeft(Empty as Tree<A>) { tree: Tree<A> -> { a: A -> tree.plus(a) } }
 
         operator fun <A: Comparable<A>> invoke(left: Tree<A>, a: A, right: Tree<A>): Tree<A> =
             when {
@@ -304,7 +304,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
 
         private fun <A: Comparable<A>> balanceFirstLevel(tree: Tree<A>): Tree<A> =
-                unfold(tree, { t: Tree<A> ->
+                unfold(tree) { t: Tree<A> ->
                     when {
                         isUnBalanced(t) -> when {
                             tree.right.height > tree.left.height -> Result(t.rotateLeft())
@@ -312,7 +312,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
                         }
                         else -> Result()
                     }
-                })
+                }
     }
 }
 

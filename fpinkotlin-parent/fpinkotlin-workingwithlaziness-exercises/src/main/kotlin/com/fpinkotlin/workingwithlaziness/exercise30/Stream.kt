@@ -149,9 +149,9 @@ sealed class Stream<out A> {
                 }
 
         fun <A, S> unfold(z: S, f: (S) -> Result<Pair<A, S>>): Stream<A> =
-                f(z).map({ x ->
+                f(z).map { x ->
                     Stream.cons(Lazy { x.first }, Lazy { unfold(x.second, f) })
-                }).getOrElse(Stream.Empty)
+                }.getOrElse(Stream.Empty)
 
         fun from(n: Int): Stream<Int> = unfold(n) { x -> Result(Pair(x, x + 1)) }
     }

@@ -56,7 +56,7 @@ fun main(args: Array<String>) {
     val value = Lazy{ getValue() }
     val rnd = Random()
     val ifTrue: (Any) -> Unit = { println(it) }
-    val ifFalse = { s: String ->  println("No value") }
+    val ifFalse = { _: String ->  println("No value") }
     value.forEach(rnd.nextBoolean(), ifTrue, ifFalse)
 }
 

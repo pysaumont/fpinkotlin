@@ -20,14 +20,14 @@ sealed class Stream<out A> {
                                f: (A) -> (Lazy<B>) -> B): B
 
     fun takeWhileViaFoldRight(p: (A) -> Boolean): Stream<A> =
-        foldRight(Lazy { Empty }, { a ->
+        foldRight(Lazy { Empty }) { a ->
             { b: Lazy<Stream<A>> ->
                 if (p(a))
                     cons(Lazy { a }, b)
                 else
                     Empty
             }
-        })
+        }
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 

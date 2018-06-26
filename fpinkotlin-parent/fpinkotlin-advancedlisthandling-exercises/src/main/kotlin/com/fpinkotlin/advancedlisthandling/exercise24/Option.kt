@@ -128,4 +128,4 @@ fun <A, B> traverse_(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
             }
         }
 
-fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse_(list, { x: Option<A> -> x })
+fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse_(list) { x: Option<A> -> x }
