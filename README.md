@@ -17,7 +17,7 @@ The code is available as a Gradle project that may be used  by:
 
 There are two ways to download this project. You may:
 
-- Click on the _Download ZIP_ button on this page (https://github.com/fpinjava/fpinjava) to download a ZIP archive, then unzip it in the directory
+- Click on the _Download ZIP_ button on this page (https://github.com/pysaumont/fpinkotlin) to download a ZIP archive, then unzip it in the directory
 of your choice
 - Or you can clone the project using Git, in order to be able to update it easily when modifications or additions are made to the project. For this,
 you will need to have Git installed on your PC and use the URL available on this page in the _SSH clone URL_ area.
