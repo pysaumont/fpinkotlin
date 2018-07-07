@@ -1,5 +1,6 @@
 package com.fpinkotlin.effects.exercise04
 
+import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
 
 
@@ -44,4 +45,12 @@ fun main(args: Array<String>) {
     val script: IO = instruction1 + instruction2 + instruction3
     script()
     instruction1.plus(instruction2).plus(instruction3)()
+
+    val script2 = List(
+            IO { print("Hello, ") },
+            IO { print(getName()) },
+            IO { print("!\n") }
+    )
+    val program: IO = script2.foldRight(IO.empty) { io -> { io + it } }
+
 }

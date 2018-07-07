@@ -31,7 +31,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = TODO("foldLeft")
 
-    private fun <A, S, B> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>, identity: B, f: (B) -> (A) -> B): B = TODO("unfold")
+    fun <A, S, B> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>, identity: B, f: (B) -> (A) -> B): B = TODO("unfold")
 
 
     abstract class Empty<out A: Comparable<@UnsafeVariance A>>: Heap<A>() {

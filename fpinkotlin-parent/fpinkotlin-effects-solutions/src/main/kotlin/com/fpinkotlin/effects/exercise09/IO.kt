@@ -26,13 +26,13 @@ class IO<out A>(private val f: () -> A) {
 
         fun <A> repeat(n: Int, io: IO<A> ): IO<List<A>> =
                 Stream.fill(n, Lazy { io })
-                        .foldRight( Lazy { IO { List<A>() } }, { ioa ->
+                        .foldRight( Lazy { IO { List<A>() } }) { ioa ->
                             { sioLa ->
                                 map2(ioa, sioLa()) { a ->
                                     { la: List<A> -> cons(a, la) }
                                 }
                             }
-                        })
+                        }
 
         fun <A, B, C> map2(ioa: IO<A>, iob: IO<B>, f: (A) ->  (B) -> C): IO<C> =
                 ioa.flatMap { a ->
@@ -50,12 +50,12 @@ class IO<out A>(private val f: () -> A) {
 
         fun <A> doWhile(ioa: IO<A>, f: (A) -> IO<Boolean>): IO<Unit> {
             return ioa.flatMap { f(it) }
-                    .flatMap({ ok ->
+                    .flatMap { ok ->
                         when {
                             ok -> doWhile(ioa, f)
                             else -> empty
                         }
-                    })
+                    }
         }
 
         fun <A> sequence(stream: Stream<IO<A>>): IO<Unit> {
@@ -75,12 +75,12 @@ class IO<out A>(private val f: () -> A) {
                 IO(z)
             else
                 f(z)(s.head().getOrElse { throw IllegalStateException() })
-                        .flatMap({ zz -> foldM(s.tail()
-                                .getOrElse { throw IllegalStateException() }, zz, f) })
+                        .flatMap { zz -> foldM(s.tail()
+                                .getOrElse { throw IllegalStateException() }, zz, f) }
         }
 
         fun <A> forEach(s: Stream<A>, f: (A) -> IO<Unit>): IO<Unit> {
-            return foldM_(s, Unit, { { t: A -> skip(f(t)) } })
+            return foldM_(s, Unit) { { t: A -> skip(f(t)) } }
         }
 
         fun <A> sequence(vararg array: IO<A>): IO<Unit> {
@@ -96,11 +96,9 @@ class IO<out A>(private val f: () -> A) {
 }
 
 fun main(args: Array<String>) {
-//    val program = forever<String, String>(IO { "Hi again!" })
-//        .flatMap { Console.println(it) }
-//    program()
-
-    IO.forever<Unit, String>(Console.println("Hi again!"))()
+    val program = IO.forever<String, String>(IO { "Hi again!" })
+        .flatMap { Console.println(it) }
+    program()
 }
 
 

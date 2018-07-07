@@ -1,11 +1,10 @@
 package com.fpinkotlin.effects.exercise09
 
 import com.fpinkotlin.common.Lazy
-import com.fpinkotlin.effects.exercise09.IO.Companion.condition
 
 
 private val buildMessage = { name: String ->
-    condition(name.isNotEmpty(), Lazy {
+    IO.condition(name.isNotEmpty(), Lazy {
         IO("Hello, $name!").flatMap { Console.println(it) }
     })
 }

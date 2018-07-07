@@ -113,7 +113,7 @@ object CountComparator: Comparator<Count> {
 private fun <A> isBalanced(heap: Heap<A>): Boolean {
     fun <A> rightSpine(heap: Heap<A>): Int {
         fun <A> rightSpine(heap: Result<Heap<A>>): Int =
-                heap.map({ t -> if (t.isEmpty) -1 else 1 + rightSpine(t.right) }).getOrElse(-1)
+                heap.map { t -> if (t.isEmpty) -1 else 1 + rightSpine(t.right) }.getOrElse(-1)
         return 1 + rightSpine(heap.right)
     }
     return rightSpine(heap) <= log2nlz(heap.size + 1)

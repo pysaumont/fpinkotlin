@@ -31,7 +31,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = unfold(this, { it.pop() }, identity, f)
 
-    private fun <A, S, B> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>, identity: B, f: (B) -> (A) -> B): B {
+    fun <A, S, B> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>, identity: B, f: (B) -> (A) -> B): B {
         tailrec fun unfold(acc: B, z: S): B {
             val next = getNext(z)
             return when (next) {

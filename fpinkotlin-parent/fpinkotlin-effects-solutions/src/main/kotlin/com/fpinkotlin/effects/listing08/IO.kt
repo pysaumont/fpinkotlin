@@ -64,12 +64,12 @@ sealed class IO<out A> {
         fun <A, B, C> map2(ioa: IO<A>, iob: IO<B>, f: (A) -> (B) -> C): IO<C> = ioa.flatMap { t -> iob.map { u -> f(t)(u) } }
 
         fun <A> doWhile(iot: IO<A>, f: (A) -> IO<Boolean>): IO<Unit> = iot.flatMap { f(it) }
-            .flatMap({ ok ->
-                         when {
-                             ok   -> doWhile(iot, f)
-                             else -> empty
-                         }
-                     })
+            .flatMap { ok ->
+                when {
+                    ok   -> doWhile(iot, f)
+                    else -> empty
+                }
+            }
 
         fun <A> repeat(n: Int, io: IO<A>): IO<Unit> = forEach(fill(n, Lazy { io }), { skip(it) })
 
@@ -79,7 +79,7 @@ sealed class IO<out A> {
         fun <A, B> fold(s: Stream<A>, z: B, f: (B) -> (A) -> IO<B>): IO<B> = when {
             s.isEmpty() -> unit(z)
             else        -> f(z)(s.head().getOrElse { throw IllegalStateException() })
-                .flatMap({ zz -> fold(s.tail().getOrElse { throw IllegalStateException() }, zz, f) })
+                .flatMap { zz -> fold(s.tail().getOrElse { throw IllegalStateException() }, zz, f) }
         }
 
         fun <A, B> changeTo(a: IO<A>, b: B): IO<B> = a.map { b }
