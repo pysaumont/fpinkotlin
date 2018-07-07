@@ -3,6 +3,7 @@
  * This list is hold by the fpinkotlin-parent module
  */
 include 'fpinkotlin-common',
+        'fpinkotlin-common-test',
         'fpinkotlin-makingprogramssafer',
         'fpinkotlin-functions-exercises',
         'fpinkotlin-functions-solutions',

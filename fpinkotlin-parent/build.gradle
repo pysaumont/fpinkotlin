@@ -41,6 +41,14 @@ subprojects {
 project(':fpinkotlin-common') {
 
     dependencies {
+    }
+}
+
+project(':fpinkotlin-common-test') {
+
+    dependencies {
+        compile project(':fpinkotlin-common')
+
         compile "io.kotlintest:kotlintest:$kotlintest_version"
         compile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     }
@@ -50,6 +58,7 @@ project(':fpinkotlin-makingprogramssafer') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -57,6 +66,7 @@ project(':fpinkotlin-functions-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -64,6 +74,7 @@ project(':fpinkotlin-functions-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -71,6 +82,7 @@ project(':fpinkotlin-recursion-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -78,6 +90,7 @@ project(':fpinkotlin-recursion-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -85,6 +98,7 @@ project(':fpinkotlin-lists-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -92,6 +106,7 @@ project(':fpinkotlin-lists-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -99,6 +114,7 @@ project(':fpinkotlin-optionaldata-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -106,6 +122,7 @@ project(':fpinkotlin-optionaldata-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -113,6 +130,7 @@ project(':fpinkotlin-handlingerrors-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -120,6 +138,7 @@ project(':fpinkotlin-handlingerrors-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -127,6 +146,7 @@ project(':fpinkotlin-advancedlisthandling-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -134,6 +154,7 @@ project(':fpinkotlin-advancedlisthandling-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -141,6 +162,7 @@ project(':fpinkotlin-workingwithlaziness-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -148,6 +170,7 @@ project(':fpinkotlin-workingwithlaziness-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -155,6 +178,7 @@ project(':fpinkotlin-trees-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -162,6 +186,7 @@ project(':fpinkotlin-trees-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -169,6 +194,7 @@ project(':fpinkotlin-advancedtrees-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -176,6 +202,7 @@ project(':fpinkotlin-advancedtrees-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -183,6 +210,7 @@ project(':fpinkotlin-effects-exercises') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -190,6 +218,7 @@ project(':fpinkotlin-effects-solutions') {
 
     dependencies {
         compile project(':fpinkotlin-common')
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -198,6 +227,7 @@ project(':fpinkotlin-actors') {
     dependencies {
         compile project(':fpinkotlin-common')
         compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
+        testCompile project(':fpinkotlin-common-test')
     }
 }
 
@@ -207,5 +237,6 @@ project(':fpinkotlin-commonproblems') {
     dependencies {
         compile project(':fpinkotlin-common')
         compile group: 'org.jdom', name: 'jdom2', version: '2.0.6'
+        testCompile project(':fpinkotlin-common-test')
     }
 }
