@@ -68,7 +68,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
-            else -> value == a
+            else      -> value == a
         }
     }
 

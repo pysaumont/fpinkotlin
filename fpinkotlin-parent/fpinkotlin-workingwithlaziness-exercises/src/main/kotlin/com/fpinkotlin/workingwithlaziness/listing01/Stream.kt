@@ -3,13 +3,13 @@ package com.fpinkotlin.workingwithlaziness.listing01
 import com.fpinkotlin.common.Result
 
 
-sealed class Stream<out A> { // <1>
+sealed class Stream<out A> {
 
     abstract fun isEmpty(): Boolean
 
-    abstract fun head(): Result<A> // <2>
+    abstract fun head(): Result<A>
 
-    abstract fun tail(): Result<Stream<A>> // <3>
+    abstract fun tail(): Result<Stream<A>>
 
     private object Empty: Stream<Nothing>() {
 
@@ -21,7 +21,7 @@ sealed class Stream<out A> { // <1>
 
     }
 
-    private class Cons<out A> (internal val hd: Lazy<A>, // <4> <5>
+    private class Cons<out A> (internal val hd: Lazy<A>,
                                internal val tl: Lazy<Stream<A>>) : Stream<A>() {
 
         override fun head(): Result<A> = Result(hd())
@@ -33,9 +33,9 @@ sealed class Stream<out A> { // <1>
 
     companion object {
 
-        fun <A> cons(hd: Lazy<A>, tl: Lazy<Stream<A>>): Stream<A> = Cons(hd, tl) // <6>
+        fun <A> cons(hd: Lazy<A>, tl: Lazy<Stream<A>>): Stream<A> = Cons(hd, tl)
 
-        operator fun <A> invoke(): Stream<A> = Empty // <7>
+        operator fun <A> invoke(): Stream<A> = Empty
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
     }

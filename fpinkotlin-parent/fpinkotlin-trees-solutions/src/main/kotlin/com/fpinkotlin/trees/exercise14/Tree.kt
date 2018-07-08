@@ -54,7 +54,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T -> when {
             a < this.value -> T(left + a, this.value, right)
             a > this.value -> T(left, this.value, right + a)
-            else -> T(this.left, a, this.right)
+            else           -> T(this.left, a, this.right)
         }
     }
 
@@ -75,7 +75,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T  ->  when {
             a < value -> T(left.remove(a), value, right)
             a > value -> T(left, value, right.remove(a))
-            else -> left.removeMerge(right)
+            else      -> left.removeMerge(right)
         }
     }
 
@@ -97,7 +97,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
-            else -> value == a
+            else      -> value == a
         }
     }
 
@@ -150,12 +150,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun rotateRight(): Tree<A> = when (left) {
             Empty -> this
-            is T -> T(left.left, left.value, T(left.right, value, right))
+            is T  -> T(left.left, left.value, T(left.right, value, right))
         }
 
         override fun rotateLeft(): Tree<A> = when (right) {
             Empty -> this
-            is T -> T(T(left, value, right.left), right.value, right.right)
+            is T  -> T(T(left, value, right.left), right.value, right.right)
         }
 
         override fun toListPreOrderLeft(): List<A> =
@@ -178,7 +178,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override fun merge(tree: Tree<@UnsafeVariance A>): Tree<A> = when (tree) {
             Empty -> this
-            is T ->   when  {
+            is T  ->   when  {
                 tree.value > this.value -> T(left, value, right.merge(T(Empty, tree.value, tree.right))).merge(tree.left)
                 tree.value < this.value -> T(left.merge(T(tree.left, tree.value, Empty)), value, right).merge(tree.right)
                 else                    -> T(left.merge(tree.left), value, right.merge(tree.right))
@@ -225,14 +225,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             }.getOrElse(left.isEmpty() && right.isEmpty()) ||
                 left.min()
                     .mapEmpty()
-                    .flatMap { _ ->
+                    .flatMap {
                                  right.min().map { rMin ->
                                      lt(a, rMin)
                                  }
                      }.getOrElse(false) ||
                 right.min()
                     .mapEmpty()
-                    .flatMap { _ ->
+                    .flatMap {
                                  left.max().map { lMax ->
                                      lt(lMax, a)
                                  }
@@ -280,15 +280,15 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         }
 
         private fun <A: Comparable<A>> balanceFirstLevel(tree: Tree<A>): Tree<A> =
-                unfold(tree, { t: Tree<A> ->
+                unfold(tree) { t: Tree<A> ->
                     when {
                         isUnBalanced(t) -> when {
                             tree.right.height > tree.left.height -> Result(t.rotateLeft())
-                            else -> Result(t.rotateRight())
+                            else             -> Result(t.rotateRight())
                         }
-                        else -> Result()
+                        else            -> Result()
                     }
-        })
+                }
 
     }
 }

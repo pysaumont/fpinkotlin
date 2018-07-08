@@ -61,7 +61,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T  ->  when {
             a < value -> T(left.remove(a), value, right)
             a > value -> T(left, value, right.remove(a))
-            else -> left.removeMerge(right)
+            else      -> left.removeMerge(right)
         }
     }
 
@@ -82,7 +82,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         is T -> when {
             a < value -> left.contains(a)
             a > value -> right.contains(a)
-            else -> value == a
+            else      -> value == a
         }
     }
 
@@ -191,14 +191,14 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
             }.getOrElse(left.isEmpty() && right.isEmpty()) ||
                 left.min()
                     .mapEmpty()
-                    .flatMap { _ ->
+                    .flatMap {
                         right.min().map { rMin ->
                             lt(a, rMin)
                         }
                     }.getOrElse(false) ||
                 right.min()
                     .mapEmpty()
-                    .flatMap { _ ->
+                    .flatMap {
                         left.max().map { lMax ->
                             lt(lMax, a)
                         }

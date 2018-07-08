@@ -1,18 +1,18 @@
 package com.fpinkotlin.trees.listing01
 
 
-sealed class Tree<out A: Comparable<@UnsafeVariance A>> { //<1> <2>
+sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
     abstract fun isEmpty(): Boolean
 
-    internal object Empty : Tree<Nothing>() { // <3>
+    internal object Empty : Tree<Nothing>() {
 
         override fun isEmpty(): Boolean = true
 
         override fun toString(): String = "E"
     }
 
-    internal class T<out A: Comparable<@UnsafeVariance A>>(internal val left: Tree<A>, // <4> <5>
+    internal class T<out A: Comparable<@UnsafeVariance A>>(internal val left: Tree<A>,
                                                            internal val value: A,
                                                            internal val right: Tree<A>) : Tree<A>() {
 
@@ -23,6 +23,6 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> { //<1> <2>
 
     companion object {
 
-        operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty // <6>
+        operator fun <A: Comparable<A>> invoke(): Tree<A> = Empty
     }
 }
