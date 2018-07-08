@@ -293,9 +293,9 @@ fun <A, B, C> zipWith(list1: List<A>,
                           list1: List<A>,
                           list2: List<B>,
                           f: (A) -> (B) -> C): List<C> = when (list1) {
-        List.Nil -> acc
+        List.Nil     -> acc
         is List.Cons -> when (list2) {
-            List.Nil -> acc
+            List.Nil     -> acc
             is List.Cons ->
                 zipWith(acc.cons(f(list1.head)(list2.head)),
                         list1.tail, list2.tail, f)

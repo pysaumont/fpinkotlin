@@ -13,7 +13,7 @@ class MapEntry<K: Comparable<@UnsafeVariance K>, V>
     override fun equals(other: Any?): Boolean =
             this === other || when (other) {
                 is MapEntry<*, *> -> key == other.key
-                else -> false
+                else              -> false
             }
 
     override fun hashCode(): Int = key.hashCode()

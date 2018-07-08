@@ -1,6 +1,6 @@
 package com.fpinkotlin.recursion.exercise15
 
-class Fibonacci
+
 fun <T> List<T>.head(): T =
     if (this.isEmpty())
         throw IllegalArgumentException("head called on empty list")

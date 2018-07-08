@@ -10,18 +10,18 @@ sealed class IO<out A> {
     operator fun invoke(): A = invoke(this)
 
     operator fun invoke(io: IO<@UnsafeVariance A>): A {
-        tailrec fun invokeHelper(io: IO<A>): A = when (io) { // <1>
-            is Return  -> io.value // <2>
-            is Suspend -> io.resume() // <3>
+        tailrec fun invokeHelper(io: IO<A>): A = when (io) {
+            is Return  -> io.value
+            is Suspend -> io.resume()
             else       -> {
-                val ct = io as Continue<A, A> // <4>
+                val ct = io as Continue<A, A>
                 val sub = ct.sub
                 val f = ct.f
                 when (sub) {
-                    is Return  -> invokeHelper(f(sub.value)) // <5>
-                    is Suspend -> invokeHelper(f(sub.resume())) // <6>
+                    is Return  -> invokeHelper(f(sub.value))
+                    is Suspend -> invokeHelper(f(sub.resume()))
                     else       -> {
-                        val ct2 = sub as Continue<A, A> // <7>
+                        val ct2 = sub as Continue<A, A>
                         val sub2 = ct2.sub
                         val f2 = ct2.f
                         invokeHelper(sub2.flatMap { f2(it).flatMap(f) })
@@ -32,9 +32,9 @@ sealed class IO<out A> {
         return invokeHelper(io)
     }
 
-    fun <B> map(f: (A) -> B): IO<B> = flatMap { Return(f(it)) } // <6>
+    fun <B> map(f: (A) -> B): IO<B> = flatMap { Return(f(it)) }
 
-    fun <B> flatMap(f: (A) -> IO<B>): IO<B> = Continue(this, f) as IO<B> // <7>
+    fun <B> flatMap(f: (A) -> IO<B>): IO<B> = Continue(this, f) as IO<B>
 
     class IORef<A>(private var value: A) {
 
@@ -57,21 +57,23 @@ sealed class IO<out A> {
 
     companion object {
 
-        val empty: IO<Unit> = IO.Suspend { Unit } // <2>
+        val empty: IO<Unit> = IO.Suspend { Unit }
 
-        internal fun <A> unit(a: A): IO<A> = IO.Suspend { a } // <8>
+        internal fun <A> unit(a: A): IO<A> = IO.Suspend { a }
 
-        fun <A, B, C> map2(ioa: IO<A>, iob: IO<B>, f: (A) -> (B) -> C): IO<C> = ioa.flatMap { t -> iob.map { u -> f(t)(u) } }
+        fun <A, B, C> map2(ioa: IO<A>, iob: IO<B>, f: (A) -> (B) -> C): IO<C> =
+                ioa.flatMap { t -> iob.map { u -> f(t)(u) } }
 
-        fun <A> doWhile(iot: IO<A>, f: (A) -> IO<Boolean>): IO<Unit> = iot.flatMap { f(it) }
-            .flatMap { ok ->
-                when {
-                    ok   -> doWhile(iot, f)
-                    else -> empty
-                }
-            }
+        fun <A> doWhile(iot: IO<A>, f: (A) -> IO<Boolean>): IO<Unit> =
+                iot.flatMap { f(it) }
+                        .flatMap { ok ->
+                            when {
+                                ok   -> doWhile(iot, f)
+                                else -> empty
+                            }
+                        }
 
-        fun <A> repeat(n: Int, io: IO<A>): IO<Unit> = forEach(fill(n, Lazy { io }), { skip(it) })
+        fun <A> repeat(n: Int, io: IO<A>): IO<Unit> = forEach(fill(n, Lazy { io })) { skip(it) }
 
         fun <A, B> forever(ioa: IO<A>): IO<B> =
             { forever<A, B>(ioa) }.let { ioa.flatMap { it() } }
@@ -88,7 +90,7 @@ sealed class IO<out A> {
 
         private fun <A, B> fold2(s: Stream<A>, z: B, f: (B) -> (A) -> IO<B>): IO<Unit> = skip(fold(s, z, f))
 
-        internal fun <A> forEach(s: Stream<A>, f: (A) -> IO<Unit>): IO<Unit> = fold2(s, Unit, {  { a -> skip(f(a)) } })
+        internal fun <A> forEach(s: Stream<A>, f: (A) -> IO<Unit>): IO<Unit> = fold2(s, Unit) {  { a -> skip(f(a)) } }
 
         fun <A> sequence(stream: Stream<IO<A>>): IO<Unit> = forEach(stream) { skip(it) }
 

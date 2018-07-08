@@ -35,7 +35,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
         tailrec fun unfold(acc: B, z: S): B {
             val next = getNext(z)
             return when (next) {
-                Option.None -> acc
+                Option.None    -> acc
                 is Option.Some ->
                     unfold(f(acc)(next.value.first), next.value.second)
             }
@@ -102,7 +102,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
         protected fun <A : Comparable<A>> merge(head: A, first: Heap<A>, second: Heap<A>): Heap<A> =
             when {
                 first.rank >= second.rank -> H(second.rank + 1, first, head, second)
-                else -> H(first.rank + 1, second, head, first)
+                else                      -> H(first.rank + 1, second, head, first)
             }
 
         fun <A: Comparable<A>> merge(first: Heap<A>, second: Heap<A>): Heap<A> =
@@ -122,7 +122,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
                     }
                 }
             }.getOrElse(when (first) {
-                            E -> second
+                            E    -> second
                             else -> first
                         })
     }

@@ -45,7 +45,7 @@ class Manager(id: String, list: List<Int>,
     }
 
     private fun initWorker(t: Pair<Int, Int>): Result<() -> Unit> =
-        Result({ Worker("Worker " + t.second).tell(Pair(t.first, t.second), self()) })
+        Result(a = { Worker("Worker " + t.second).tell(Pair(t.first, t.second), self()) })
 
     private fun initWorkers(lst: List<() -> Unit>) {
         lst.forEach { it() }
@@ -67,7 +67,7 @@ class Manager(id: String, list: List<Int>,
         override fun process(message: Pair<Int, Int>,
                              sender: Result<Actor<Pair<Int, Int>>>) {
             managerFunction(this@Manager)(this@Behavior)(message)
-            sender.forEach({ a: Actor<Pair<Int, Int>> ->
+            sender.forEach(onSuccess = { a: Actor<Pair<Int, Int>> ->
                 workList.headSafe().forEach({ a.tell(it, self()) }) { a.shutdown() }
             })
         }

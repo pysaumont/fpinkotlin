@@ -7,7 +7,7 @@ sealed class List<A> {
     fun cons(a: A): List<A> = Cons(a, this)
 
     fun setHead(a: A): List<A> = when (this) {
-        Nil -> throw IllegalStateException("setHead called on an empty list")
+        Nil     -> throw IllegalStateException("setHead called on an empty list")
         is Cons -> tail.cons(a)
     }
 
@@ -27,7 +27,7 @@ sealed class List<A> {
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         private tailrec  fun toString(acc: String, list: List<A>): String = when (list) {
-            Nil  -> acc
+            Nil     -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -40,6 +40,6 @@ sealed class List<A> {
         }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil as List<A>) { a: A, list: List<A> -> Cons(a, list) }
     }
 }

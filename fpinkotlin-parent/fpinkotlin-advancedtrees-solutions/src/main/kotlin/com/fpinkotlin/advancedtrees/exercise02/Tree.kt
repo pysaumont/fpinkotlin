@@ -389,7 +389,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         private fun makeCell(string: String): String = when (string.length) {
             1    -> " $string  "
             2    -> " $string "
-            3    -> string + " "
+            3    -> "$string "
             else -> string
         }
 

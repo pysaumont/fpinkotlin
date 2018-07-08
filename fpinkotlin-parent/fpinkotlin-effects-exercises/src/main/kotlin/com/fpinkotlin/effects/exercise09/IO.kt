@@ -52,7 +52,7 @@ class IO<out A>(private val f: () -> A) {
             return ioa.flatMap { f(it) }
                     .flatMap { ok ->
                         when {
-                            ok -> doWhile(ioa, f)
+                            ok   -> doWhile(ioa, f)
                             else -> empty
                         }
                     }

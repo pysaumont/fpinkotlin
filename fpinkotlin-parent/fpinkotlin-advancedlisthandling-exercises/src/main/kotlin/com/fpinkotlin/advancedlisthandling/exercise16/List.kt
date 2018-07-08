@@ -21,7 +21,7 @@ sealed class List<out A> {
         tailrec fun splitAt(acc: List<A>,
                             list: List<A>, i: Int): Pair<List<A>, List<A>> =
                 when (list) {
-                    Nil -> Pair(list.reverse(), acc)
+                    Nil     -> Pair(list.reverse(), acc)
                     is Cons ->
                         if (i == 0)
                             Pair(list.reverse(), acc)

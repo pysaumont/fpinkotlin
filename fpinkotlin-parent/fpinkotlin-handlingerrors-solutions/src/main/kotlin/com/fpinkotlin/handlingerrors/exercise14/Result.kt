@@ -78,14 +78,11 @@ sealed class Result<out A>: Serializable {
             onFailure(exception)
         }
 
-        override fun <B> map(f: (A) -> B): Result<B> = Failure(
-            exception)
+        override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(
-            exception)
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(exception)
 
-        override fun mapFailure(message: String): Result<A> = Failure(
-            RuntimeException(message, exception))
+        override fun mapFailure(message: String): Result<A> = Failure(RuntimeException(message, exception))
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -154,8 +151,7 @@ sealed class Result<out A>: Serializable {
             null -> Failure(NullPointerException())
             else -> when {
                 p(a) -> Success(a)
-                else -> Failure(
-                    IllegalArgumentException("Argument $a does not match condition: $message"))
+                else -> Failure(IllegalArgumentException("Argument $a does not match condition: $message"))
             }
         }
     }

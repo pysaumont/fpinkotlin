@@ -127,14 +127,11 @@ sealed class Result<out A>: Serializable {
 
         operator fun <A> invoke(): Result<A> = Empty
 
-        fun <A> failure(message: String): Result<A> = Failure(
-            IllegalStateException(message))
+        fun <A> failure(message: String): Result<A> = Failure(IllegalStateException(message))
 
-        fun <A> failure(exception: RuntimeException): Result<A> = Failure(
-            exception)
+        fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception)
 
-        fun <A> failure(exception: Exception): Result<A> = Failure(
-            IllegalStateException(exception))
+        fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
 
         operator fun <A> invoke(a: A? = null, message: String): Result<A> = when (a) {
             null -> Failure(NullPointerException(message))
@@ -153,8 +150,7 @@ sealed class Result<out A>: Serializable {
             null -> Failure(NullPointerException())
             else -> when {
                 p(a) -> Success(a)
-                else -> Failure(
-                    IllegalArgumentException("Argument $a does not match condition: $message"))
+                else -> Failure(IllegalArgumentException("Argument $a does not match condition: $message"))
             }
         }
     }

@@ -26,7 +26,7 @@ class IO<out A>(private val f: () -> A) {
 
         fun <A> repeat(n: Int, io: IO<A> ): IO<List<A>> =
                 Stream.fill(n, Lazy { io })
-                        .foldRight( Lazy { IO { List<A>() } }) { ioa ->
+                        .foldRight(Lazy { IO { List<A>() } }) { ioa ->
                             { sioLa ->
                                 map2(ioa, sioLa()) { a ->
                                     { la: List<A> -> cons(a, la) }

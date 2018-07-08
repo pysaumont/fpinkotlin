@@ -4,19 +4,19 @@ import com.fpinkotlin.effects.listing04.ConsoleReader
 
 fun main(args: Array<String>) {
 
-    val input = ConsoleReader() // <1>
+    val input = ConsoleReader()
 
-    val rString = input.readString("Enter your name:").map { t -> t.first } // <2>
+    val rString = input.readString("Enter your name:").map { t -> t.first }
 
-    val nameMessage = rString.map { "Hello, $it!" } // <3>
+    val nameMessage = rString.map { "Hello, $it!" }
 
-    nameMessage.forEach(::println, onFailure = { println(it.message)}) // <4>
+    nameMessage.forEach(::println, onFailure = { println(it.message)})
 
     val rInt = input.readInt("Enter your age:").map  { t -> t.first }
 
     val ageMessage = rInt.map { "You look younger than $it!" }
 
-    ageMessage.forEach(::println, onFailure = { println("Invalid age. Please enter an integer")}) // <5>
+    ageMessage.forEach(::println, onFailure = { println("Invalid age. Please enter an integer")})
 }
 
 

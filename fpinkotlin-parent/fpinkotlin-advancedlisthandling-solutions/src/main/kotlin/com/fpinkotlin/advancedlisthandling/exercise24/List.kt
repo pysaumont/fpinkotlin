@@ -371,7 +371,7 @@ fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> =
     }
 
 fun <A> sequence(list: List<Result<A>>): Result<List<A>> =
-                                traverse(list, { x: Result<A> -> x })
+                                traverse(list) { x: Result<A> -> x }
 
 fun <A, B, C> zipWith(list1: List<A>,
                       list2: List<B>,

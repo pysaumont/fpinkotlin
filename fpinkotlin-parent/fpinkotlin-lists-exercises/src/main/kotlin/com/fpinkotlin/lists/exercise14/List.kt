@@ -22,7 +22,7 @@ sealed class List<out A> {
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
 
-    fun reverse(): List<A> = foldLeft(Nil as List<A>, { acc -> { acc.cons(it) } })
+    fun reverse(): List<A> = foldLeft(Nil as List<A>) { acc -> { acc.cons(it) } }
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
@@ -95,10 +95,10 @@ sealed class List<out A> {
                 }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }

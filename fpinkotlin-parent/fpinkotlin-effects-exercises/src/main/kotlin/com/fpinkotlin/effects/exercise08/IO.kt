@@ -3,8 +3,6 @@ package com.fpinkotlin.effects.exercise08
 import com.fpinkotlin.common.List
 
 
-
-
 class IO<out A>(private val f: () -> A) {
 
     operator fun invoke() = f()

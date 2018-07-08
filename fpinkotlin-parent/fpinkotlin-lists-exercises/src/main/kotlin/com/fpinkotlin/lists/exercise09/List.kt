@@ -26,7 +26,7 @@ sealed class List<out A> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = TODO("foldLeft")
 
-    fun length(): Int = foldRight(0) { _ -> { it + 1} }
+    fun length(): Int = foldRight(0) { { it + 1} }
 
     internal object Nil: List<Nothing>() {
 
@@ -88,10 +88,10 @@ sealed class List<out A> {
                 }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }

@@ -179,7 +179,7 @@ sealed class List<out A> {
             }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }

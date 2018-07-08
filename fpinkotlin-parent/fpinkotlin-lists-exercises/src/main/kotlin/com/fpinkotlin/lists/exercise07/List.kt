@@ -78,7 +78,7 @@ sealed class List<out A> {
         }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 

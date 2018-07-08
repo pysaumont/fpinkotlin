@@ -24,7 +24,7 @@ fun readXmlFile(sPath: () -> FilePath,
     }
     return {
         result.forEach(onSuccess = { effect(it) },
-                onFailure = { it.printStackTrace() })
+                       onFailure = { it.printStackTrace() })
     }
 }
 

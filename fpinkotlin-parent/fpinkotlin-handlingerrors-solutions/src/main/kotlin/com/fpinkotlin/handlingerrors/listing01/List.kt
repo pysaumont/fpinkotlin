@@ -11,7 +11,7 @@ sealed class List<out A> {
 
     fun dropWhile(p: (A) -> Boolean): List<A> = dropWhile(this, p)
 
-    fun reverse(): List<A> = foldLeft(Nil as List<A>, { acc -> { acc.cons(it) } })
+    fun reverse(): List<A> = foldLeft(Nil as List<A>) { acc -> { acc.cons(it) } }
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
@@ -51,7 +51,7 @@ sealed class List<out A> {
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
-        tailrec private fun toString(acc: String, list: List<A>): String = when (list) {
+        private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
             is Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
@@ -96,7 +96,7 @@ sealed class List<out A> {
         fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(Nil) { x -> x::concat }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 
@@ -107,18 +107,18 @@ fun <A> List<A>.setHead(a: A): List<A> = when (this) {
 
 fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
 
-fun <A> List<A>.concat(list: List<A>): List<A> = List.Companion.concat(this, list)
+fun <A> List<A>.concat(list: List<A>): List<A> = List.concat(this, list)
 
-fun <A> List<A>.concat_(list: List<A>): List<A> = List.Companion.concat_(this, list)
+fun <A> List<A>.concat_(list: List<A>): List<A> = List.concat_(this, list)
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }
 
-fun triple(list: List<Int>): List<Int> = List.foldRight(list, List<Int>()) { h -> { t -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> = List.foldRight(list, List()) { h -> { t: List<Int> -> t.cons(h * 3) } }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List<String>())  { h -> { t -> t.cons(java.lang.Double.toString(h)) } }
+        List.foldRight(list, List())  { h -> { t: List<String> -> t.cons(java.lang.Double.toString(h)) } }
 
 fun <A: Comparable<A>>  max(list: List<A>): Either<String, A> = when(list) {
     is List.Nil  -> Either.left("max called on an empty list")

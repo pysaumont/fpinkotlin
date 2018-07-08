@@ -17,14 +17,14 @@ fun <T> readXmlFile(sPath: () -> FilePath,
     val path = sPath().value
     val rDoc = path.flatMap(::readFile2String)
     val rRoot = sRootName().value
-    val result = rDoc.flatMap({ doc ->
+    val result = rDoc.flatMap { doc ->
         rRoot.flatMap { rootElementName ->
             readDocument(rootElementName, doc) }
                 .map { list -> list.map(function) }
-    })
+    }
     return {
         result.forEach(onSuccess = { effect(it) },
-                onFailure = { throw it })
+                       onFailure = { throw it })
     }
 }
 

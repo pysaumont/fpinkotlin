@@ -1,9 +1,6 @@
 package com.fpinkotlin.advancedtrees.exercise04
 
-import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.B
-import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.BB
-import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.NB
-import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.R
+import com.fpinkotlin.advancedtrees.exercise04.Tree.Color.*
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.List.Companion.concat
 import com.fpinkotlin.common.List.Companion.cons
@@ -398,7 +395,7 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         private fun makeCell(string: String): String = when (string.length) {
                 1    -> " $string  "
                 2    -> " $string "
-                3    -> string + " "
+                3    -> "$string "
                 else -> string
             }
 

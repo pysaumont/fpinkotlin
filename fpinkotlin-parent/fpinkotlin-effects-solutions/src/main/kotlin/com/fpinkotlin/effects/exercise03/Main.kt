@@ -16,7 +16,7 @@ fun readPersonsFromFile(path: String): Result<List<Person>> =
         }
 
 fun main(args: Array<String>) {
-    val path = "/run/media/pysaumont/KINGSTON2/fpinkotlin/fpinkotlin/fpinkotlin-parent/fpinkotlin-effects-solutions/src/main/kotlin/com/fpinkotlin/effects/exercise03/data.txt"
+    val path = "/replace/with/valid/path/data.txt"
     readPersonsFromScript("1", "Mickey", "Mouse", "2", "Minnie", "Mouse", "3", "Donald", "Duck").forEach(::println)
     readPersonsFromFile(path).forEach({ list: List<Person> ->
         list.forEach(::println)

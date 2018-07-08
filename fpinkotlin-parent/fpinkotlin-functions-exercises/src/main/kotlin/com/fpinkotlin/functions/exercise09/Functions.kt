@@ -31,4 +31,4 @@ fun <A, B, C> partialA(a: A, f: (A) -> (B) -> C): (B) -> C =  f(a)
 
 fun <A, B, C> partialB(b: B, f: (A) -> (B) -> C): (A) -> C = { a: A -> f(a)(b) }
 
-fun  curried() = null// Define a function returning curried form of func(a: A, b: B, c: C, d: D)
+fun  curried() = null// Define a function returning curried form of function(a: A, b: B, c: C, d: D)

@@ -26,10 +26,10 @@ class Manager(id: String, list: List<Int>,
             { behavior ->
                 { p ->
                     val result = streamResult(behavior.resultHeap + p,
-                                              behavior.expected, List()) // <1>
+                                              behavior.expected, List())
                     result.third.forEach { client.tell(it) }
                     if (result.second > limit) {
-                        this.client.tell(-1) // <2>
+                        this.client.tell(-1)
                     } else {
                         manager.context
                             .become(Behavior(behavior.workList
@@ -46,14 +46,14 @@ class Manager(id: String, list: List<Int>,
                   Triple<Heap<Pair<Int, Int>>, Int, List<Int>> {
         val triple = Triple(result, expected, list)
         val temp = result.head
-            .flatMap({ head ->
-                 result.tail().map { tail ->
-                     if (head.second == expected)
-                         streamResult(tail, expected + 1, list.cons(head.first))
-                     else
-                         triple
-                 }
-             })
+            .flatMap { head ->
+                result.tail().map { tail ->
+                    if (head.second == expected)
+                        streamResult(tail, expected + 1, list.cons(head.first))
+                    else
+                        triple
+                }
+            }
         return temp.getOrElse(triple)
     }
 
@@ -65,7 +65,7 @@ class Manager(id: String, list: List<Int>,
     }
 
     private fun initWorker(t: Pair<Int, Int>): Result<() -> Unit> =
-        Result({ Worker("Worker " + t.second).tell(Pair(t.first, t.second), self()) })
+        Result(a = { Worker("Worker " + t.second).tell(Pair(t.first, t.second), self()) })
 
     private fun initWorkers(lst: List<() -> Unit>) {
         lst.forEach { it() }
@@ -85,7 +85,7 @@ class Manager(id: String, list: List<Int>,
         override fun process(message: Pair<Int, Int>,
                              sender: Result<Actor<Pair<Int, Int>>>) {
             managerFunction(this@Manager)(this@Behavior)(message)
-            sender.forEach({ a: Actor<Pair<Int, Int>> ->
+            sender.forEach(onSuccess = { a: Actor<Pair<Int, Int>> ->
                 workList.headSafe().forEach({ a.tell(it, self()) }) { a.shutdown() }
             })
         }

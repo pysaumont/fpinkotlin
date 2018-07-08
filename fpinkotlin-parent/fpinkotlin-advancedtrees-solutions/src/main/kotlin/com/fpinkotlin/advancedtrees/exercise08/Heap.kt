@@ -71,7 +71,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
         override fun tail(): Result<Heap<A>> = Result(merge(lft, rght))
 
         override fun get(index: Int): Result<A> = when (index) {
-            0 -> Result(hd)
+            0    -> Result(hd)
             else -> tail().flatMap { it.get(index - 1) }
         }
 
@@ -87,7 +87,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
         protected fun <A : Comparable<A>> merge(head: A, first: Heap<A>, second: Heap<A>): Heap<A> =
             when {
                 first.rank >= second.rank -> H(second.rank + 1, first, head, second)
-                else -> H(first.rank + 1, second, head, first)
+                else                      -> H(first.rank + 1, second, head, first)
             }
 
         fun <A: Comparable<A>> merge(first: Heap<A>, second: Heap<A>): Heap<A> =
@@ -107,7 +107,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
                     }
                 }
             }.getOrElse(when (first) {
-                            E -> second
+                            E    -> second
                             else -> first
                         })
     }

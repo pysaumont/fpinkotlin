@@ -156,13 +156,13 @@ fun main(args: Array<String>) {
         .forEach(onSuccess = { println(it) }, onFailure = { println(it) })
 
     val person1 = propertyReader.readAsInt("id")
-        .flatMap({ id ->
-             propertyReader.readAsString("firstName")
-                 .flatMap({ firstName ->
-                      propertyReader.readAsString("lastName")
-                          .map({ lastName -> Person(id, firstName, lastName) })
-                  })
-         })
+        .flatMap { id ->
+            propertyReader.readAsString("firstName")
+                    .flatMap { firstName ->
+                        propertyReader.readAsString("lastName")
+                                .map { lastName -> Person(id, firstName, lastName) }
+                    }
+        }
 
     person1.forEach(onSuccess = { println(it) }, onFailure = { println(it) })
 

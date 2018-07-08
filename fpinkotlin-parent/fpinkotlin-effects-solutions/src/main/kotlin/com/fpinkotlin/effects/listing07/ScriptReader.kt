@@ -7,11 +7,11 @@ import com.fpinkotlin.effects.listing02.Input
 
 class ScriptReader : Input {
 
-    constructor(commands: List<String>) : super() { // <1>
+    constructor(commands: List<String>) : super() {
         this.commands = commands
     }
 
-    constructor(vararg commands: String) : super() { // <2>
+    constructor(vararg commands: String) : super() {
         this.commands = List(*commands)
     }
 

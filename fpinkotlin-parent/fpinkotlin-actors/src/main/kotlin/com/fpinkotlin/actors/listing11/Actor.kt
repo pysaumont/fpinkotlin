@@ -19,7 +19,6 @@ interface MessageProcessor<T> {
     fun process(message: T, sender: Result<Actor<T>>)
 }
 
-
 interface Actor<T> {
 
     val context: ActorContext<T>
@@ -34,7 +33,7 @@ interface Actor<T> {
 
     companion object {
 
-        fun <T> noSender(): Result<Actor<T>> = Result() // <1>
+        fun <T> noSender(): Result<Actor<T>> = Result()
     }
 }
 

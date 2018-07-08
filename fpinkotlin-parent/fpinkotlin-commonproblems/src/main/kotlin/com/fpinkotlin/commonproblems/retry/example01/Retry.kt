@@ -18,20 +18,6 @@ fun <A, B> retry(f: (A) -> B, times: Int, delay: Long = 10): (A) -> Result<B> {
     return { a -> retry(a, Result.of { f(a) }, Result(), times - 1)}
 }
 
-//fun <A, B> retry_(f: (A) -> B, times: Int, delay: Long = 10): (A) -> Result<B> = { a: A ->
-//    rt@ range(0, times).foldLeft(Result()) { _->
-//        { n ->
-//            try {
-//                print("Try $n: ")
-//                return@rt Result(f(a))
-//            } catch (e: Exception) {
-//                Thread.sleep(delay)
-//                Result.failure(e)
-//            }
-//        }
-//    }
-//}
-
 fun show(message: String) =
     Random().nextInt(10).let {
         when {

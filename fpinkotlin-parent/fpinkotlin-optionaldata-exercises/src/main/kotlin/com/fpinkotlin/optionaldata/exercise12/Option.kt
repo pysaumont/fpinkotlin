@@ -75,9 +75,9 @@ val mean: (List<Double>) -> Option<Double> = { list ->
 
 val variance: (List<Double>) -> Option<Double> = { list ->
     mean(list).flatMap { m ->
-        mean(list.map({ x ->
+        mean(list.map { x ->
             Math.pow((x - m), 2.0)
-        }))
+        })
     }
 }
 
@@ -90,9 +90,9 @@ fun mean(list: List<Double>): Option<Double> =
 
 fun variance(list: List<Double>): Option<Double> =
     mean(list).flatMap { m ->
-        mean(list.map({ x ->
+        mean(list.map { x ->
             Math.pow((x - m), 2.0)
-        }))
+        })
     }
 
 val abs: (Double) -> Double = { d -> if (d > 0) d else -d }

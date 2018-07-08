@@ -78,7 +78,7 @@ sealed class List<A> {
         }
 
         operator fun <A> invoke(vararg az: A): List<A> = TODO("invoke")
-        // Uncomment this implementation after adding variance handling to the class
+        // Use this implementation after adding variance handling to the class
                 // az.foldRight(Nil, { a: A, list: List<A> -> Cons(a, list) })
     }
 }

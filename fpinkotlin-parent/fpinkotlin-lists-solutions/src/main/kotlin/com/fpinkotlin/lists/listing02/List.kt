@@ -71,7 +71,7 @@ sealed class List<out A> {
                 }
 
         operator fun <A> invoke(vararg az: A): List<A> =
-                az.foldRight(Nil as List<A>, { a: A, list: List<A> -> Cons(a, list) })
+                az.foldRight(Nil as List<A>) { a: A, list: List<A> -> Cons(a, list) }
     }
 }
 
@@ -82,8 +82,8 @@ fun <A> List<A>.setHead(a: A): List<A> = when (this) {
 
 fun <A> List<A>.cons(a: A): List<A> = List.Cons(a, this)
 
-fun <A> List<A>.concat(list: List<A>): List<A> = List.Companion.concat(this, list)
+fun <A> List<A>.concat(list: List<A>): List<A> = List.concat(this, list)
 
-fun sum(list: List<Int>): Int = list.foldRight(0, { x -> { y -> x + y } })
+fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
-fun product(list: List<Double>): Double = list.foldRight(1.0, { x -> { y -> x * y } })
+fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }

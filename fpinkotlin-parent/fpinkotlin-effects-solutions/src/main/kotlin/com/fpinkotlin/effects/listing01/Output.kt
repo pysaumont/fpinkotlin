@@ -4,8 +4,8 @@ import com.fpinkotlin.common.Result
 
 
 fun main(args: Array<String>) {
-    val ra = Result(4)// <1>
-    val rb = Result(0)// <1>
+    val ra = Result(4)
+    val rb = Result(0)
     val inverse: (Int) -> Result<Double> = { x ->
         when {
             x != 0 -> Result(1.toDouble() / x)
@@ -19,8 +19,8 @@ fun main(args: Array<String>) {
     val rt2 = rb.flatMap(inverse)
 
     print("Inverse of 4: ")
-    rt1.forEach(showResult, showError) // <2>
+    rt1.forEach(showResult, showError)
 
     System.out.print("Inverse of 0: ")
-    rt2.forEach(showResult, showError) // <3>
+    rt2.forEach(showResult, showError)
 }

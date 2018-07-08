@@ -11,7 +11,7 @@ class MapEntry<K: Any, V> private constructor(private val key: K, val value: Res
     override fun equals(other: Any?): Boolean =
             this === other || when (other) {
                 is MapEntry<*, *> -> key == other.key
-                else -> false
+                else              -> false
             }
 
     override fun hashCode(): Int = key.hashCode()

@@ -64,12 +64,12 @@ fun main(args: Array<String>) {
     val path = getXmlFilePath()
     val rDoc = path.flatMap(::readFile2String)
     val rRoot = getRootElementName()
-    val result = rDoc.flatMap({ doc ->
+    val result = rDoc.flatMap { doc ->
         rRoot.flatMap { rootElementName ->
             readDocument(rootElementName, doc)
         }.map { list ->
             toStringList(list, format)
         }
-    })
+    }
     result.forEach(onSuccess = { processList(it) }, onFailure = { it.printStackTrace() })
 }

@@ -74,14 +74,11 @@ sealed class Result<out A>: Serializable {
                              onFailure: (RuntimeException) -> Unit,
                              onEmpty: () -> Unit) = TODO("forEach")
 
-        override fun <B> map(f: (A) -> B): Result<B> = Failure(
-                exception)
+        override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(
-                exception)
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(exception)
 
-        override fun mapFailure(message: String): Result<A> = Failure(
-                RuntimeException(message, exception))
+        override fun mapFailure(message: String): Result<A> = Failure(RuntimeException(message, exception))
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -122,14 +119,11 @@ sealed class Result<out A>: Serializable {
 
         operator fun <A> invoke(): Result<A> = Empty
 
-        fun <A> failure(message: String): Result<A> = Failure(
-                IllegalStateException(message))
+        fun <A> failure(message: String): Result<A> = Failure(IllegalStateException(message))
 
-        fun <A> failure(exception: RuntimeException): Result<A> = Failure(
-                exception)
+        fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception)
 
-        fun <A> failure(exception: Exception): Result<A> = Failure(
-                IllegalStateException(exception))
+        fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
 
         operator fun <A> invoke(a: A? = null, message: String): Result<A> = when (a) {
             null -> Failure(NullPointerException(message))
@@ -148,8 +142,7 @@ sealed class Result<out A>: Serializable {
             null -> Failure(NullPointerException())
             else -> when {
                 p(a) -> Success(a)
-                else -> Failure(
-                        IllegalArgumentException("Argument $a does not match condition: $message"))
+                else -> Failure(IllegalArgumentException("Argument $a does not match condition: $message"))
             }
         }
     }

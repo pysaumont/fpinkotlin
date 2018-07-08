@@ -1,7 +1,7 @@
 package com.fpinkotlin.effects.exercise06
 
 
-class IO<out A>(private val f: () -> A) { // <1>
+class IO<out A>(private val f: () -> A) {
 
     operator fun invoke() = f()
 
@@ -11,9 +11,9 @@ class IO<out A>(private val f: () -> A) { // <1>
 
     companion object {
 
-        val empty: IO<Unit> = IO { } // <2>
+        val empty: IO<Unit> = IO { }
 
-        operator fun <A> invoke(a: A): IO<A> = IO { a } // <3>
+        operator fun <A> invoke(a: A): IO<A> = IO { a }
     }
 }
 

@@ -23,7 +23,7 @@ abstract class AbstractReader (private val reader: BufferedReader): Input {
         reader.readLine().let {
             when {
                 it.isEmpty() -> Result()
-                it == "-1"-> throw IOException("Exception reading input")
+                it == "-1"   -> throw IOException("Exception reading input")
                 else         -> Result(Pair(it.toInt(), this))
             }
         }

@@ -7,8 +7,7 @@ class Worker(id: String) : AbstractActor<Pair<Int, Int>>(id) {
 
     override fun onReceive(message: Pair<Int, Int>,
                            sender: Result<Actor<Pair<Int, Int>>>) {
-        sender.forEach(
-                { a: Actor<Pair<Int, Int>> ->
+        sender.forEach (onSuccess = { a: Actor<Pair<Int, Int>> ->
                     a.tell(Pair(fibonacci(message.first),
                                 message.second) , self())
                 })

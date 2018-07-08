@@ -80,7 +80,7 @@ sealed class Heap<out A: Comparable<@UnsafeVariance A>> {
                     }
                 }
             }.getOrElse(when (first) {
-                            E -> second
+                            E    -> second
                             else -> first
                         })
     }

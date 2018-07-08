@@ -1,9 +1,6 @@
 package com.fpinkotlin.recursion.exercise13
 
 
-class Unfold {
-}
-
 fun <T> List<T>.head(): T =
     if (this.isEmpty())
         throw IllegalArgumentException("head called on empty list")

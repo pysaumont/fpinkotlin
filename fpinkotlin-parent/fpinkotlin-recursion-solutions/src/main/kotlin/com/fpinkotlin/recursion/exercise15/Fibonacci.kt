@@ -2,6 +2,7 @@ package com.fpinkotlin.recursion.exercise15
 
 import java.math.BigInteger
 
+
 fun <T> List<T>.head(): T =
     if (this.isEmpty())
         throw IllegalArgumentException("head called on empty list")
@@ -41,7 +42,7 @@ fun <T> makeString(list: List<T>, separator: String): String =
     when {
         list.isEmpty() -> ""
         list.tail().isEmpty() -> list.head().toString()
-        else -> list.head().toString() + // <4>
+        else -> list.head().toString() +
             foldLeft(list.tail(), "") { x, y -> x + separator + y}
     }
 

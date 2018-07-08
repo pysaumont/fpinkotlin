@@ -33,7 +33,7 @@ sealed class Option<out A> {
 
         override fun equals(other: Any?): Boolean = when (other) {
             is Some<*> -> value == other.value
-            else                                                             -> false
+            else       -> false
         }
 
         override fun hashCode(): Int = value?.hashCode() ?: 0
@@ -99,8 +99,7 @@ fun abs0(od: Option<Double>): Option<Double> = lift(
 
 val upperOption: (Option<String>) -> Option<String> = lift { it.toUpperCase() }
 
-val upperOption_: (Option<String>) -> Option<String> = lift(
-    String::toUpperCase)
+val upperOption_: (Option<String>) -> Option<String> = lift(String::toUpperCase)
 
 fun <A, B, C> map2(oa: Option<A>,
                    ob: Option<B>,
@@ -124,4 +123,4 @@ fun <A, B> traverse_(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
             }
         }
 
-fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse_(list, { x: Option<A> -> x })
+fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse_(list) { x: Option<A> -> x }

@@ -9,12 +9,12 @@ import java.io.InputStreamReader
 
 class ConsoleReader(reader: BufferedReader): AbstractReader(reader) {
 
-    override fun readString(message: String): Result<Pair<String, Input>> { // <1>
+    override fun readString(message: String): Result<Pair<String, Input>> {
         print("$message ")
         return readString()
     }
 
-    override fun readInt(message: String): Result<Pair<Int, Input>> { // <1>
+    override fun readInt(message: String): Result<Pair<Int, Input>> {
         print("$message ")
         return readInt()
     }
@@ -22,7 +22,7 @@ class ConsoleReader(reader: BufferedReader): AbstractReader(reader) {
 
     companion object {
         operator fun invoke(): ConsoleReader =
-                ConsoleReader(BufferedReader(InputStreamReader(System.`in`))) // <2>
+                ConsoleReader(BufferedReader(InputStreamReader(System.`in`)))
 
     }
 }

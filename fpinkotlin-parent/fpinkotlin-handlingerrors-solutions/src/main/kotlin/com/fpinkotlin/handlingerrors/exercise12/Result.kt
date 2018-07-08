@@ -3,7 +3,7 @@ package com.fpinkotlin.handlingerrors.exercise12
 import java.io.Serializable
 
 
-sealed class Result<out A>: Serializable {
+sealed class Result<out A> : Serializable {
 
     abstract fun <B> map(f: (A) -> B): Result<B>
 
@@ -53,7 +53,7 @@ sealed class Result<out A>: Serializable {
                 }
             }
 
-    internal object Empty: Result<Nothing>() {
+    internal object Empty : Result<Nothing>() {
 
         override fun forEach(onSuccess: (Nothing) -> Unit,
                              onFailure: (RuntimeException) -> Unit,
@@ -70,7 +70,7 @@ sealed class Result<out A>: Serializable {
         override fun toString(): String = "Empty"
     }
 
-    internal class Failure<out A>(private val exception: RuntimeException): Result<A>() {
+    internal class Failure<out A>(private val exception: RuntimeException) : Result<A>() {
 
         override fun forEach(onSuccess: (A) -> Unit,
                              onFailure: (RuntimeException) -> Unit,
@@ -78,14 +78,11 @@ sealed class Result<out A>: Serializable {
             onFailure(exception)
         }
 
-        override fun <B> map(f: (A) -> B): Result<B> = Failure(
-            exception)
+        override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
-        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(
-            exception)
+        override fun <B> flatMap(f: (A) -> Result<B>): Result<B> = Failure(exception)
 
-        override fun mapFailure(message: String): Result<A> = Failure(
-            RuntimeException(message, exception))
+        override fun mapFailure(message: String): Result<A> = Failure(RuntimeException(message, exception))
 
         override fun toString(): String = "Failure(${exception.message})"
     }
@@ -128,14 +125,11 @@ sealed class Result<out A>: Serializable {
 
         operator fun <A> invoke(): Result<A> = Empty
 
-        fun <A> failure(message: String): Result<A> = Failure(
-            IllegalStateException(message))
+        fun <A> failure(message: String): Result<A> = Failure(IllegalStateException(message))
 
-        fun <A> failure(exception: RuntimeException): Result<A> = Failure(
-            exception)
+        fun <A> failure(exception: RuntimeException): Result<A> = Failure(exception)
 
-        fun <A> failure(exception: Exception): Result<A> = Failure(
-            IllegalStateException(exception))
+        fun <A> failure(exception: Exception): Result<A> = Failure(IllegalStateException(exception))
 
         operator fun <A> invoke(a: A? = null, message: String): Result<A> = when (a) {
             null -> Failure(NullPointerException(message))
@@ -154,18 +148,17 @@ sealed class Result<out A>: Serializable {
             null -> Failure(NullPointerException())
             else -> when {
                 p(a) -> Success(a)
-                else -> Failure(
-                    IllegalArgumentException("Argument $a does not match condition: $message"))
+                else -> Failure(IllegalArgumentException("Argument $a does not match condition: $message"))
             }
         }
 
     }
 }
 
-fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> =  {
+fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> = {
     try {
         it.map(f)
-    } catch(e: Exception) {
+    } catch (e: Exception) {
         Result.failure(e)
     }
 }

@@ -18,7 +18,6 @@ interface MessageProcessor<T> {
     fun process(message: T, sender: Result<Actor<T>>)
 }
 
-
 interface Actor<T> {
 
     val actorContext: ActorContext<T>
