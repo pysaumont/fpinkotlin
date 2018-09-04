@@ -22,8 +22,8 @@ class ListTest: StringSpec() {
 
         "flatten" {
             forAll(IntListListGenerator(), { list ->
-                val sum1 = list.foldLeft(0) { x -> { y -> x + sum(y)} }
-                val sum2 = sum(flatten(list))
+                val sum1 = list.foldLeft("") { x -> { y -> x + y.foldLeft("") { a -> { b -> a + b } } } }
+                val sum2 = flatten(list).foldLeft("") { a -> { b -> a + b } }
                 sum1 == sum2
             }, 10)
         }
