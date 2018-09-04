@@ -123,7 +123,7 @@ data class Person(val id: Int, val firstName: String, val lastName: String) {
 
         fun readAsPersonList(propertyName: String,
                              propertyReader: PropertyReader): Result<List<Person>> =
-            propertyReader.readAsList(propertyName, { it }).flatMap { list ->
+            propertyReader.readAsList(propertyName) { it }.flatMap { list ->
                      sequence(list.map { s ->
                             readPerson(PropertyReader.stringPropertyReader(PropertyReader.toPropertyString(s)))
                         })
