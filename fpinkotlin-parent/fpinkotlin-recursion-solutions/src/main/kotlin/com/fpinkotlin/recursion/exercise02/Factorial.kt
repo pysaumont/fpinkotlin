@@ -8,3 +8,7 @@ object Factorial {
     }
     val factorial: (Int)-> Int = fact
 }
+
+object Factorial2 {
+    val factorial2: (Int)-> Int by lazy { { n: Int -> if (n <= 1) n else n * factorial2(n - 1) } }
+}
