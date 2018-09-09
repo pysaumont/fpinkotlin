@@ -19,6 +19,20 @@ class ListTest: StringSpec() {
                 second.toString() == result.first.concat(result.second).toString()
             })
         }
+        "splitAt2" {
+            forAll(IntListGenerator(), { (first, second) ->
+                val index = if (first.isEmpty()) 0 else IntGenerator(0, max(first.size - 1, 1)).generate()
+                val result = second.splitAt2(index)
+                second.toString() == result.first.concat(result.second).toString()
+            })
+        }
+        "splitAt3" {
+            forAll(IntListGenerator(), { (first, second) ->
+                val index = if (first.isEmpty()) 0 else IntGenerator(0, max(first.size - 1, 1)).generate()
+                val result = second.splitAt3(index)
+                second.toString() == result.first.concat(result.second).toString()
+            })
+        }
     }
 }
 
