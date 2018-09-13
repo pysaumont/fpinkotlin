@@ -151,7 +151,7 @@ sealed class List<out A> {
 
     fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t -> f(h).concat(t) } }
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = flatten(map(f))
 
     fun filter(p: (A) -> Boolean): List<A> = flatMap { a -> if (p(a)) List(a) else Nil }
 
