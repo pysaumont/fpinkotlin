@@ -39,7 +39,9 @@ sealed class List<out A> {
 
     fun filter(p: (A) -> Boolean): List<A> = coFoldRight(Nil) { h -> { t: List<A> -> if (p(h)) Cons(h, t) else t } }
 
-    fun <B> flatMap(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t: List<B> -> f(h).concat(t) } }
+    fun <B> flatMap1(f: (A) -> List<B>): List<B> = coFoldRight(Nil as List<B>) { h -> { t: List<B> -> f(h).concat(t) } }
+
+    fun <B> flatMap(f: (A) -> List<B>): List<B> = flatten(map(f))
 
     internal object Nil: List<Nothing>() {
 
