@@ -155,10 +155,4 @@ sealed class Result<out A> : Serializable {
     }
 }
 
-fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> = {
-    try {
-        it.map(f)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
-}
+fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> = { it.map(f) }

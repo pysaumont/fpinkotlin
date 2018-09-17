@@ -154,23 +154,12 @@ sealed class Result<out A>: Serializable {
     }
 }
 
-fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> =
-    { a ->
-        try {
-            a.map(f)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> = { it.map(f) }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Result<A>) -> (Result<B>) -> Result<C> =
     { a ->
         { b ->
-            try {
-                a.map(f).flatMap { b.map(it) }
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+            a.map(f).flatMap { b.map(it) }
         }
     }
 
@@ -178,12 +167,7 @@ fun <A, B, C, D> lift3(f: (A) -> (B) -> (C) -> D): (Result<A>) -> (Result<B>) ->
     { a ->
         { b ->
             { c ->
-                try {
-                    a.map(f).flatMap { b.map(it) }.flatMap { c.map(it) }
-                } catch (e: Exception) {
-                    Result.failure(e)
-                }
-
+                a.map(f).flatMap { b.map(it) }.flatMap { c.map(it) }
             }
         }
     }
