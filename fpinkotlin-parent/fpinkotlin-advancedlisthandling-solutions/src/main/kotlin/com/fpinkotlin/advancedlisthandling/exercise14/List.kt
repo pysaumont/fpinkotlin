@@ -17,6 +17,28 @@ sealed class List<out A> {
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): B
 
+    abstract fun <B> foldLeft(identity: B,
+                              p: (B) -> Boolean,
+                              f: (B) -> (A) -> B): B
+
+    fun getAt(index: Int): Result<A> {
+        val p: (Pair<Result<A>, Int>) -> Boolean = { it.second < 0 }
+        return Pair<Result<A>, Int>(Result.failure("Index out of bound"), index).let { identity ->
+            if (index < 0 || index >= length())
+                identity
+            else
+                foldLeft(identity, p) { ta: Pair<Result<A>, Int> ->
+                    { a: A ->
+                        if (p(ta))
+                            ta
+                        else
+                            Pair(Result(a), ta.second - 1)
+                    }
+                }
+
+        }.first
+    }
+
     fun splitAt(index: Int): Pair<List<A>, List<A>> {
         tailrec fun splitAt(acc: List<A>,
                             list: List<A>, i: Int): Pair<List<A>, List<A>> =
@@ -33,35 +55,6 @@ sealed class List<out A> {
             index > length() -> splitAt(length())
             else             -> splitAt(Nil, this.reverse(), this.length() - index)
         }
-    }
-
-    fun getAt(index: Int): Result<A> {
-        data class Pair<out A>(val first: Result<A>, val second: Int) {
-            override fun equals(other: Any?): Boolean = when {
-                other == null -> false
-                other.javaClass == this.javaClass -> (other as Pair<A>).second == second
-                else -> false
-            }
-
-            override fun hashCode(): Int =
-                    first.hashCode() + second.hashCode()
-        }
-
-        return Pair<A>(Result.failure("Index out of bound"), index).let { identity ->
-            Pair<A>(Result.failure("Index out of bound"), -1).let { zero ->
-                if (index < 0 || index >= length())
-                    identity
-                else
-                    foldLeft(identity, zero) { ta: Pair<A> ->
-                        { a: A ->
-                            if (ta.second < 0)
-                                ta
-                            else
-                                Pair(Result(a), ta.second - 1)
-                        }
-                    }
-            }
-        }.first
     }
 
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
@@ -116,6 +109,8 @@ sealed class List<out A> {
 
     internal object Nil: List<Nothing>() {
 
+        override fun <B> foldLeft(identity: B, p: (B) -> Boolean, f: (B) -> (Nothing) -> B): B = identity
+
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (Nothing) -> B): B = identity
 
         override fun headSafe(): Result<Nothing> = Result()
@@ -131,6 +126,18 @@ sealed class List<out A> {
 
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
+
+        override fun <B> foldLeft(identity: B, p: (B) -> Boolean, f: (B) -> (A) -> B): B {
+            fun foldLeft(acc: B, list: List<A>): B = when (list) {
+                Nil -> acc
+                is Cons ->
+                    if (p(acc))
+                        acc
+                    else
+                        foldLeft(f(acc)(list.head), list.tail)
+            }
+            return foldLeft(identity, this)
+        }
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (A) -> B): B {
             fun <B> foldLeft(acc: B, zero: B, list: List<A>, f: (B) -> (A) -> B): B = when (list) {
@@ -223,16 +230,7 @@ tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
 }
 
 fun <A> flattenResult(list: List<Result<A>>): List<A> =
-    flatten(list.foldRight(List()) { ra: Result<A> ->
-        { lla: List<List<A>> -> lla.cons(ra.map { List(it)}.getOrElse(List())) }
-    })
-
-fun <A> flattenResultLeft(list: List<Result<A>>): List<A> =
-    flatten(list.foldLeft(List.Nil as List<List<A>>) { lla: List<List<A>> ->
-        { ra: Result<A> ->
-            lla.cons(ra.map { List(it)}.getOrElse(List()))
-        }
-    }).reverse()
+        list.flatMap { ra -> ra.map { List(it) }.getOrElse(List()) }
 
 fun <A> sequenceLeft(list: List<Result<A>>): Result<List<A>> =
     list.foldLeft(Result(List())) { x: Result<List<A>> ->
@@ -256,19 +254,18 @@ fun <A, B, C> zipWith(list1: List<A>,
                       list2: List<B>,
                       f: (A) -> (B) -> C): List<C> {
     tailrec
-    fun <A, B, C> zipWith(acc: List<C>,
-                          list1: List<A>,
-                          list2: List<B>,
-                          f: (A) -> (B) -> C): List<C> = when (list1) {
-                              List.Nil -> acc
-                              is List.Cons -> when (list2) {
-                                  List.Nil -> acc
-                                  is List.Cons ->
-                                      zipWith(acc.cons(f(list1.head)(list2.head)),
-                                              list1.tail, list2.tail, f)
-                              }
-                          }
-    return zipWith(List(), list1, list2, f).reverse()
+    fun zipWith(acc: List<C>,
+                list1: List<A>,
+                list2: List<B>): List<C> = when (list1) {
+        List.Nil -> acc
+        is List.Cons -> when (list2) {
+            List.Nil -> acc
+            is List.Cons ->
+                zipWith(acc.cons(f(list1.head)(list2.head)),
+                        list1.tail, list2.tail)
+        }
+    }
+    return zipWith(List(), list1, list2).reverse()
 }
 
 fun <A, B, C> product(list1: List<A>,

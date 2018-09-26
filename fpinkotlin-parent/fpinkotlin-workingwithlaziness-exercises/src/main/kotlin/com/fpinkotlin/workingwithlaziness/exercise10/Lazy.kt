@@ -19,11 +19,6 @@ class Lazy<out A>(function: () -> A): () -> A {
     fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit): Unit = TODO("forEach")
 
     fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: (A) -> Unit): Unit = TODO("forEach")
-
-    companion object {
-
-        operator fun <A> invoke(function: () -> A): Lazy<A> = Lazy(function)
-    }
 }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =

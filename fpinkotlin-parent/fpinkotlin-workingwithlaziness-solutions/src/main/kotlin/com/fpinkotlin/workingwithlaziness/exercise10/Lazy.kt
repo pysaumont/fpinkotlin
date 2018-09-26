@@ -32,11 +32,6 @@ class Lazy<out A>(function: () -> A): () -> A {
                 ifTrue(value)
             else
                 ifFalse(value)
-
-    companion object {
-
-        operator fun <A> invoke(function: () -> A): Lazy<A> = Lazy(function)
-    }
 }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =

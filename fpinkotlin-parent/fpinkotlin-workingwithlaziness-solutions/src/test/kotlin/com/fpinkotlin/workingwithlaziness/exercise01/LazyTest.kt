@@ -9,7 +9,7 @@ class LazyTest: StringSpec() {
     init {
 
         "Lazy" {
-            forAll(IntGenerator(), {
+            forAll(IntGenerator()) {
 
                 var firstCalls = 0
                 var secondCalls = 0
@@ -25,7 +25,7 @@ class LazyTest: StringSpec() {
                         (first() || second()) &&
                         (1 == firstCalls) &&
                         (0 == secondCalls)
-            })
+            }
         }
     }
 }

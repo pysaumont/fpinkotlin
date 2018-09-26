@@ -16,6 +16,12 @@ class ListTest: StringSpec() {
                 result.values.fold(0) { r, list -> r + list.length() } == first.size
             })
         }
+        "groupByViaFoldRight" {
+            forAll(IntListGenerator(), { (first, second) ->
+                val result = second.groupByViaFoldRight { it % 5 }
+                result.values.fold(0) { r, list -> r + list.length() } == first.size
+            })
+        }
     }
 }
 

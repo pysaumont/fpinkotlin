@@ -150,16 +150,7 @@ tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
 }
 
 fun <A> flattenResult(list: List<Result<A>>): List<A> =
-        flatten(list.foldRight(List()) { ra: Result<A> ->
-            { lla: List<List<A>> -> lla.cons(ra.map { List(it)}.getOrElse(List())) }
-        })
-
-fun <A> flattenResultLeft(list: List<Result<A>>): List<A> =
-        flatten(list.foldLeft(List.Nil as List<List<A>>) { lla: List<List<A>> ->
-            { ra: Result<A> ->
-                lla.cons(ra.map { List(it)}.getOrElse(List()))
-            }
-        }).reverse()
+        list.flatMap { ra -> ra.map { List(it) }.getOrElse(List()) }
 
 fun <A> sequenceLeft(list: List<Result<A>>): Result<List<A>> =
         list.foldLeft(Result(List())) { x: Result<List<A>> ->

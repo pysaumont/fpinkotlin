@@ -18,14 +18,6 @@ class ListTest: StringSpec() {
                 result.toString() == firstFiltered.toString()
             })
         }
-
-        "flattenResultLeft" {
-            forAll(IntListGenerator(), { (first, second) ->
-                val firstFiltered = List(*first).filter { it % 2 == 0 }
-                val result = flattenResultLeft(second.map { if (it % 2 == 0) Result(it) else Result.failure("Odd") })
-                result.toString() == firstFiltered.toString()
-            })
-        }
     }
 }
 
