@@ -126,6 +126,8 @@ sealed class Stream<out A> {
 
         operator fun <A> invoke(): Stream<A> = Empty
 
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
+
         tailrec fun <A> dropWhile(stream: Stream<A>,
                               p: (A) -> Boolean): Stream<A> = when (stream) {
                 Empty -> stream

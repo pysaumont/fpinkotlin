@@ -117,6 +117,8 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
+
         tailrec fun <A> dropWhile(stream: Stream<A>,
                               p: (A) -> Boolean): Stream<A> = when (stream) {
                 Empty -> stream
@@ -157,7 +159,6 @@ sealed class Stream<out A> {
     }
 }
 
-fun fibs(): Stream<Int> =
-    Stream.iterate(Pair(1, 1)) { x ->
-        Pair(x.second, x.first + x.second)
-    }.map { x -> x.first }
+fun fibs(): Stream<Int> = Stream.iterate(Pair(1, 1)) {
+    (x, y) ->  Pair(y, x + y)
+}.map { it.first }

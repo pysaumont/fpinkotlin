@@ -20,15 +20,7 @@ class LazyTest: StringSpec() {
                 val testValue = a - start / 2
                 val result1 = stream.exists { it == testValue }
                 val evaluated = incCalls
-                println(evaluated)
                 val result2 = stream.exists { it == a }
-                println(a)
-                println(start)
-                println(result1)
-                println(result2)
-                println(evaluated)
-                println(testValue - 1)
-                println(incCalls)
                 result1 &&
                         !result2 &&
                         evaluated == testValue + 1 && // all drop values + 1 for seed

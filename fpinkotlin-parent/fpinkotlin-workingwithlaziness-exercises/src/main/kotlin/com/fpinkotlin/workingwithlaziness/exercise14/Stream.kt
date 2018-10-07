@@ -1,6 +1,5 @@
 package com.fpinkotlin.workingwithlaziness.exercise14
 
-import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
 
 
@@ -14,9 +13,7 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun toList(): List<A> = TODO("toList")
-
-    fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
+    fun dropAtMost(n: Int): Stream<A> = TODO("dropAtMost")
 
     private object Empty: Stream<Nothing>() {
 
@@ -53,12 +50,6 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
-        tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
-            n > 0 -> when (stream) {
-                Empty -> stream
-                is Cons -> dropAtMost(n - 1, stream.tl())
-            }
-            else -> stream
-        }
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
     }
 }

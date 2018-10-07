@@ -8,11 +8,12 @@ class LazyTest: StringSpec() {
 
     init {
 
-        "dropAtMost&takeAtMost" {
-            forAll(IntGenerator(0, 100_000), { a ->
-                val offset = IntGenerator(1, 500).generate()
-                val stream = Stream.from(a).dropAtMost(offset).takeAtMost(offset)
-                stream.head().map { it == a + offset }.getOrElse(false)
+        "head&tail" {
+            forAll(IntGenerator(), { a ->
+                val stream = Stream.from(a)
+                val first = stream.head().getOrElse(0)
+                val second = stream.tail().getOrElse(Stream.invoke()).head().getOrElse(0)
+                first == a && second == a + 1
             })
         }
     }

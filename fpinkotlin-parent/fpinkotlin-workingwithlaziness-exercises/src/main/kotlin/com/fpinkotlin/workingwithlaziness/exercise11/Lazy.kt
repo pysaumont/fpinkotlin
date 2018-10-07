@@ -3,6 +3,7 @@ package com.fpinkotlin.workingwithlaziness.exercise11
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
 import com.fpinkotlin.common.sequence
+import java.util.*
 
 class Lazy<out A>(function: () -> A): () -> A {
 
@@ -44,3 +45,17 @@ fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = Lazy { lst.map { it() } }
 
 fun <A> sequenceResult(lst: List<Lazy<A>>): Lazy<Result<List<A>>> =
         Lazy { sequence(lst.map { Result.of(it) }) }
+
+
+fun main(args: Array<String>) {
+    val value = Lazy{ getValue() }
+    val rnd = Random()
+    val ifTrue: (Any) -> Unit = { println(it) }
+    val ifFalse = { _: String ->  println("No value") }
+    value.forEach(rnd.nextBoolean(), ifTrue, ifFalse)
+}
+
+fun getValue(): String {
+    println("in getValue")
+    return "Value"
+}
