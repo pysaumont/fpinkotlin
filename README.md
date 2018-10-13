@@ -157,6 +157,22 @@ Code modules are generally named after the chapter titles, and not the chapter n
 
 * Chapter 8: fpinkotlin-advancedlisthandling
 
+* Chapter 9: fpinkotlin-Workingwithlaziness
+
+* Chapter 10: fpinkotlin-trees
+
+* Chapter 11: fpinkotlin-advancedtrees
+
+* Chapter 12: fpinkotlin-effects
+
+* Chapter 13: fpinkotlin-actors
+
+* Chapter 14: fpinkotlin-commonproblems
+
+## Code example fro appendix A & B
+
+The code examples for appendix A & B are to be found in a separate repository: https//github.com/pysaumont/kotlingradle
+
 
 
 
