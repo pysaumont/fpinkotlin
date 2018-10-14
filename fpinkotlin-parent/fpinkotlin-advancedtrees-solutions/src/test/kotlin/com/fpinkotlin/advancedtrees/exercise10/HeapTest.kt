@@ -6,7 +6,7 @@ import com.fpinkotlin.advancedtrees.common.range
 import com.fpinkotlin.advancedtrees.common.unfold
 import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class HeapTest: StringSpec() {

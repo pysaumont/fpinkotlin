@@ -4,7 +4,7 @@ import com.fpinkotlin.generators.IntPairGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec
 
-class AddTest: StringSpec() {
+class ListTest: StringSpec() {
 
     init {
 

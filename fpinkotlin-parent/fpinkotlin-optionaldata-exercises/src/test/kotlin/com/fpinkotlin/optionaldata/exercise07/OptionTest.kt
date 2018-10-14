@@ -12,9 +12,9 @@ class OptionTest: StringSpec() {
             forAll(DoubleListGenerator(), { (array, list) ->
                 variance(list) == when {
                     array.isEmpty() -> Option()
-                    else -> Option((array.sum() / array.size).let { list.map({ x ->
+                    else -> Option((array.sum() / array.size).let { list.map { x ->
                         Math.pow((x - it), 2.0)
-                    }).let {it.sum() / it.size} })
+                    }.let {it.sum() / it.size} })
                 }
             })
         }

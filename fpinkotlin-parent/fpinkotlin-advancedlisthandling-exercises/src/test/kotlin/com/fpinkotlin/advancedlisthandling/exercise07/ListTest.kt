@@ -25,10 +25,13 @@ class ListTest: StringSpec() {
     }
 }
 
-class DoubleListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Double>, List<Double>>> {
+class DoubleListGenerator(private val minLength: Int = 0,
+                          private val maxLength: Int = 100): Gen<Pair<Array<Double>, List<Double>>> {
+    override fun constants(): Iterable<Pair<Array<Double>, List<Double>>> = listOf(Pair(arrayOf(), List()))
 
-    override fun generate(): Pair<Array<Double>, List<Double>> {
-        val array: Array<Double> = list(Gen.double(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
-    }
+    override fun random(): Sequence<Pair<Array<Double>, List<Double>>> =
+            list(Gen.double(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Double>()) { list, i ->
+                                List.cons(i, list)}) }.random()
 }

@@ -4,8 +4,11 @@ import com.fpinkotlin.generators.forAll
 import io.kotlintest.properties.Gen
 import io.kotlintest.specs.StringSpec
 import java.io.IOException
+import java.util.*
 
 class ResultTest: StringSpec() {
+
+    private val random = Random()
 
     init {
 
@@ -52,7 +55,7 @@ class ResultTest: StringSpec() {
         }
 
         "getOrElse" {
-            val x = Gen.int().generate()
+            val x = random.nextInt()
             val f = { x }
             forAll(Gen.int(), { z ->
                 Result(z).getOrElse(f) == z &&
@@ -61,7 +64,7 @@ class ResultTest: StringSpec() {
         }
 
         "orElse" {
-            val x: Result<Int> = Result(Gen.int().generate())
+            val x: Result<Int> = Result(random.nextInt())
             val f = { x }
             forAll(Gen.int(), { z ->
                 Result(z).orElse(f).toString() == Result(z).toString() &&
@@ -70,7 +73,7 @@ class ResultTest: StringSpec() {
         }
 
         "orElseException" {
-            val x: Result<Int> = Result(Gen.int().generate())
+            val x: Result<Int> = Result(random.nextInt())
             val f = { throw IOException("IOException")  }
             forAll(Gen.int(), { z ->
                 Result(z).orElse(f).toString() == Result(z).toString() &&
@@ -79,7 +82,7 @@ class ResultTest: StringSpec() {
         }
 
         "orElseRuntimeException" {
-            val x: Result<Int> = Result(Gen.int().generate())
+            val x: Result<Int> = Result(random.nextInt())
             val f = { throw IllegalStateException("IllegalStateException")  }
             forAll(Gen.int(), { z ->
                 Result(z).orElse(f).toString() == Result(z).toString() &&

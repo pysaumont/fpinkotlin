@@ -9,7 +9,7 @@ class LazyTest: StringSpec() {
 
     init {
 
-        "Lazy" {
+        "sequenceResult" {
             forAll(IntGenerator(), { a ->
                 var name1Calls = 0
                 val name1: Lazy<String> = Lazy {
@@ -51,5 +51,6 @@ class LazyTest: StringSpec() {
                                 name4Calls == 1)
             })
         }
+
     }
 }

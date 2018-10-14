@@ -24,10 +24,23 @@ class ListTest: StringSpec() {
 }
 
 class IntListPairGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<List<Int>, List<Int>>> {
+    override fun constants(): Iterable<Pair<List<Int>, List<Int>>> =
+            listOf(Pair(List(), List()))
 
-    override fun generate(): Pair<List<Int>, List<Int>> {
-        val array1: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        val array2: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        return Pair(List(*array1), List(*array2))
-    }
+    override fun random(): Sequence<Pair<List<Int>, List<Int>>> =
+            IntListGenerator(minLength, maxLength).random().let {
+                IntListGenerator(minLength, maxLength).random().zip(it)
+                        .map { Pair(it.first.second, it.second.second) }
+            }
+}
+
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+            listOf(Pair(arrayOf(), List()))
+
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            list(Gen.int(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Int>()) { list, i ->
+                                List.cons(i, list)}) }.random()
 }

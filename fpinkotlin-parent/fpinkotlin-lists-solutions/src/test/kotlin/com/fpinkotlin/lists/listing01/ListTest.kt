@@ -1,7 +1,8 @@
 package com.fpinkotlin.lists.listing01
 
+import com.fpinkotlin.generators.forAll
+import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class ListTest: StringSpec() {
@@ -9,38 +10,27 @@ class ListTest: StringSpec() {
     init {
 
         "empty" {
-            forAll(EmptyListGenerator(), { list: List<Int> ->
-                list.isEmpty()
-            })
-        }
-
-        "not empty" {
-            forAll(IntListGenerator(), { pair ->
-                !pair.second.isEmpty()
-            })
+            forAll(IntListGenerator(), { (first, second) ->
+                (first.isEmpty() && second.isEmpty()) || (!first.isEmpty() && !second.isEmpty())
+            }, 100)
         }
 
         "toString" {
             forAll(IntListGenerator(), { (first, second) ->
+                second.isEmpty() ||
                 second.toString() == first.joinToString(", ", "[", ", NIL]")
-            })
+            }, 100)
         }
     }
 }
 
-class EmptyListGenerator<A> : Gen<List<A>> {
-    override fun generate(): List<A> = List()
-}
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
 
-class IntListGenerator : Gen<Pair<Array<Int>, List<Int>>> {
-    private val array: Array<Int> = Gen.set(Gen.int()).generate().toTypedArray()
-    override fun generate(): Pair<Array<Int>, List<Int>> = Pair(array, List(*array))
-}
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> = listOf(Pair(arrayOf(), List()))
 
-//class ListGenerator<A>(clazz: Class<A>, gen: Gen<A>) : Gen<Pair<Array<A>, List<A>>> {
-//    private val set: Set<A> = Gen.set(gen).generate()
-//    private val array = toArray(set)
-//    override fun generate(): Pair<Array<A>, List<A>> = Pair(array, List(*array))
-//}
-//
-//inline fun <reified A> toArray(set: Set<A>): Array<A> = Array(set.size) { set.elementAt(it) }
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            list(Gen.int(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Int>()) { list, i ->
+                                list.cons(i) }) }.random()
+}

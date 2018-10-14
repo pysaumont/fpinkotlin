@@ -13,5 +13,11 @@ class OptionTest: StringSpec() {
                 Option(x).map { it.toString() } == Option(x.toString())
             })
         }
+
+        "mapNone" {
+            forAll(Gen.int(), { x ->
+                (Option<Int>(null).map { it * x }).isEmpty()
+            }, 1)
+        }
     }
 }

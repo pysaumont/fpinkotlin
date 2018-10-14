@@ -15,16 +15,18 @@ class ListTest: StringSpec() {
             forAll(IntListGenerator(), { (first, second) ->
                 val firstFiltered = List(*first).filter { it % 2 == 0 }
                 val result = flattenResult(second.map { if (it % 2 == 0) Result(it) else Result.failure("Odd") })
-                sum(result) == sum(firstFiltered) && result.length() == firstFiltered.length()
+                result.toString() == firstFiltered.toString()
             })
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> = listOf(Pair(arrayOf(), List()))
 
-    override fun generate(): Pair<Array<Int>, List<Int>> {
-        val array: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
-    }
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            list(Gen.int(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Int>()) { list, i ->
+                                List.cons(i, list)}) }.random()
 }

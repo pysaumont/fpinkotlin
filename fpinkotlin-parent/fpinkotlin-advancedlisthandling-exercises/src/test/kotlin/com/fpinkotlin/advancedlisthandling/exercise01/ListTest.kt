@@ -18,11 +18,21 @@ class ListTest: StringSpec() {
     }
 }
 
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> = listOf(Pair(arrayOf(), List()))
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            list(Gen.int(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Int>()) { list, i ->
+                                List.cons(i, list)}) }.random()
+}
 
-    override fun generate(): Pair<Array<Int>, List<Int>> {
-        val array: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
-    }
+fun main(args: Array<String>) {
+    val testLimit = 35000
+    val array = Array(testLimit) {i -> i.toLong() }
+    val testList: List<Long> = List(*array)
+    val start = System.currentTimeMillis()
+    testList.map { it * 2 }
+    println(System.currentTimeMillis() - start)
 }

@@ -1,6 +1,6 @@
 package com.fpinkotlin.recursion.exercise06
 
-import com.fpinkotlin.generators.CharListGenerator
+import com.fpinkotlin.generators.CharKListGenerator
 import com.fpinkotlin.generators.IntKListGenerator
 
 import com.fpinkotlin.generators.forAll
@@ -11,7 +11,7 @@ class FoldRightTest : StringSpec() {
     init {
 
         "string" {
-            forAll(CharListGenerator(), { (array, list) ->
+            forAll(CharKListGenerator(), { (array, list) ->
                 string(list) == array.fold("") { s, c -> s + c}
             })
         }

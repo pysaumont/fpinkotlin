@@ -6,7 +6,6 @@ import com.fpinkotlin.generators.list
 import com.fpinkotlin.lists.exercise15.List.Companion.flatten
 import io.kotlintest.properties.Gen
 import io.kotlintest.specs.StringSpec
-import java.util.*
 
 class ListTest: StringSpec() {
 
@@ -22,32 +21,33 @@ class ListTest: StringSpec() {
 
         "flatten" {
             forAll(IntListListGenerator(), { list ->
-                val sum1 = list.foldLeft(0) { x -> { y -> x + sum(y)} }
-                val sum2 = sum(flatten(list))
+                val sum1 = list.foldLeft("") { x -> { y -> x + y.foldLeft("") { a -> { b -> a + b } } } }
+                val sum2 = flatten(list).foldLeft("") { a -> { b -> a + b } }
                 sum1 == sum2
             }, 10)
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<List<Int>> {
+class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun generate(): List<Int> {
-        val array: Array<Int> = list(IntGenerator(100), minLength, maxLength).generate().toTypedArray()
-        return List(*array)
-    }
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> = listOf(Pair(arrayOf(), List()))
+
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            list(Gen.int(), minLength, maxLength)
+                    .map { Pair(it.toTypedArray(),
+                            it.fold(List<Int>()) { list, i ->
+                                list.cons(i) }) }.random()
 }
 
 class IntListListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<List<List<Int>>> {
 
-    override fun generate(): List<List<Int>> {
-        val array: Array<List<Int>> = list(IntListGenerator(0, 10), minLength, maxLength).generate() .toTypedArray()
-        return List(*array)
-    }
+    override fun constants(): Iterable<List<List<Int>>> = listOf()
+
+    override fun random(): Sequence<List<List<Int>>> =
+        list(IntListGenerator(0, 10), minLength, maxLength).map { it.map { it.second } }.random().map {
+            it.fold(List<List<Int>>()) { list, i -> list.cons(i)}
+        }
 }
 
-class IntGenerator(private val max: Int): Gen<Int> {
-    private val RANDOM = Random()
-    override fun generate(): Int = RANDOM.nextInt(max)
-}
 

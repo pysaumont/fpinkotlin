@@ -18,7 +18,7 @@ class StreamTest: StringSpec() {
                     else -> drop( a - 1, s.tail().getOrElse { throw RuntimeException("No tail") })
                 }
                 val x = a % 10000 // limit the
-                val stream = drop(x, Stream.repeat(this::next))
+                val stream = drop(x, Stream.repeat{ next() })
                 val result = stream.head().getOrElse(-1)
                 n = 0
                 /*

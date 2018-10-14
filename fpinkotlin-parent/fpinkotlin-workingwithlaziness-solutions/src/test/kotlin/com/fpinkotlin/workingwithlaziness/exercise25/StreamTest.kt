@@ -4,15 +4,18 @@ import com.fpinkotlin.common.range
 import com.fpinkotlin.generators.IntGenerator
 import com.fpinkotlin.generators.forAll
 import io.kotlintest.specs.StringSpec
+import java.util.*
 
 class LazyTest: StringSpec() {
+
+    private val random = Random()
 
     init {
 
         "append" {
             forAll(IntGenerator(0, 100), { a ->
                 fun inc(i: Int): Int = i + 1
-                val limit = IntGenerator(1, 500).generate()
+                val limit = random.nextInt(500)
                 val stream = Stream
                         .iterate(Lazy{ inc(0) }, ::inc)
                         .takeAtMost(a)

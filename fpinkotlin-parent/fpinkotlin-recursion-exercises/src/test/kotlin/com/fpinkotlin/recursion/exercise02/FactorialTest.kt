@@ -2,6 +2,7 @@ package com.fpinkotlin.recursion.exercise02
 
 import com.fpinkotlin.generators.IntGenerator
 import com.fpinkotlin.generators.forAll
+import com.fpinkotlin.recursion.exercise02.Factorial.factorial
 import io.kotlintest.specs.StringSpec
 
 class FactorialTest: StringSpec() {
@@ -10,7 +11,7 @@ class FactorialTest: StringSpec() {
 
         "factorial" {
             forAll(IntGenerator(1, 30), { n ->
-                Factorial.factorial(n + 1) == Factorial.factorial(n) * (n + 1)
+                factorial(n + 1) == factorial(n) * (n + 1)
             })
         }
     }

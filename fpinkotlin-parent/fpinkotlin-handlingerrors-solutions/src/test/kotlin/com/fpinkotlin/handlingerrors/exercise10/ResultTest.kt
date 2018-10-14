@@ -22,7 +22,6 @@ class ResultTest: StringSpec() {
 
         "forEachSuccessEmpty" {
             forAll(Gen.int(), { z ->
-                val errorMessage = "Value is odd"
                 var result = false
                 (if (z % 2 == 0) Result(z) else Result()).forEachOrElse({ x -> result = (x == z)}, {}, { result = true })
                 result

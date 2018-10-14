@@ -12,8 +12,8 @@ class FunctionsTest: StringSpec() {
 
         "curried" {
             forAll(IntDoublePairGenerator(), { (a, b) ->
-                val c = Gen.string().generate()
-                val d = Gen.bool().generate()
+                val c = Gen.string().random().first()
+                val d = Gen.bool().random().first()
                 curried<Int, Double, String, Boolean>()(a)(b)(c)(d) == "$a, $b, $c, $d"
             })
         }
