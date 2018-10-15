@@ -1,8 +1,7 @@
 package com.fpinkotlin.functions.exercise08
 
 
-import com.fpinkotlin.generators.IntDoublePairGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
@@ -12,9 +11,9 @@ class FunctionsTest: StringSpec() {
     init {
 
         "partialB" {
-            forAll(IntDoublePairGenerator(), { (x, y) ->
-                partialB(y, f)(x) == f(x)(y)
-            })
+            forAll { x: Int, y: Double ->
+                y.isNaN() || y.isInfinite() || partialB(y, f)(x) == f(x)(y)
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ import com.fpinkotlin.common.range
 import com.fpinkotlin.generators.IntGenerator
 import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {

@@ -9,21 +9,21 @@ class ListTest: StringSpec() {
 
         "forEach empty" {
             val list = List<Int>()
-            var result: String = ""
+            var result = ""
             list.forEach { result += it }
             result shouldBe ""
         }
 
         "forEach 1" {
             val list = List(1)
-            var result: String = ""
+            var result = ""
             list.forEach { result += it }
             result shouldBe "1"
         }
 
         "forEach more" {
             val list = List(1, 2, 3, 4, 5)
-            var result: String = ""
+            var result = ""
             list.forEach { result += it }
             result shouldBe "12345"
         }

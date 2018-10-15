@@ -25,7 +25,12 @@ fun <T> list(gen: Gen<T>, minLength: Int = 0, maxLength: Int = 100): Gen<kotlin.
   }
 
 fun <T>  forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000) {
-  Int
+    generator.constants().forEach {
+        if (!fn(it)) throw AssertionError("Property failed for\n$it")
+    }
+    generator.random().take(numTests).forEach {
+        if (!fn(it)) throw AssertionError("Property failed for\n$it")
+    }
 }
 
 class IntGenerator(private val min: Int = 0, val max: Int = Int.MAX_VALUE): Gen<Int> {
