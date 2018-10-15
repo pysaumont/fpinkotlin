@@ -3,7 +3,7 @@ package com.fpinkotlin.advancedtrees.exercise09
 
 import com.fpinkotlin.advancedtrees.common.List
 import com.fpinkotlin.advancedtrees.common.range
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class HeapTest: StringSpec() {

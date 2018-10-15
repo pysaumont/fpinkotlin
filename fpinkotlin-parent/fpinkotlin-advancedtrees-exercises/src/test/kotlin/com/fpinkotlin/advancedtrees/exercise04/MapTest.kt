@@ -1,39 +1,36 @@
 package com.fpinkotlin.advancedtrees.exercise04
 
 
-import com.fpinkotlin.common.List
-import com.fpinkotlin.common.Result
-import com.fpinkotlin.generators.IntListGenerator
 import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.Gen
 import io.kotlintest.specs.StringSpec
 
 class MapTest: StringSpec() {
 
-    private val testLimit = 100_000
     private val timeFactor = 500
 
     init {
 
         "testAddRemoveRandom" {
-            forAll(IntListGenerator(0, testLimit, 0, 10_000), { (_, list) ->
-                val maxTime = 2L * log2nlz(list.length + 1) * timeFactor
-                val set = list.foldLeft(setOf<Int>()) { s -> { s + it }}
+            forAll( Gen.list(Gen.choose(1, 1000))) { list ->
+                val maxTime = 2L * log2nlz(list.size + 1) * timeFactor
+                val set = list.fold(setOf<Int>()) { s, t ->  s + t }
                 val time = System.currentTimeMillis()
-                val map = list.foldLeft(Map<Int, String>()) { m ->
-                    { m + Pair(it, NumbersToEnglish.convertUS(it)) }
+                val map = list.fold(Map<Int, String>()) { m, n ->
+                    m + Pair(n, NumbersToEnglish.convertUS(n))
                 }
                 val duration = System.currentTimeMillis() - time
                 val time2 = System.currentTimeMillis()
                 val duration2 = System.currentTimeMillis() - time2
                 val map2 = set.fold(map) { m, i -> m - i }
-                val result: List<Result<Boolean>> = list.map { i ->
-                        map[i].map { p -> p.second == NumbersToEnglish.convertUS(i) }
-                    }
-                (duration < maxTime) &&
-                    result.forAll { it.map { true }.getOrElse(false) } &&
-                    duration2 < maxTime &&
+                val result = list.map { i ->
+                    map[i].map { p -> p.second == NumbersToEnglish.convertUS(i) }
+                }
+                (list.isEmpty() || duration < maxTime) &&
+                    result.all { it.map { true }.getOrElse(false) } &&
+                    (list.isEmpty() || duration2 < maxTime) &&
                     map2.isEmpty()
-            }, 1)
+            }
         }
     }
 

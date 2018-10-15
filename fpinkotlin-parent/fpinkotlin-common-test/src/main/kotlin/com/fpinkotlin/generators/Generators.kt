@@ -24,7 +24,16 @@ fun <T> list(gen: Gen<T>, minLength: Int = 0, maxLength: Int = 100): Gen<kotlin.
 
   }
 
-fun <T>  forAll(generator: Gen<T>, fn: (a: T) -> Boolean, numTests: Int = 1_000) {
+fun <T>  forAll(generator: Gen<T>, fn: (a: T) -> Boolean) {
+    generator.constants().forEach {
+        if (!fn(it)) throw AssertionError("Property failed for\n$it")
+    }
+    generator.random().take(1000).forEach {
+        if (!fn(it)) throw AssertionError("Property failed for\n$it")
+    }
+}
+
+fun <T>  forAll(numTests: Int, generator: Gen<T>, fn: (a: T) -> Boolean) {
     generator.constants().forEach {
         if (!fn(it)) throw AssertionError("Property failed for\n$it")
     }
@@ -142,19 +151,13 @@ class IntDoublePairGenerator: Gen<Pair<Int, Double>> {
 
 typealias Stack<A> = com.fpinkotlin.common.List<A>
 
-class IntListGenerator(private val minLength: Int = 0,
-                       private val maxLength: Int = 100,
-                       private val minValue: Int = Int.MIN_VALUE,
-                       private val maxValue: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, Stack<Int>>> {
+class IntListGenerator(min: Int, max: Int): Gen<Stack<Int>> {
 
-    override fun constants(): Iterable<Pair<Array<Int>, Stack<Int>>> =
-            listOf(Pair(arrayOf(), Stack()))
+    val gen = Gen.list(Gen.choose(min, max))
 
-    override fun random(): Sequence<Pair<Array<Int>, Stack<Int>>> =
-            list(IntGenerator(minValue, maxValue), minLength, maxLength)
-                    .map { Pair(it.toTypedArray(),
-                            it.fold(Stack<Int>()) { list, i ->
-                                Stack.cons(i, list)}) }.random()
+    override fun constants(): Iterable<Stack<Int>> = gen.constants().map { Stack(*(it.toTypedArray())) }
+
+    override fun random(): Sequence<Stack<Int>> = gen.random().map { Stack(*(it.toTypedArray())) }
 }
 
 class DoubleListGenerator(private val minLength: Int = 0,

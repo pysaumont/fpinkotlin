@@ -1,9 +1,8 @@
 package com.fpinkotlin.advancedlisthandling.exercise11
 
 
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class ListTest: StringSpec() {
@@ -11,36 +10,32 @@ class ListTest: StringSpec() {
     init {
 
         "unZip" {
-            forAll(IntListPairGenerator(), { (list1, list2) ->
+            forAll(IntListPairGenerator()) { (list1, list2) ->
                 val zip = zipWith(list1, list2) { a -> { b: Int -> Pair(a, b) } }
                 val result = zip.unzip { it }
                 result.first.toString() ==
-                    list1.reverse().drop(list1.length() - result.first.length()).reverse().toString() &&
-                    result.second.toString() ==
+                        list1.reverse().drop(list1.length() - result.first.length()).reverse().toString() &&
+                        result.second.toString() ==
                         list2.reverse().drop(list2.length() - result.second.length()).reverse().toString()
-            })
+            }
         }
     }
 }
 
-class IntListPairGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<List<Int>, List<Int>>> {
+class IntListPairGenerator: Gen<Pair<List<Int>, List<Int>>> {
+
     override fun constants(): Iterable<Pair<List<Int>, List<Int>>> =
-            listOf(Pair(List(), List()))
+            IntListGenerator().constants().zipWithNext()
 
     override fun random(): Sequence<Pair<List<Int>, List<Int>>> =
-            IntListGenerator(minLength, maxLength).random().let {
-                IntListGenerator(minLength, maxLength).random().zip(it)
-                        .map { Pair(it.first.second, it.second.second) }
-            }
+            IntListGenerator().random().zipWithNext()
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
-    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
-            listOf(Pair(arrayOf(), List()))
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<List<Int>> {
 
-    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
-            list(Gen.int(), minLength, maxLength)
-                    .map { Pair(it.toTypedArray(),
-                            it.fold(List<Int>()) { list, i ->
-                                List.cons(i, list)}) }.random()
+    override fun constants(): Iterable<List<Int>> =
+            Gen.list(Gen.choose(min, max)).constants().map { List(*(it.toTypedArray())) }
+
+    override fun random(): Sequence<List<Int>> =
+            Gen.list(Gen.choose(min, max)).random().map { List(*(it.toTypedArray())) }
 }

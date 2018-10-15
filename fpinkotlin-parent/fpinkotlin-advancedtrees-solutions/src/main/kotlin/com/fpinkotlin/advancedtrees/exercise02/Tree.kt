@@ -1,6 +1,9 @@
 package com.fpinkotlin.advancedtrees.exercise02
 
-import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.*
+import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.B
+import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.BB
+import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.NB
+import com.fpinkotlin.advancedtrees.exercise02.Tree.Color.R
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.List.Companion.concat
 import com.fpinkotlin.common.List.Companion.cons
