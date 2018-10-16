@@ -1,8 +1,7 @@
 package com.fpinkotlin.recursion.exercise12
 
 
-import com.fpinkotlin.generators.IntPairGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class RangeTest : StringSpec() {
@@ -10,9 +9,9 @@ class RangeTest : StringSpec() {
     init {
 
         "range" {
-            forAll(IntPairGenerator(), { (a, b) ->
-                range(a, b) == (a until b).toList()
-            })
+            forAll { a: Int, b: Int ->
+                b > a || range(a, b) == (a until b).toList()
+            }
         }
     }
 }

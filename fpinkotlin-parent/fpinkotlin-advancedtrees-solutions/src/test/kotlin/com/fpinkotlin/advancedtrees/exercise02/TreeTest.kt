@@ -4,7 +4,7 @@ import com.fpinkotlin.advancedtrees.common.Option
 import com.fpinkotlin.advancedtrees.common.range
 import com.fpinkotlin.advancedtrees.common.unfold
 import com.fpinkotlin.generators.IntListGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
@@ -48,7 +48,7 @@ class TreeTest: StringSpec() {
         }
 
         "testAddRemoveRandom" {
-            forAll(1, IntListGenerator(0, testLimit, 0, 10_000)) { (_, list) ->
+            forAll(1, IntListGenerator(0, testLimit)) { (_, list) ->
                 val maxTime = 2L * log2nlz(list.length + 1) * timeFactor
                 val set = list.foldLeft(setOf<Int>()) { s -> { s + it }}
                 val time = System.currentTimeMillis()

@@ -4,7 +4,7 @@ package com.fpinkotlin.trees.exercise10
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Option
 import com.fpinkotlin.common.unfold
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {

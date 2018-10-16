@@ -41,14 +41,15 @@ class DoubleListGenerator(val min: Double = Double.MIN_VALUE, val max: Double = 
         assert(min < max) { "min must be < max" }
         val random = Random()
         return object : Gen<Double> {
+
             override fun constants(): Iterable<Double> = emptyList()
+
             override fun random(): Sequence<Double> =
-                    generateSequence { random.nextDouble() }.filter { it in min..max }
+                generateSequence { random.nextDouble() }.filter { it in min..max }
         }
     }
-    val gen = Gen.list(choose())
 
-    override fun constants(): Iterable<List<Double>> = gen.constants().map { List(*(it.toTypedArray())) }
+    override fun constants(): Iterable<List<Double>> = Gen.list(choose()).constants().map { List(*(it.toTypedArray())) }
 
-    override fun random(): Sequence<List<Double>> = gen.random().map { List(*(it.toTypedArray())) }
+    override fun random(): Sequence<List<Double>> = Gen.list(choose()).random().map { List(*(it.toTypedArray())) }
 }

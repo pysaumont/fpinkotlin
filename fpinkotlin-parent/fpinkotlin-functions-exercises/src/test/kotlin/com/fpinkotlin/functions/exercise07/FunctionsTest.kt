@@ -1,7 +1,6 @@
 package com.fpinkotlin.functions.exercise07
 
 
-import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
@@ -10,11 +9,12 @@ class FunctionsTest: StringSpec() {
 
     init {
 
-        "partialA" {
-            forAll { x: Int, y: Double ->
-                y.isNaN() || y.isInfinite() || partialA(x, f)(y) == f(x)(y)
-            }
-        }
+// Uncomment after implementing the function
+//        "partialA" {
+//            forAll { x: Int, y: Double ->
+//                y.isNaN() || y.isInfinite() || partialA(x, f)(y) == f(x)(y)
+//            }
+//        }
     }
 }
 

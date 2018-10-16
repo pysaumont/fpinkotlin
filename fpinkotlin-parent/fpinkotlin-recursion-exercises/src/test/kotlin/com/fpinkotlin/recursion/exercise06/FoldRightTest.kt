@@ -1,9 +1,7 @@
 package com.fpinkotlin.recursion.exercise06
 
 import com.fpinkotlin.generators.CharKListGenerator
-import com.fpinkotlin.generators.IntKListGenerator
-
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FoldRightTest : StringSpec() {
@@ -11,18 +9,18 @@ class FoldRightTest : StringSpec() {
     init {
 
         "string" {
-            forAll(CharKListGenerator(), { (array, list) ->
-                string(list) == array.fold("") { s, c -> s + c}
-            })
+            forAll(CharKListGenerator()) { list ->
+                string(list) == list.toCharArray().fold("") { s, c -> s + c}
+            }
         }
     }
 
     init {
 
         "sum" {
-            forAll(IntKListGenerator(), { (array, list) ->
-                sum(list) == array.fold(0) { s, c -> s + c}
-            })
+            forAll { list: List<Int> ->
+                sum(list) == list.toIntArray().fold(0) { s, c -> s + c}
+            }
         }
     }
 }

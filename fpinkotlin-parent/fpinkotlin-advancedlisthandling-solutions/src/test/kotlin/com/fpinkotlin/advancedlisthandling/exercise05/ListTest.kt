@@ -22,11 +22,9 @@ class ListTest: StringSpec() {
     }
 }
 
-class IntListGenerator(min: Int, max: Int): Gen<List<Int>> {
+class IntListGenerator(private val min: Int, private val max: Int): Gen<List<Int>> {
 
-    val gen = Gen.list(Gen.choose(min, max))
+    override fun constants(): Iterable<List<Int>> = Gen.list(Gen.choose(min, max)).constants().map { List(*(it.toTypedArray())) }
 
-    override fun constants(): Iterable<List<Int>> = gen.constants().map { List(*(it.toTypedArray())) }
-
-    override fun random(): Sequence<List<Int>> = gen.random().map { List(*(it.toTypedArray())) }
+    override fun random(): Sequence<List<Int>> = Gen.list(Gen.choose(min, max)).random().map { List(*(it.toTypedArray())) }
 }

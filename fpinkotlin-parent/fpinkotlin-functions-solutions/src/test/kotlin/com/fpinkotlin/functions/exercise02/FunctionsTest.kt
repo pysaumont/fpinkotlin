@@ -8,7 +8,7 @@ class FunctionsTest: StringSpec() {
 
     init {
 
-        "compose" {
+        "compose2" {
             forAll { x: Int ->
                 compose(::square, ::triple)(x) == square(triple(x))
             }

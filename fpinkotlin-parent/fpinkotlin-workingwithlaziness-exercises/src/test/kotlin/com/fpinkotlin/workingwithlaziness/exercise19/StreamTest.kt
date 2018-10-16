@@ -1,15 +1,15 @@
 package com.fpinkotlin.workingwithlaziness.exercise19
 
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
-class LazyTest: StringSpec() {
+class StreamTest: StringSpec() {
 
     init {
 
         "exists" {
-            forAll(IntGenerator(0, 10_000), { a ->
+            forAll(10, Gen.choose(0, 1_000)) { a ->
                 var incCalls = 0
                 fun inc(i: Int): Int {
                     incCalls++
@@ -25,7 +25,7 @@ class LazyTest: StringSpec() {
                         !result2 &&
                         evaluated == testValue + 1 && // all drop values + 1 for seed
                         incCalls == a + 1 // + 1 for seed
-            }, 10)
+            }
         }
     }
 }

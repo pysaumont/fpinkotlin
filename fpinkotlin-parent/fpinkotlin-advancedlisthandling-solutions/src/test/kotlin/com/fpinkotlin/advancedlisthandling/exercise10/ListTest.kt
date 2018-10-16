@@ -10,7 +10,7 @@ class ListTest: StringSpec() {
     init {
 
         "unZip" {
-            forAll(IntListPairGenerator()) { (list1, list2) ->
+            forAll(IntListGenerator(), IntListGenerator()) { list1, list2 ->
                 val zip = zipWith(list1, list2) { a -> { b: Int -> Pair(a, b) } }
                 val result = unzip(zip)
                 result.first.toString() ==
@@ -20,15 +20,6 @@ class ListTest: StringSpec() {
             }
         }
     }
-}
-
-class IntListPairGenerator: Gen<Pair<List<Int>, List<Int>>> {
-
-    override fun constants(): Iterable<Pair<List<Int>, List<Int>>> =
-            IntListGenerator().constants().zipWithNext()
-
-    override fun random(): Sequence<Pair<List<Int>, List<Int>>> =
-            IntListGenerator().random().zipWithNext()
 }
 
 class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<List<Int>> {

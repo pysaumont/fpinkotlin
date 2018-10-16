@@ -1,29 +1,24 @@
 package com.fpinkotlin.handlingerrors.exercise03
 
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
-import java.util.*
 
 class EitherTest: StringSpec() {
 
-    private val random = Random()
-
     init {
         "getOrElse" {
-            val x = random.nextInt()
-            forAll(Gen.int(), { z ->
-                Either.right<String, Int>(z).getOrElse { x } == z &&
-                        Either.left<String, Int>("Error").getOrElse { x } == x
-            })
+            forAll { n: Int, m: Int ->
+                Either.right<String, Int>(n).getOrElse { m } == n &&
+                    Either.left<String, Int>("Error").getOrElse { m } == m
+            }
         }
 
         "orElse" {
-            val x: Either<String, Int> = Either.right(random.nextInt())
-            forAll(Gen.int(), { z ->
-                Either.right<String, Int>(z).orElse { x }.toString() == Either.right<String, Int>(z).toString() &&
-                        Either.left<String, Int>("Error").orElse { x } == x
-            })
+            forAll { n: Int, m: Int ->
+                val erm: Either<String, Int> = Either.right(m)
+                Either.right<String, Int>(n).orElse { erm }.toString() == Either.right<String, Int>(n).toString() &&
+                    Either.left<String, Int>("Error").orElse { erm } == erm
+            }
         }
     }
 }

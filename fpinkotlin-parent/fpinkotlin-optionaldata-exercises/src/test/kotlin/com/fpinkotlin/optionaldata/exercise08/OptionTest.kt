@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.exercise08
 
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class OptionTest: StringSpec() {
@@ -10,9 +9,9 @@ class OptionTest: StringSpec() {
 
         "lift" {
             val p: (Int) -> Boolean = { it % 5 != 0 }
-            forAll(Gen.int(), { z ->
+            forAll { z: Int ->
                 lift(p)(Option(z)) == Option(p(z))
-            })
+            }
         }
     }
 }

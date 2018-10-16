@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.exercise02
 
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 import java.util.*
 
@@ -12,11 +11,9 @@ class OptionTest: StringSpec() {
     init {
 
         "getOrElse" {
-            val x = random.nextInt()
-            val y: Int? = null
-            forAll(Gen.int(), { z ->
-                Option(z).getOrElse { x } == z && Option(y).getOrElse { x } == x
-            })
+            forAll { x: Int, z: Int ->
+                Option(z).getOrElse { x } == z && Option(null as Int?).getOrElse { x } == x
+            }
         }
     }
 }

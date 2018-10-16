@@ -1,7 +1,7 @@
 package com.fpinkotlin.advancedtrees.exercise04
 
 
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.properties.Gen
 import io.kotlintest.specs.StringSpec
 

@@ -1,8 +1,7 @@
 package com.fpinkotlin.lists.exercise02
 
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import java.util.*
@@ -15,11 +14,11 @@ class ListTest: StringSpec() {
 
         "setHead" {
             val i = random.nextInt()
-            forAll(IntListGenerator(1, 100), { (first, second) ->
+            forAll(IntListGenerator()) { (first, second) ->
                 second.isEmpty() ||
                 second.setHead(i).toString() ==
                         "[$i, ${first.joinToString(", ", "", ", NIL]").substringAfter(", ")}"
-            }, 100)
+            }
         }
 
         "setHeadEmpty" {
@@ -29,13 +28,11 @@ class ListTest: StringSpec() {
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100): Gen<Pair<Array<Int>, List<Int>>> {
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> = listOf(Pair(arrayOf(), List()))
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+        Gen.list(Gen.choose(min, max)).constants().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 
     override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
-            list(Gen.int(), minLength, maxLength)
-                    .map { Pair(it.toTypedArray(),
-                            it.fold(List<Int>()) { list, i ->
-                                list.cons(i) }) }.random()
+        Gen.list(Gen.choose(min, max)).random().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 }

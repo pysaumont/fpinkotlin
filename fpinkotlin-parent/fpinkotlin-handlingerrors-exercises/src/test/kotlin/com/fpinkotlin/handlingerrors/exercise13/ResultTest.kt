@@ -1,9 +1,7 @@
 package com.fpinkotlin.handlingerrors.exercise13
 
 
-import com.fpinkotlin.generators.IntPairGenerator
-import com.fpinkotlin.generators.IntTripleGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class ResultTest: StringSpec() {
@@ -16,11 +14,11 @@ class ResultTest: StringSpec() {
                     if (a > b) throw RuntimeException("A is to big") else b - a
                 }
             }
-            forAll(IntPairGenerator(0, 100_000), { (x, y) ->
+            forAll { x: Int, y: Int ->
                 lift2(f)(Result(x))(Result(y)).toString() ==
                     if (x <= y) Result(f(x)(y)).toString()
                     else Result.failure<Int>("A is to big").toString()
-            })
+            }
         }
 
         "lift3" {
@@ -31,11 +29,11 @@ class ResultTest: StringSpec() {
                     }
                 }
             }
-            forAll(IntTripleGenerator(0, 100_000), { (x, y, z) ->
+            forAll { x: Int, y: Int, z: Int ->
                 lift3(f)(Result(x))(Result(y))(Result(z)).toString() ==
                     if (x <= y) Result(f(x)(y)(z)).toString()
                     else Result.failure<Int>("A is to big").toString()
-            })
+            }
         }
     }
 }

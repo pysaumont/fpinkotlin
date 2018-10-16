@@ -1,22 +1,18 @@
 package com.fpinkotlin.workingwithlaziness.exercise22
 
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
-import java.util.*
 
-class LazyTest: StringSpec() {
-
-    private val random = Random()
+class StreamTest: StringSpec() {
 
     init {
 
         "headSafeViaFoldRight" {
-            forAll(IntGenerator(0, 100_000), { a ->
-                val offset = random.nextInt(500)
+            forAll(Gen.choose(0, 100_000), Gen.choose(0, 500)) { a, offset ->
                 val stream = Stream.from(a).dropAtMost(offset).takeAtMost(offset)
-                stream.headSafeViaFoldRight().map { it == a + offset }.getOrElse(false)
-            })
+                stream.isEmpty() || stream.headSafeViaFoldRight().map { it == a + offset }.getOrElse(false)
+            }
         }
     }
 }

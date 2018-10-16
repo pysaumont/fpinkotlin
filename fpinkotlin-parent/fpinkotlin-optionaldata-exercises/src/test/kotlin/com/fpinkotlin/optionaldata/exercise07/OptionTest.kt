@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.exercise07
 
-import com.fpinkotlin.generators.DoubleListGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class OptionTest: StringSpec() {
@@ -9,14 +8,15 @@ class OptionTest: StringSpec() {
     init {
 
         "variance" {
-            forAll(DoubleListGenerator(), { (array, list) ->
+            forAll { list: List<Double> ->
                 variance(list) == when {
-                    array.isEmpty() -> Option()
-                    else -> Option((array.sum() / array.size).let { list.map { x ->
-                        Math.pow((x - it), 2.0)
-                    }.let {it.sum() / it.size} })
+                    list.isEmpty() -> Option()
+                    else -> Option((list.sum() / list.size).let { value ->
+                        list.map { x ->
+                        Math.pow((x - value), 2.0)
+                    }.let { it.sum() / it.size} })
                 }
-            })
+            }
         }
     }
 }
