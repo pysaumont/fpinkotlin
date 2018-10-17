@@ -1,30 +1,26 @@
 package com.mydomain.mymultipleproject.common.example04
 
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.shrinking.ListShrinker
 import java.util.*
 
 
-class StringGenerator(private val maxList: Int,
-                      private val maxString: Int) : Gen<List<Pair<String, Map<Char, Int>>>> {
-
-    override fun constants(): Iterable<List<Pair<String, Map<Char, Int>>>> = listOf(listOf(Pair("", mapOf())))
-
-    override fun random(): Sequence<List<Pair<String, Map<Char, Int>>>> =
-        Random().let { random ->
-            generateSequence {
-                (0 until random.nextInt(maxList)).map {
-                    (0 until random.nextInt(maxString)).fold(Pair("", mapOf<Char, Int>())) { pair, _ ->
-                        (random.nextInt(122 - 96) + 96).toChar().let { char ->
-                            Pair("${pair.first}$char", updateMap(pair.second, char))
-                        }
-                    }
+fun stringGenerator(maxList: Int,
+                    maxString: Int): Gen<List<Pair<String, Map<Char, Int>>>> =
+    ListGenerator(ListGenerator(Gen.choose(32, 127), maxString), maxList)
+        .map { intListList ->
+            intListList.asSequence().map { intList ->
+                intList.map { n ->
+                    n.toChar()
                 }
-            }
+            }.map { charList ->
+                Pair(String(charList.toCharArray()), makeMap(charList))
+            }.toList()
         }
-}
+
+fun makeMap(charList: List<Char>): Map<Char, Int> = charList.fold(mapOf(), ::updateMap)
 
 fun updateMap(map: Map<Char, Int>, char: Char) =  when {
     map.containsKey(char) -> map + Pair(char, map[char]!! + 1)
     else -> map + Pair(char, 1)
 }
-

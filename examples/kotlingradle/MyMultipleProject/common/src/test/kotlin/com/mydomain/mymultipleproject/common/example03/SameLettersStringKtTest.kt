@@ -7,7 +7,7 @@ class SameLettersStringKtTest: StringSpec() {
 
     init {
         "getCharUsed" {
-            forAll(StringGenerator) { list: List<Pair<String, Map<Char, Int>>> ->
+            forAll(stringGenerator) { list: List<Pair<String, Map<Char, Int>>> ->
                 getCharUsed(list.map { it.first }).keys.toSet() == list.asSequence().map { it.second }.toSet()
             }
         }

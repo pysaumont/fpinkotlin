@@ -6,12 +6,16 @@ import java.util.*
 
 class UpdateMapTest: StringSpec() {
 
-    val random = Random()
+    private val random = Random()
+
+    private val min = 'a'
+
+    private val max = 'z'
 
     init {
         "getCharUsed" {
-            forAll(MapGenerator) { map: Map<Char, Int> ->
-                (random.nextInt(122 - 96) + 96).toChar().let {
+            forAll(mapGenerator()) { map: Map<Char, Int> ->
+                (random.nextInt(max.toInt() - min.toInt()) + min.toInt()).toChar().let {
                     if (map.containsKey(it)) {
                         updateMap(map, it)[it] == map[it]!! + 1
                     } else {
