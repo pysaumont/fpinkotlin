@@ -1,6 +1,6 @@
 package com.fpinkotlin.trees.exercise01
 
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {

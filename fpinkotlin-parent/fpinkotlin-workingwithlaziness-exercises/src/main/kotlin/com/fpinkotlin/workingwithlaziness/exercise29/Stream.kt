@@ -115,6 +115,8 @@ sealed class Stream<out A> {
 
         operator fun <A> invoke(): Stream<A> = Empty
 
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
+
         tailrec fun <A> dropWhile(stream: Stream<A>,
                                   p: (A) -> Boolean): Stream<A> = when (stream) {
             Empty -> stream
@@ -154,10 +156,9 @@ sealed class Stream<out A> {
                 }
 
         fun <A, S> unfold(z: S, f: (S) -> Result<Pair<A, S>>): Stream<A> = TODO("Implement this function")
+
+        fun from(i: Int): Stream<Int> = TODO("Implement this function based upon unfold")
     }
 }
 
-fun fibs(): Stream<Int> =
-        Stream.unfold(Pair(1, 1)) { x ->
-            Result(Pair(x.first, Pair(x.second, x.first + x.second)))
-        }
+fun fibs(): Stream<Int> = TODO("Implement this function based upon unfold")

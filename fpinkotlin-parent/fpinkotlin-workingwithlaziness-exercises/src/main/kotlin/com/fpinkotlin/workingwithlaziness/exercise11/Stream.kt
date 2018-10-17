@@ -11,9 +11,11 @@ sealed class Stream<out A> {
 
     abstract fun tail(): Result<Stream<A>>
 
-    fun takeAtMost(n: Int): Stream<A> = TODO("takeAtMost")
+    abstract fun takeAtMost(n: Int): Stream<A>
 
     private object Empty: Stream<Nothing>() {
+
+        override fun takeAtMost(n: Int): Stream<Nothing> = this
 
         override fun head(): Result<Nothing> = Result()
 
@@ -25,6 +27,11 @@ sealed class Stream<out A> {
 
     private class Cons<out A> (internal val hd: Lazy<A>,
                                internal val tl: Lazy<Stream<A>>) : Stream<A>() {
+
+        override fun takeAtMost(n: Int): Stream<A> = when {
+            n > 0 -> cons(hd, Lazy { tl().takeAtMost(n - 1) })
+            else -> Empty
+        }
 
         override fun head(): Result<A> = Result(hd())
 
@@ -40,5 +47,10 @@ sealed class Stream<out A> {
         operator fun <A> invoke(): Stream<A> = Empty
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
+
+        fun <A> repeat(f: () -> A): Stream<A> = TODO()
     }
 }
+
+
+

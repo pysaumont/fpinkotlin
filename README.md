@@ -17,14 +17,14 @@ The code is available as a Gradle project that may be used  by:
 
 There are two ways to download this project. You may:
 
-- Click on the _Download ZIP_ button on this page (https://github.com/pysaumont/fpinkotlin) to download a ZIP archive, then unzip it in the directory
+- Click on the _Download ZIP_ button on the [project page](https://github.com/pysaumont/fpinkotlin) to download a ZIP archive, then unzip it in the directory
 of your choice
 - Or you can clone the project using Git, in order to be able to update it easily when modifications or additions are made to the project. For this,
 you will need to have Git installed on your PC and use the URL available on this page in the _SSH clone URL_ area.
 
 ## Importing into IntelliJ
 
-IntelliJ offers the best support for Kotlin development, plus full Gradle integration. If you don't have IntelliJ, just download the Community version from https://www.jetbrains.com/idea/download. This free version has all you need for using the examples and solving the exercises in the book.
+IntelliJ offers the best support for Kotlin development, plus full Gradle integration. If you don't have IntelliJ, just download the Community version from the [JetBrains site](https://www.jetbrains.com/idea/download). This free version has all you need for using the examples and solving the exercises in the book.
 
 To import the project into IntelliJ:
  
@@ -156,6 +156,22 @@ Code modules are generally named after the chapter titles, and not the chapter n
 * Chapter 7: fpinkotlin-handlingerrors
 
 * Chapter 8: fpinkotlin-advancedlisthandling
+
+* Chapter 9: fpinkotlin-Workingwithlaziness
+
+* Chapter 10: fpinkotlin-trees
+
+* Chapter 11: fpinkotlin-advancedtrees
+
+* Chapter 12: fpinkotlin-effects
+
+* Chapter 13: fpinkotlin-actors
+
+* Chapter 14: fpinkotlin-commonproblems
+
+## Code example fro appendix A & B
+
+The code examples for appendix A & B are to be found in the [kotlingradle repository](https://github.com/pysaumont/kotlingradle)
 
 
 

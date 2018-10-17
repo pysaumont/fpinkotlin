@@ -1,7 +1,6 @@
 package com.fpinkotlin.recursion.exercise01
 
-import com.fpinkotlin.generators.IntPairGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class ListTest: StringSpec() {
@@ -9,9 +8,9 @@ class ListTest: StringSpec() {
     init {
 
         "add" {
-            forAll(IntPairGenerator(), { (a, b) ->
+            forAll { a: Int, b: Int ->
                 add(a, b) == a + b
-            })
+            }
         }
     }
 }

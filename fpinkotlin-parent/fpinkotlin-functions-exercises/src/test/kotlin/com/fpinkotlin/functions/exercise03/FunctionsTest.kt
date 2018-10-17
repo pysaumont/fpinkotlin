@@ -1,8 +1,7 @@
 package com.fpinkotlin.functions.exercise03
 
 
-import com.fpinkotlin.generators.IntPairGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
@@ -10,9 +9,10 @@ class FunctionsTest: StringSpec() {
     init {
 
         "add" {
-            forAll(IntPairGenerator(), { (x, y) ->
+            forAll { x: Int, y: Int ->
                 add(x)(y) == x + y
-            })
+            }
         }
     }
 }
+

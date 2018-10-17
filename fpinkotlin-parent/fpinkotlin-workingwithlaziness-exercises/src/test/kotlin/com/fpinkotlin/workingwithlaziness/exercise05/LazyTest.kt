@@ -1,7 +1,6 @@
 package com.fpinkotlin.workingwithlaziness.exercise05
 
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class LazyTest: StringSpec() {
@@ -9,7 +8,7 @@ class LazyTest: StringSpec() {
     init {
 
         "Lazy" {
-            forAll(IntGenerator(), { a ->
+            forAll { a: Int ->
                 var greetingsCalls = 0
                 val greetings = Lazy {
                     greetingsCalls++
@@ -52,7 +51,7 @@ class LazyTest: StringSpec() {
                                 name1Calls == 1 &&
                                 name2Calls == 1 &&
                                 defaultMessageCalls == 0)
-            })
+            }
 
         }
     }

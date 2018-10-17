@@ -6,7 +6,7 @@ import com.fpinkotlin.advancedtrees.exercise02.NumbersToEnglish.convertUS
 import com.fpinkotlin.advancedtrees.exercise02.NumbersToEnglish.convertUnder1000
 import com.fpinkotlin.advancedtrees.exercise02.NumbersToEnglish.decompose
 import com.fpinkotlin.advancedtrees.exercise02.NumbersToEnglish.thousands2String
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class NumbersToEnglishTest: StringSpec() {

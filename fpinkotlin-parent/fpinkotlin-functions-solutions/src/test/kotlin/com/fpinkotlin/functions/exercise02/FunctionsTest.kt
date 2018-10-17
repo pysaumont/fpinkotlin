@@ -1,18 +1,17 @@
 package com.fpinkotlin.functions.exercise02
 
 
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
 
     init {
 
-        "compose" {
-            forAll(Gen.int(), { x ->
+        "compose2" {
+            forAll { x: Int ->
                 compose(::square, ::triple)(x) == square(triple(x))
-            })
+            }
         }
     }
 }

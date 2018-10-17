@@ -1,53 +1,50 @@
 package com.fpinkotlin.lists.exercise15
 
 
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import com.fpinkotlin.lists.exercise15.List.Companion.flatten
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 import java.util.*
 
 class ListTest: StringSpec() {
 
-    val f: (Int) -> (String) -> String = { a -> { b -> "$a + ($b)"} }
-
     init {
 
-        "flatten0" {
-            forAll(IntListListGenerator(0, 0), { list ->
-                flatten(list).isEmpty()
-            })
-        }
-
         "flatten" {
-            forAll(IntListListGenerator(), { list ->
+            forAll(100, IntListListGenerator()) { list ->
                 val sum1 = list.foldLeft("") { x -> { y -> x + y.foldLeft("") { a -> { b -> a + b } } } }
                 val sum2 = flatten(list).foldLeft("") { a -> { b -> a + b } }
                 sum1 == sum2
-            }, 10)
+            }
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<List<Int>> {
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun generate(): List<Int> {
-        val array: Array<Int> = list(IntGenerator(100), minLength, maxLength).generate().toTypedArray()
-        return List(*array)
-    }
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+        Gen.list(Gen.choose(min, max)).constants().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
+
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+        Gen.list(Gen.choose(min, max)).random().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 }
 
-class IntListListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<List<List<Int>>> {
+class IntListListGenerator : Gen<List<List<Int>>> {
 
-    override fun generate(): List<List<Int>> {
-        val array: Array<List<Int>> = list(IntListGenerator(0, 10), minLength, maxLength).generate() .toTypedArray()
-        return List(*array)
-    }
+    val random = Random()
+
+    override fun constants(): Iterable<List<List<Int>>> = listOf()
+
+    override fun random(): Sequence<List<List<Int>>> =
+        Gen.list(Gen.choose(0, 100))
+            .random()
+            .map { List(*(IntListGenerator()
+                .random()
+                .map { it.second }
+                .take(random.nextInt(100)))
+                .toList()
+                .toTypedArray()) }
 }
 
-class IntGenerator(private val max: Int): Gen<Int> {
-    private val RANDOM = Random()
-    override fun generate(): Int = RANDOM.nextInt(max)
-}
 

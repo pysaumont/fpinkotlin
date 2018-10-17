@@ -5,7 +5,7 @@ import com.fpinkotlin.generators.IntListGenerator
 
 fun main(args: Array<String>) {
     println("Generating test data...")
-    val list = IntListGenerator(0, 1_000_000, 0, 1_000_000).generate().second
+    val list = IntListGenerator(0, 1_000_000).random().map { it.second }.first()
     print("Creating tree... ")
     val time = System.currentTimeMillis()
     val tree = list.foldLeft(Tree<Int>()) { t -> { t + it } }

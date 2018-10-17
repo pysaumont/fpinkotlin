@@ -49,5 +49,7 @@ sealed class Stream<out A> {
         operator fun <A> invoke(): Stream<A> = Empty
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
+
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
     }
 }

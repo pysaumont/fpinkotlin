@@ -1,9 +1,10 @@
 package com.fpinkotlin.effects.exercise03
 
 import com.fpinkotlin.common.Result
+import java.io.Closeable
 
 
-interface Input: AutoCloseable {
+interface Input: Closeable {
 
     fun readString(): Result<Pair<String, Input>>
 

@@ -1,7 +1,6 @@
 package com.fpinkotlin.optionaldata.exercise04
 
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class OptionTest: StringSpec() {
@@ -9,15 +8,15 @@ class OptionTest: StringSpec() {
     init {
 
         "flatMap" {
-            forAll(Gen.int(), { x ->
+            forAll { x: Int ->
                 Option(x).flatMap { Option(it / 2) } == Option(x / 2)
-            })
+            }
         }
 
         "flatMapNone" {
-            forAll(Gen.int(), { x ->
+            forAll { x: Int ->
                 (Option<Int>(null).flatMap { Option(it * x) }).isEmpty()
-            }, 1)
+            }
         }
     }
 }

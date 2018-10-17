@@ -1,8 +1,7 @@
 package com.fpinkotlin.functions.exercise11
 
 
-import com.fpinkotlin.generators.IntDoublePairGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
 class FunctionsTest: StringSpec() {
@@ -12,9 +11,9 @@ class FunctionsTest: StringSpec() {
     init {
 
         "swapArgs" {
-            forAll(IntDoublePairGenerator(), { (x, y) ->
-                swapArgs(curry(f))(y)(x) == f(x, y)
-            })
+            forAll { x: Int, y: Double ->
+                y.isNaN() || y.isInfinite() || swapArgs(curry(f))(y)(x) == f(x, y)
+            }
         }
     }
 }

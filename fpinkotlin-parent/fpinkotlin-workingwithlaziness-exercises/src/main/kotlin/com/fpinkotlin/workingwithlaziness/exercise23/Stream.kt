@@ -89,6 +89,8 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
+
         tailrec fun <A> dropWhile(stream: Stream<A>,
                               p: (A) -> Boolean): Stream<A> = when (stream) {
                 Empty -> stream

@@ -1,33 +1,44 @@
 package com.fpinkotlin.lists.exercise07
 
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
+import java.util.*
 
 class ListTest: StringSpec() {
 
     init {
 
-        "product0" {
-            forAll(DoubleListGenerator(0, 0), { (first, second) ->
-                Math.abs(product(second) - first.fold(1.0) { a, b -> a * b }) < 0.001
-            }, 1)
-        }
-
         "product" {
-            forAll(DoubleListGenerator(), { (first, second) ->
+            forAll(DoubleListGenerator()) { (first, second) ->
                 Math.abs(product(second) - first.fold(1.0) { a, b -> a * b }) < 0.001
-            })
+            }
         }
     }
 }
 
-class DoubleListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Double>,
-    List<Double>>> {
+class DoubleListGenerator(val min: Double = Double.MIN_VALUE, val max: Double = Double.MAX_VALUE): Gen<Pair<Array<Double>, List<Double>>> {
 
-    override fun generate(): Pair<Array<Double>, List<Double>> {
-        val array: Array<Double> = list(Gen.double(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
+    private fun choose(): Gen<Double> {
+        assert(min < max) { "min must be < max" }
+        val random = Random()
+        return object : Gen<Double> {
+
+            override fun constants(): Iterable<Double> = emptyList()
+
+            override fun random(): Sequence<Double> =
+                generateSequence { random.nextDouble() }.filter { it in min..max }
+        }
     }
+
+    private inline fun <reified T> toPair(list: Collection<T>): Pair<Array<T>, List<T>> =
+        list.toTypedArray().let {
+            Pair(it, List(*(it)))
+        }
+
+    override fun constants(): Iterable<Pair<Array<Double>, List<Double>>> =
+        Gen.list(choose()).constants().map { toPair(it) }
+
+    override fun random(): Sequence<Pair<Array<Double>, List<Double>>> =
+        Gen.list(choose()).random().map { toPair(it) }
 }

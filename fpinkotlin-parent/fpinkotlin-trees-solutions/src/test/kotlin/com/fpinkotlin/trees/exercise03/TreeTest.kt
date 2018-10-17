@@ -1,7 +1,7 @@
 package com.fpinkotlin.trees.exercise03
 
 import com.fpinkotlin.common.List
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {

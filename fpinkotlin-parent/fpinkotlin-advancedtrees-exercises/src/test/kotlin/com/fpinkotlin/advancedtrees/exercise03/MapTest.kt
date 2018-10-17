@@ -1,9 +1,11 @@
 package com.fpinkotlin.advancedtrees.exercise03
 
 
-import com.fpinkotlin.common.*
 import com.fpinkotlin.common.List
-import io.kotlintest.matchers.shouldBe
+import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.range
+import com.fpinkotlin.common.sequence
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class MapTest: StringSpec() {

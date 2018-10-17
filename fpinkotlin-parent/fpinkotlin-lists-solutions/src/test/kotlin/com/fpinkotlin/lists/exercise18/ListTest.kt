@@ -1,35 +1,29 @@
 package com.fpinkotlin.lists.exercise18
 
 
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
-import java.util.*
 
 class ListTest: StringSpec() {
 
     init {
 
         "map" {
-            forAll(IntListGenerator(), { list ->
-                sum(list.map { it * 3 }) == sum(list) * 3
-            })
+            forAll(IntListGenerator()) { pair ->
+                sum(pair.second.map { it * 3 }) == sum(pair.second) * 3
+            }
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<List<Int>> {
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun generate(): List<Int> {
-        val array: Array<Int> = list(IntGenerator(100), minLength, maxLength).generate().toTypedArray()
-        return List(*array)
-    }
-}
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+        Gen.list(Gen.choose(min, max)).constants().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 
-class IntGenerator(private val max: Int): Gen<Int> {
-    private val RANDOM = Random()
-    override fun generate(): Int = RANDOM.nextInt(max)
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+        Gen.list(Gen.choose(min, max)).random().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 }
 
 fun main(args: Array<String>) {

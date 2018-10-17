@@ -1,20 +1,18 @@
 package com.fpinkotlin.workingwithlaziness.exercise14
 
-import com.fpinkotlin.common.range
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
-class LazyTest: StringSpec() {
+class StreamTest: StringSpec() {
 
     init {
 
-        "toList" {
-            forAll(IntGenerator(0, 10_000), { a ->
-                val list = range(0, a)
-                val stream = Stream.from(0).takeAtMost(a)
-                list.toString() == stream.toList().toString()
-            }, 10)
+        "dropAtMost&takeAtMost" {
+            forAll(Gen.choose(0, 100_000), Gen.choose(0, 500)) { a, offset ->
+                val stream = Stream.from(a).dropAtMost(offset).takeAtMost(offset)
+                stream.isEmpty() || stream.head().map { it == a + offset }.getOrElse(false)
+            }
         }
     }
 }

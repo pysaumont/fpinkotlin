@@ -1,8 +1,8 @@
 package com.fpinkotlin.advancedlisthandling.exercise23
 
 
-import com.fpinkotlin.generators.IntGenerator
 import java.math.BigInteger
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -14,14 +14,14 @@ import java.util.concurrent.Executors
  */
 object SerialParallelFoldLeftBenchmark {
 
+    private val random = Random()
+
     @JvmStatic
     fun main(args: Array<String>) {
         val testLimit = 35000
 
-        val generator = IntGenerator(0, 30)
-
         val testList: List<Long> = range(0, testLimit).map {
-                generator.generate().toLong()
+                random.nextInt(30).toLong()
         }
 
         val es2 = Executors.newFixedThreadPool(2)

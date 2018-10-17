@@ -1,7 +1,7 @@
 package com.fpinkotlin.effects.exercise04
 
 import com.fpinkotlin.common.List
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class IOTest: StringSpec() {
@@ -37,14 +37,14 @@ class IOTest: StringSpec() {
             )
 
             // We can sort of "compile" it, then execute it using a left fold:
-            script2.foldLeft(reset(), { acc -> { acc + it } })()
+            script2.foldLeft(reset()) { acc -> { acc + it } }()
             result.shouldBe("Hello, Mickey!")
 
             // We can also use a right fold but beware that with foldRight,
             // the identity will be applied last. So using reset() as the identity
             // would result into an empty string
             reset()()
-            script2.foldRight(IO.empty, { io -> { io + it } })()
+            script2.foldRight(IO.empty) { io -> { io + it } }()
             result.shouldBe("Hello, Mickey!")
         }
 

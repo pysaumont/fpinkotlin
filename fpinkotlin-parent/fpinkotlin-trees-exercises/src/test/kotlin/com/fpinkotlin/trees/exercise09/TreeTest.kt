@@ -1,7 +1,7 @@
 package com.fpinkotlin.trees.exercise09
 
 
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {
@@ -85,17 +85,17 @@ class TreeTest: StringSpec() {
             tree.foldPostOrder("", f) shouldBe "1234567"
         }
 
-        "testFoldPreOrder_postOrderRight" {
+        "testFoldPostOrder_inOrderRight" {
             val f = { s1: String -> { s2: String -> { i: Int -> "$i$s2$s1" } } }
             tree.foldPostOrder("", f) shouldBe "4675231"
         }
 
-        "testFoldPreOrder_inOrderRight" {
+        "testFoldPostOrder_preOrderRight" {
             val f = { s1: String -> { s2: String -> { i: Int -> "$i$s1$s2" } } }
             tree.foldPostOrder("", f) shouldBe "4213657"
         }
 
-        "testFoldPreOrder_postOrderLeft" {
+        "testFoldPostOrder_preOrderLeft" {
             val f = { s1: String -> { s2: String -> { i: Int -> "$s2$i$s1" } } }
             tree.foldPostOrder("", f) shouldBe "7654321"
         }

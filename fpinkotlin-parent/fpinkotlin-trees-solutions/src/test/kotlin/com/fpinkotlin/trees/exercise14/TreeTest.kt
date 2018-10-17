@@ -2,9 +2,8 @@ package com.fpinkotlin.trees.exercise14
 
 
 import com.fpinkotlin.common.range
-import com.fpinkotlin.generators.IntListGenerator
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {
@@ -12,11 +11,11 @@ class TreeTest: StringSpec() {
     init {
 
         "balanceRandom" {
-            forAll(IntListGenerator(0, 2_000), { (_, list) ->
-                val tree = list.foldLeft(Tree<Int>()) { tree -> { elem ->  tree + elem } }
+            forAll { list:List<Int> ->
+                val tree = list.fold(Tree<Int>()) { tree , elem ->  tree + elem }
                 val result = Tree.balance(tree)
-                result.size == tree.size && result.height == log2nlz(result.size)
-            }, 100)
+                result.size == tree.size && result.height <= log2nlz(result.size)
+            }
         }
 
         "balanceOrdered" {

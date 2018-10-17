@@ -2,34 +2,36 @@ package com.fpinkotlin.advancedlisthandling.exercise13
 
 
 import com.fpinkotlin.common.Result
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
+import java.util.*
 import kotlin.math.max
 
 class ListTest: StringSpec() {
 
+    private val random = Random()
+
     init {
 
         "getAt" {
-            forAll(IntListGenerator(), { (first, second) ->
-                val index = if (first.isEmpty()) 0 else IntGenerator(0, max(first.size - 1, 1)).generate()
+            forAll(IntListGenerator()) { (first, second) ->
+                val index = if (first.isEmpty()) 0 else random.nextInt(max(first.size - 1, 1))
                 val error = Result.failure<Int>("Index out of bound").toString()
                 second.getAt(- (index + 1)).toString() ==  error &&
-                    second.getAt(first.size + index).toString() == error &&
-                    second.getAt(index).toString() == if (first.isEmpty()) error else Result(first[index])
+                        second.getAt(first.size + index).toString() == error &&
+                        second.getAt(index).toString() == if (first.isEmpty()) error else Result(first[index])
                         .toString()
-            })
+            }
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun generate(): Pair<Array<Int>, List<Int>> {
-        val array: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
-    }
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+            Gen.list(Gen.choose(min, max)).constants().map { it.toTypedArray().let { Pair(it, List(*(it))) } }
+
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            Gen.list(Gen.choose(min, max)).random().map { it.toTypedArray().let { Pair(it, List(*(it))) } }
 }

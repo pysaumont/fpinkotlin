@@ -1,6 +1,6 @@
 package com.fpinkotlin.workingwithlaziness.exercise01
 
-import com.fpinkotlin.generators.IntGenerator
+import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
@@ -9,7 +9,7 @@ class LazyTest: StringSpec() {
     init {
 
         "Lazy" {
-            forAll(IntGenerator(), {
+            forAll(Gen.choose(0, 10)) { i: Int ->
 
                 var firstCalls = 0
                 var secondCalls = 0
@@ -21,11 +21,9 @@ class LazyTest: StringSpec() {
                     secondCalls++
                     throw IllegalStateException()
                 }
-                (first() || second()) &&
-                        (first() || second()) &&
-                        (1 == firstCalls) &&
-                        (0 == secondCalls)
-            })
+                (0..i).forEach { _ -> first() || second() }
+                i == 0 || (1 == firstCalls) && (0 == secondCalls)
+            }
         }
     }
 }

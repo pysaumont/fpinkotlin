@@ -1,7 +1,7 @@
 package com.fpinkotlin.workingwithlaziness.exercise14
 
-import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
+import java.util.*
 
 
 sealed class Stream<out A> {
@@ -13,8 +13,6 @@ sealed class Stream<out A> {
     abstract fun tail(): Result<Stream<A>>
 
     abstract fun takeAtMost(n: Int): Stream<A>
-
-    fun toList(): List<A> = toList(this)
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
@@ -53,20 +51,27 @@ sealed class Stream<out A> {
 
         fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
 
+        fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
+
         tailrec fun <A> dropAtMost(n: Int, stream: Stream<A>): Stream<A> =  when {
             n > 0 -> when (stream) {
-                Empty -> stream
+                is Empty -> stream
                 is Cons -> dropAtMost(n - 1, stream.tl())
             }
             else -> stream
         }
-
-        fun <A> toList(stream: Stream<A>) : List<A> {
-            tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
-                Empty -> list
-                is Cons -> toList(list.cons(stream.hd()), stream.tl())
-            }
-            return toList(List(), stream).reverse()
-        }
     }
+}
+
+fun main(args: Array<String>) {
+    val stream = Stream.repeat(::random).dropAtMost(60000).takeAtMost(60000)
+    stream.head().forEach(::println)
+}
+
+val rnd = Random()
+
+fun random(): Int {
+    val rnd = rnd.nextInt()
+    println("evaluating $rnd")
+    return rnd
 }

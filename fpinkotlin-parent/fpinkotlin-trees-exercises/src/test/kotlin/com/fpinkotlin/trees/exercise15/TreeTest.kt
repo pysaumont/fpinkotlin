@@ -3,7 +3,7 @@ package com.fpinkotlin.trees.exercise15
 
 import com.fpinkotlin.common.range
 import com.fpinkotlin.trees.exercise15.Tree.Companion.balance
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class TreeTest: StringSpec() {

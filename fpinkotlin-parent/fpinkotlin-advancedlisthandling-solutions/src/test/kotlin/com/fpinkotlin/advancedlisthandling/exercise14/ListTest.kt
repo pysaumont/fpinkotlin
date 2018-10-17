@@ -1,31 +1,33 @@
 package com.fpinkotlin.advancedlisthandling.exercise14
 
 
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
-import com.fpinkotlin.generators.list
 import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
+import java.util.*
 import kotlin.math.max
 
 class ListTest: StringSpec() {
 
+    private val random = Random()
+
     init {
 
         "splitAt" {
-            forAll(IntListGenerator(), { (first, second) ->
-                val index = if (first.isEmpty()) 0 else IntGenerator(0, max(first.size - 1, 1)).generate()
+            forAll(IntListGenerator()) { (first, second) ->
+                val index = if (first.isEmpty()) 0 else random.nextInt(max(first.size - 1, 1))
                 val result = second.splitAt(index)
                 second.toString() == result.first.concat(result.second).toString()
-            })
+            }
         }
     }
 }
 
-class IntListGenerator(private val minLength: Int = 0, private val maxLength: Int = 100) : Gen<Pair<Array<Int>, List<Int>>> {
+class IntListGenerator(private val min: Int = Int.MIN_VALUE, private val max: Int = Int.MAX_VALUE): Gen<Pair<Array<Int>, List<Int>>> {
 
-    override fun generate(): Pair<Array<Int>, List<Int>> {
-        val array: Array<Int> = list(Gen.int(), minLength, maxLength).generate().toTypedArray()
-        return Pair(array, List(*array))
-    }
+    override fun constants(): Iterable<Pair<Array<Int>, List<Int>>> =
+            Gen.list(Gen.choose(min, max)).constants().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
+
+    override fun random(): Sequence<Pair<Array<Int>, List<Int>>> =
+            Gen.list(Gen.choose(min, max)).random().map { list -> list.toTypedArray().let { Pair(it, List(*(it))) } }
 }

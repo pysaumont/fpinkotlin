@@ -4,9 +4,9 @@ import com.fpinkotlin.advancedtrees.common.Result
 import com.fpinkotlin.advancedtrees.common.getOrElse
 import com.fpinkotlin.advancedtrees.common.range
 import com.fpinkotlin.advancedtrees.common.unfold
-import com.fpinkotlin.generators.IntListGenerator
-import com.fpinkotlin.generators.forAll
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class HeapTest: StringSpec() {
@@ -14,7 +14,7 @@ class HeapTest: StringSpec() {
     init {
 
         "test Plus Ordered Ascending Comparable" {
-            val list = range(1, 20_000)
+            val list = range(1, 2_000)
             val heap = list.foldLeft(Heap()) { h: Heap<Int> -> { i -> h + i } }
             heap.toList().toString() shouldBe(list.toString())
             isBalanced(heap) shouldBe true
@@ -24,7 +24,7 @@ class HeapTest: StringSpec() {
         }
 
         "test Plus Ordered Descending Comparable" {
-            val list = range(1, 20_000)
+            val list = range(1, 2_000)
             val heap = list.reverse().foldLeft(Heap()) { h: Heap<Int> -> { i -> h + i } }
             heap.toList().toString() shouldBe(list.toString())
             isBalanced(heap) shouldBe true
@@ -34,41 +34,34 @@ class HeapTest: StringSpec() {
         }
 
         "plus random Comparable" {
-            forAll(IntListGenerator(), { (array, list) ->
-                val heap = list.foldLeft(Heap()) { h: Heap<Int> -> { i -> h + i } }
-                val heap2 = list.foldLeft(heap) { t -> { _ -> t.tail().getOrElse(t) } }
-                heap.size == array.size &&
-                        isBalanced(heap) &&
-                        isValueOrdered(heap) &&
-                        heap2.isEmpty
-            })
+            forAll(Gen.list(Gen.choose(1, 1_000))) { list ->
+                val heap = list.fold(Heap()) { h: Heap<Int>, i -> h + i }
+                val heap2 = list.fold(heap) { t, _ -> t.tail().getOrElse(t) }
+                heap.size == list.size &&
+                    isBalanced(heap) &&
+                    isValueOrdered(heap) &&
+                    heap2.isEmpty
+            }
         }
 
         "plus random Comparable 2" {
-            forAll(IntListGenerator(), { (_, list) ->
+            forAll(Gen.list(Gen.choose(1, 1_000))) { list ->
                 val list1 = list.map { Count(it) }
-                val heap = list1.foldLeft(Heap(CountComparator)) { h: Heap<Count> -> { i -> h + i } }
+                val heap = list1.fold(Heap(CountComparator)) { h: Heap<Count>, i -> h + i }
                 val list2 = unfold(heap) { it.pop() }
                 val sortedAscending = list2.foldLeft(Pair(true, Count(0))) { pair ->
                     { count ->
                         Pair(pair.first && CountComparator.compare(pair.second, count) <= 0, count)
                     }
                 }.first
-                val sum1 = list1.foldLeft(0) { sum -> { count -> sum + count.value } }
+                val sum1 = list1.fold(0) { sum, count -> sum + count.value }
                 val sum2 = list2.foldLeft(0) { sum -> { count -> sum + count.value } }
                 sortedAscending && sum1 == sum2
-            })
+            }
         }
 
-//        "test non Comparable no Comparator" {
-//            val list = range(0, 20).map { Count(it) }
-//            val heap = list.foldLeft(Heap()) { h: Heap<Count> -> { i -> h + i } }
-//                                        ^
-//            this should not compile ----|  (No comparator provided for non comparable elements)
-//        }
-
         "test Plus Ordered Ascending Comparator" {
-            val list = range(0, 20_000).map { Count(it) }
+            val list = range(0, 2_000).map { Count(it) }
             val heap = list.foldLeft(Heap(CountComparator)) { h: Heap<Count> -> { i -> h + i } }
             heap.toList().toString() shouldBe(list.toString())
             isBalanced(heap) shouldBe true
@@ -78,7 +71,7 @@ class HeapTest: StringSpec() {
         }
 
         "test Plus Ordered Descending Comparator" {
-            val list = range(0, 20_000).map { Count(it) }
+            val list = range(0, 2_000).map { Count(it) }
             val heap = list.reverse().foldLeft(Heap(CountComparator)) { h: Heap<Count> -> { i -> h + i } }
             heap.toList().toString() shouldBe(list.toString())
             isBalanced(heap) shouldBe true
@@ -88,14 +81,14 @@ class HeapTest: StringSpec() {
         }
 
         "plus random Comparator" {
-            forAll(IntListGenerator(), { (array, list) ->
-                val heap = list.map{ Count(it) }.foldLeft(Heap(CountComparator)) { h: Heap<Count> -> { i -> h + i } }
-                val heap2 = list.foldLeft(heap) { t -> { _ -> t.tail().getOrElse(t) } }
-                heap.size == array.size &&
-                        isBalanced(heap) &&
-                        isValueOrdered(heap, CountComparator) &&
-                        heap2.isEmpty
-            })
+            forAll(Gen.list(Gen.choose(1, 1_000))) { list ->
+                val heap = list.map{ Count(it) }.fold(Heap(CountComparator)) { h: Heap<Count>, i -> h + i }
+                val heap2 = list.fold(heap) { t, _ -> t.tail().getOrElse(t) }
+                heap.size == list.size &&
+                    isBalanced(heap) &&
+                    isValueOrdered(heap, CountComparator) &&
+                    heap2.isEmpty
+            }
         }
     }
 }

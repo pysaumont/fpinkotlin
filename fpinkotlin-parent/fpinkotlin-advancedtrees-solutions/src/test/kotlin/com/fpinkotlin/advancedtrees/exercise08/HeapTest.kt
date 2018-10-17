@@ -3,7 +3,7 @@ package com.fpinkotlin.advancedtrees.exercise08
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.range
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 
 class MapTest: StringSpec() {

@@ -1,20 +1,28 @@
 package com.fpinkotlin.workingwithlaziness.exercise11
 
-import com.fpinkotlin.generators.IntGenerator
-import com.fpinkotlin.generators.forAll
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 
-class LazyTest: StringSpec() {
+class StreamTest: StringSpec() {
+
+    var n = 0
+    fun next() = ++n
 
     init {
 
-        "head&tail" {
-            forAll(IntGenerator(), { a ->
-                val stream = Stream.from(a)
-                val first = stream.head().getOrElse(0)
-                val second = stream.tail().getOrElse(Stream.invoke()).head().getOrElse(0)
-                first == a && second == a + 1
-            })
+        "repeat" {
+            forAll(Gen.choose(0, 100_000)) { a ->
+                tailrec fun drop(a: Int, s: Stream<Int>): Stream<Int> = when (a) {
+                    0 -> s
+                    else -> drop( a - 1, s.tail().getOrElse { throw RuntimeException("No tail") })
+                }
+                val x = a % 10000 // limit the
+                val stream = drop(x, Stream.repeat{ next() })
+                val result = stream.head().getOrElse(-1)
+                n = 0
+                result == 1
+            }
         }
     }
 }
