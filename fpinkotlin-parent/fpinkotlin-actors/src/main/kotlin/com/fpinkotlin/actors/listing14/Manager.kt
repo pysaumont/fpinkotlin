@@ -19,7 +19,10 @@ class Manager(id: String, list: List<Int>,
         val splitLists = list.zipWithPosition().splitAt(this.workers)
         this.initial = splitLists.first
         this.workList = splitLists.second
-        this.resultHeap = Heap(Comparator { p1: Pair<Int, Int>, p2: Pair<Int, Int> -> p1.second.compareTo(p2.second) })
+        this.resultHeap =
+                Heap(Comparator { p1: Pair<Int, Int>, p2: Pair<Int, Int> ->
+                    p1.second.compareTo(p2.second)
+                })
         this.limit = list.length - 1
 
         managerFunction = { manager ->
@@ -27,7 +30,9 @@ class Manager(id: String, list: List<Int>,
                 { p ->
                     val result = streamResult(behavior.resultHeap + p,
                                               behavior.expected, List())
-                    result.third.forEach { client.tell(it) }
+                    result.third.forEach {
+                        client.tell(it)
+                    }
                     if (result.second > limit) {
                         this.client.tell(-1)
                     } else {

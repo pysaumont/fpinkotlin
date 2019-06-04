@@ -19,7 +19,10 @@ class Manager(id: String, list: List<Int>,
         val splitLists = list.zipWithPosition().splitAt(this.workers)
         this.initial = splitLists.first
         this.workList = splitLists.second
-        this.resultHeap = Heap(Comparator { p1: Pair<Int, Int>, p2: Pair<Int, Int> -> p1.second.compareTo(p2.second) })
+        this.resultHeap =
+                Heap(Comparator { p1: Pair<Int, Int>, p2: Pair<Int, Int> ->
+                    p1.second.compareTo(p2.second)
+                })
         this.limit = list.length - 1
 
         managerFunction = { manager ->
@@ -54,13 +57,15 @@ class Manager(id: String, list: List<Int>,
                         triple
                 }
             }
+        println(temp)
         return temp.getOrElse(triple)
     }
 
     fun start() {
         onReceive(Pair(0, 0), self())
-        sequence(initial.map { this.initWorker(it) })
-            .forEach({ this.initWorkers(it) },
+        sequence(initial.map {
+            this.initWorker(it)
+        }).forEach({ this.initWorkers(it) },
                      { client.tell(-1) })
     }
 

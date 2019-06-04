@@ -8,7 +8,7 @@ class Worker(id: String) : AbstractActor<Pair<Int, Int>>(id) {
     override fun onReceive(message: Pair<Int, Int>,
                            sender: Result<Actor<Pair<Int, Int>>>) {
         sender.forEach (onSuccess = { a: Actor<Pair<Int, Int>> ->
-                    a.tell(Pair(slowFibonacci(message.first),
+                    a.tell(Pair(fibonacci(message.first),
                                 message.second) , self())
                 })
     }
@@ -19,7 +19,7 @@ class Worker(id: String) : AbstractActor<Pair<Int, Int>>(id) {
             1    -> acc1 + acc2
             else -> fibonacci(acc2, acc1 + acc2, x - 1)
         }
-        return fibonacci(0, 1, number)
+        return number//fibonacci(0, 1, number)
     }
 
     private fun slowFibonacci(number: Int): Int {

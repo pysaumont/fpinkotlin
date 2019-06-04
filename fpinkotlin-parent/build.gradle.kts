@@ -5,9 +5,8 @@ ext["junitVersion"] = "3.1.8"
 
 plugins {
     base
-    kotlin("jvm") version "1.2.70"
+    kotlin("jvm") version "1.3.31"
 }
-
 
 allprojects {
 
@@ -18,5 +17,9 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+    }
+    
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 }

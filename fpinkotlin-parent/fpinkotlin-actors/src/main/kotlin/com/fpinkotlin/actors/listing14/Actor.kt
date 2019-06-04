@@ -1,9 +1,10 @@
 package com.fpinkotlin.actors.listing14
 
 import com.fpinkotlin.common.Result
-import kotlinx.coroutines.experimental.ThreadPoolDispatcher
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 
 interface ActorContext<T> {
@@ -55,7 +56,7 @@ abstract class AbstractActor<T>(protected val id: String) : Actor<T> {
         override fun behavior() = behavior
     }
 
-    private val dispatcher: ThreadPoolDispatcher = newSingleThreadContext("MyOwnThread")
+    private val dispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
 
     abstract fun onReceive(message: T, sender: Result<Actor<T>>)
 
@@ -64,12 +65,12 @@ abstract class AbstractActor<T>(protected val id: String) : Actor<T> {
     }
 
     override fun shutdown() {
-        this.dispatcher.close()
+        dispatcher.close()
     }
 
     @Synchronized
     override fun tell(message: T, sender: Result<Actor<T>>) {
-        launch(dispatcher) {
+        GlobalScope.launch(dispatcher) {
             actorContext.behavior().process(message, sender)
         }
     }
