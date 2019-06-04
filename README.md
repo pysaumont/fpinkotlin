@@ -36,7 +36,7 @@ To import the project into IntelliJ:
  
 ![Import project](graphics/ImportProject.png)
  
- - Click _Finish_ and wait stil import is complete
+ - Click _Finish_ and wait until import is complete
 
 ### Running a test
 
