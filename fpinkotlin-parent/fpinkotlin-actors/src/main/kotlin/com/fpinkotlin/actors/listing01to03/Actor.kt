@@ -1,4 +1,4 @@
-git addpackage com.fpinkotlin.actors.listing01to03
+package com.fpinkotlin.actors.listing01to03
 
 import com.fpinkotlin.common.Result
 import java.util.concurrent.ExecutorService
