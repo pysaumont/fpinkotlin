@@ -1,10 +1,14 @@
 package com.fpinkotlin.actors.listing15
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.fold
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.Comparator
 
@@ -16,6 +20,9 @@ import kotlin.Comparator
  * this means is that we made the minimal changes to the example in order to use coroutines.
  * In the next listing, we'll see how the same problem can be handle in a more Kotlin idiomatic
  * way.
+ *
+ * This version uses our immutable Heap. Look at listing16 and listing17 for faster versions
+ * using Kotlin data structures.
  */
 fun main() {
 
@@ -29,12 +36,11 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
-            produce {
-                numbers.forEach {
-                    send(it)
-                }
-            }
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
+        numbers.forEach {
+            send(it)
+        }
+    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -50,16 +56,15 @@ fun main() {
      *          to complete)
      */
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
-                     outputChannel: Channel<Pair<Int, Int>>): Job =
-            GlobalScope.launch {
-                for (pair in inputChannel) {
-                    /*
-                     * Change the following to using slowFibonacci to see the difference it makes
-                     * when using a potentially long lasting job.
-                     */
-                    outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
-                }
-            }
+                     outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
+        for (pair in inputChannel) {
+            /*
+             * Change the following to using slowFibonacci to see the difference it makes
+             * when using a potentially long lasting job.
+             */
+            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+        }
+    }
 
     /**
      * Source data is a series of random positive integers in the range [0 - 35].
@@ -82,6 +87,11 @@ fun main() {
                 })
             }
         }.take(200_000)
+
+    /**
+     * The first 40 values, used to display the result.
+     */
+    val input = numbers.take(40).toList()
 
     /**
      * A comparator to compare pairs of integer by comparing their first elements.
@@ -151,9 +161,10 @@ fun main() {
             }
         }
     }
+    val output = result.second.toList().take(40).map(Pair<Int, Int>::second)
     println("Duration: ${result.first}")
-    println("Input:    ${numbers.take(40).toList()}")
-    println("Result:   ${result.second.toList().take(40).map(Pair<Int, Int>::second)}")
+    println("Input:    $input")
+    println("Result:   $output")
 }
 
 /**

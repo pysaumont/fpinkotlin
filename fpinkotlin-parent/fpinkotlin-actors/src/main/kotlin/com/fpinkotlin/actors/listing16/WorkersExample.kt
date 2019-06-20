@@ -24,12 +24,11 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
-            produce {
-                numbers.forEach {
-                    send(it)
-                }
-            }
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
+        numbers.forEach {
+            send(it)
+        }
+    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -45,12 +44,11 @@ fun main() {
      *          to complete)
      */
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
-                     outputChannel: Channel<Pair<Int, Int>>): Job =
-            GlobalScope.launch {
-                for (pair in inputChannel) {
-                    outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
-                }
-            }
+                     outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
+        for (pair in inputChannel) {
+            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+        }
+    }
 
     /**
      * This function defines a + operator on [SortedSet] with a functional
@@ -101,6 +99,11 @@ fun main() {
     }.take(200_000)
 
     /**
+     * The first 40 values, used to display the result.
+     */
+    val input = numbers.take(40).toList()
+
+    /**
      * A comparator to compare pairs of integer by comparing their first elements.
      */
     val comparator: Comparator<Pair<Int, Int>> = Comparator {
@@ -119,10 +122,7 @@ fun main() {
             /**
              * Initialise the producer channel
              */
-            val producer =
-                    produceTasks(numbers.mapIndexed { index, num ->
-                        Pair(index, num)
-                    })
+            val producer = produceTasks(numbers.mapIndexed { index, num ->  Pair(index, num)})
 
             /**
              * The channel where to send the results. Note that the channel queue size
@@ -133,8 +133,7 @@ fun main() {
              * Channel<Pair<Int, Int>>(INT.MAX_VALUE). Try it and see how it affects
              * performance.
              */
-            val resultChannel =
-                    Channel<Pair<Int, Int>>(200_000)
+            val resultChannel = Channel<Pair<Int, Int>>(200_000)
 
             /**
              * Launch four parallel jobs. Change this number
@@ -169,9 +168,10 @@ fun main() {
             }
         }
     }
+    val output = result.second.toList().take(40).map(Pair<Int, Int>::second)
     println("Duration: ${result.first}")
-    println("Input:    ${numbers.take(40).toList()}")
-    println("Result:   ${result.second.take(40).map(Pair<Int, Int>::second).toList()}")
+    println("Input:    $input")
+    println("Result:   $output")
 }
 
 /**

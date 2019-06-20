@@ -100,6 +100,11 @@ fun main() {
             }
         }.take(numbers)
 
+        /**
+         * The first 40 values, used to display the result.
+         */
+        val input = sequence.take(40).toList()
+
         val result = measureTimeMillis {
 
             /**
@@ -116,7 +121,7 @@ fun main() {
 
             withContext(Dispatchers.Default) {
                 parallelProcess(workers) {
-                    for (msg in receiveChannel) processorActor.send(ComputeMessage(msg.index, slowFibonacci(msg.value)))
+                    for (msg in receiveChannel) processorActor.send(ComputeMessage(msg.index, fibonacci(msg.value)))
                 }
             }
 
@@ -138,9 +143,10 @@ fun main() {
              */
             result
         }
+        val output = result.second.take(40)
         println("Duration: ${result.first}")
-        println("Input:    ${sequence.take(40).toList()}")
-        println("Result:   ${result.second.take(40)}")
+        println("Input:    $input")
+        println("Result:   $output")
     }
 }
 
@@ -154,7 +160,6 @@ inline fun <T> measureTimeMillis(function: () -> T): Pair<Long, T> =
             Pair(System.currentTimeMillis() - start, result)
         }
     }
-
 
 /**
  * A fast function for computing the value of a number in the Fibonacci series
