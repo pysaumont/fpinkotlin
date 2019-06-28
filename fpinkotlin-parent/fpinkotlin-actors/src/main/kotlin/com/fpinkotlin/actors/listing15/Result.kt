@@ -1,4 +1,4 @@
-package  com.fpinkotlin.actors.listing15
+package  com.asn.pmdatabase.checker.actors01.listing15
 
 import java.io.Serializable
 
@@ -15,18 +15,18 @@ sealed class Result<out A>: Serializable {
 
     fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
         is Success -> this.value
-        else       -> defaultValue
+        else                                                            -> defaultValue
     }
 
     fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = when (this) {
         is Success -> this.value
-        else       -> defaultValue()
+        else                                                            -> defaultValue()
     }
 
     fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
             when (this) {
                 is Success -> this
-                else       -> try {
+                else                                                            -> try {
                     defaultValue()
                 } catch (e: RuntimeException) {
                     failure<A>(e)

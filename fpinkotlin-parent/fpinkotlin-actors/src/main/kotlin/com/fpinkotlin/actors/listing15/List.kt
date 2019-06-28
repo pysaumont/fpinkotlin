@@ -1,4 +1,4 @@
-package com.fpinkotlin.actors.listing15
+package com.asn.pmdatabase.checker.actors01.listing15
 
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
@@ -425,7 +425,7 @@ sealed class List<out A> {
 }
 
 fun <A> flatten(list: List<List<A>>): List<A> = list.coFoldRight(
-        List.Nil) { x -> x::concat }
+    List.Nil) { x -> x::concat }
 
 fun List<Int>.sum(): Int = foldRight(0) { x -> { y -> x + y } }
 
@@ -436,23 +436,23 @@ fun List<Int>.product(): Int = foldRight(1) { x -> { y -> x * y } }
 fun List<Double>.product(): Double = foldRight(1.0) { x -> { y -> x * y } }
 
 fun triple(list: List<Int>): List<Int> =
-        List.foldRight(list, List()) { h ->
-            { t: List<Int> ->
-                t.cons(h * 3)
-            }
+    List.foldRight(list, List()) { h ->
+        { t: List<Int> ->
+            t.cons(h * 3)
         }
+    }
 
 fun doubleToString(list: List<Double>): List<String> =
-        List.foldRight(list, List()) { h ->
-            { t: List<String> ->
-                t.cons(h.toString())
-            }
+    List.foldRight(list, List()) { h ->
+        { t: List<String> ->
+            t.cons(h.toString())
         }
+    }
 
 tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
-    List.Nil -> Result()
+    List.Nil        -> Result()
     is List.Cons<A> -> when (list.tail) {
-        List.Nil -> Result(list.head)
+        List.Nil     -> Result(list.head)
         is List.Cons -> lastSafe(list.tail)
     }
 }
@@ -490,9 +490,9 @@ fun <A, B, C> zipWith(list1: List<A>,
     fun zipWith(acc: List<C>,
                 list1: List<A>,
                 list2: List<B>): List<C> = when (list1) {
-        List.Nil -> acc
+        List.Nil     -> acc
         is List.Cons -> when (list2) {
-            List.Nil -> acc
+            List.Nil     -> acc
             is List.Cons ->
                 zipWith(acc.cons(f(list1.head)(list2.head)),
                         list1.tail, list2.tail)

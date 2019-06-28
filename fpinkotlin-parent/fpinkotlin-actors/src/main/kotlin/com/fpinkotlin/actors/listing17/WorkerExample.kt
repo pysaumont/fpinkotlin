@@ -1,9 +1,15 @@
-package com.fpinkotlin.actors.listing17
+package com.asn.pmdatabase.checker.actors01.listing17
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
@@ -73,7 +79,7 @@ fun CoroutineScope.processorActor() =
         for (msg in channel) {
             when (msg) {
                 is ComputeMessage ->  set.add(msg)
-                is ResultMessage -> msg.response.complete(set.toList().map {
+                is ResultMessage  -> msg.response.complete(set.toList().map {
                     it.value
                 })
             }
