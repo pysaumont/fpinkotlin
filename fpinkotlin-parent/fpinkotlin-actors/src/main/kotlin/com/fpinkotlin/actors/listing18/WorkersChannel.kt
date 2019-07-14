@@ -1,27 +1,26 @@
-package com.asn.pmdatabase.checker.actors01.listing19
+package com.asn.pmdatabase.checker.actors01.listing18
 
-import com.fpinkotlin.common.List
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.fold
+import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.take
+import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.Comparator
 
+
 /**
- * This is a version using a truly immutable data sharing list to collect the result. Although this is much faster
- * than Kotlin non modifiable lists and even slightly faster than modifiable ones, the overall result is slower
- * than the later because the list eventually has to be reversed. This would be unnecessary if the order was irrelevant,
- * which will of course completely contradict the requirement of reordering results. What we would really need is an
- * immutable data sharing double end queue offering the same performance in both head and tail access. We'll do this
- * in listing21.
+ * This is a version using either [ReceiveChannel.toList] or [ReceiveChannel.fold] functions to collect the result.
+ * [ReceiveChannel.fold] is slightly faster using a Kotlin modifiable list for folding, and much slower when using
+ * an Kotlin unmodifiable list. Using our immutable data sharing list will be exercised in listing20.
+ *
  */
 fun main() {
 
@@ -57,7 +56,7 @@ fun main() {
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
                      outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
         for (pair in inputChannel) {
-            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+            outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
         }
     }
 
@@ -98,7 +97,54 @@ fun main() {
         }
     }
 
-    val numbers = 200_000
+    /**
+     * Launch the client job that process the results. In this version, elements are
+     * computed pseudo lazily meaning that only the next element computed eagerly.
+     * As a consequence, we must pass the number of elements to consume and the effect
+     * to apply to them. When this is done, we mus cancel the channel.
+     *
+     * Beware not to use fold with Kotlin "non modifiable" list to consume the channel.
+     * Unlike our immutable List from chapter5, Kotlin "non modifiable" list
+     * does not use data sharing, creating a full new list on each add operation
+     * resulting in very poor performance. This will work very slowly:
+     *
+     * inputChannel.take(num).fold(listOf<Int>()) { list, value ->
+     *        list + value
+     *    }
+     *
+     * Replacing Kotlin list with our immutable list will work fine, and would be the
+     * faster solution if we weren't forced to reverse the list in the end (see listing20).
+     * Using Kotlin modifiable list will also work fine :
+     *
+     * inputChannel.take(num).fold(mutableListOf()) { list, value ->
+     *        list.add(value.second)
+     *        list
+     *    }
+     *
+     * A more idiomatic way is to use the toList() function, but this is slower
+     * than folding.
+     *
+     * Also note that [ReceiveChannel.take] is obsolete in Kotlin 1.3.40 (meaning
+     * annotated with @ObsoleteCoroutinesApi) and will be removed in future versions.
+     *
+     * @param inputChannel
+     *          The input channel providing the results.
+     * @param num
+     *          The number of elements to read from the channel
+     * @param effect
+     *          The effect to apply to elements
+     * @return  The job that will consume the data from the input channel
+     */
+    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (List<Int>) -> Unit): Job = GlobalScope.launch {
+        effect(inputChannel.take(num).map { it.second }.toList())
+//        effect(inputChannel.take(num).fold(mutableListOf()) { list, value ->
+//            list.add(value.second)
+//            list
+//        })
+        cancel()
+    }
+
+    val numbers = 20_000
 
     /**
      * Source data is a series of random positive integers in the range [0 - 35].
@@ -123,36 +169,6 @@ fun main() {
     }.take(numbers)
 
     val input = sequence.take(40).toList()
-
-    /**
-     * Launch the client job that process the results. In this version, elements are
-     * computed pseudo lazily meaning that only the next element computed eagerly.
-     * As a consequence, we must pass the number of elements to consume and the effect
-     * to apply to them. When this is done, we mus cancel the channel.
-     *
-     * Here, we use our immutable list. This is slightly faster but unfortunately,
-     * it produces a list in reverse order, and we then lose time to put the result
-     * in the correct order by reversing the list.
-     *
-     * Also note that [ReceiveChannel.take] is deprecated in Kotlin 1.3.40 (meaning
-     * annotated with @ObsoleteCoroutinesApi) and will be removed in future versions.
-     * See listing21 for another way to go.
-     *
-     * @param inputChannel
-     *          The input channel providing the results.
-     * @param num
-     *          The number of elements to read from the channel
-     * @param effect
-     *          The effect to apply to elements
-     * @return  The job that will consume the data from the input channel
-     */
-    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (List<Int>) -> Unit): Job = GlobalScope.launch {
-        effect(inputChannel.take(num).fold(List<Int>()) { list, pair ->
-            list.cons(pair.second)
-//        }.drop(numbers - 40).reverse()) // uncomment this line and comment next one for a different solution
-        }.reverse().splitAt(40).first)
-        cancel()
-    }
 
     runBlocking {
 
@@ -190,8 +206,8 @@ fun main() {
 
         val job = launchClient(clientChannel, numbers) {
             println("Total time: " + (System.currentTimeMillis() - startTime))
-            println("Input:  $input")
-            println("Result: ${it.splitAt(40).first}")
+            println("Input: $input")
+            println("Result: ${it.take(40)}")
         }
 
         job.join()

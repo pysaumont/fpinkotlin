@@ -1,12 +1,11 @@
 package com.fpinkotlin.recursion.exercise04
 
 /**
- * The version printed in the book has a bug because it uses the accumulator
- * to determine whether it is the first recursive call to the function, in
- * order to omit the separator. Otherwise, the result would tart with a
- * separator. This is wrong because if the first element results in an empty
- * string, the accumulator will be empty on the second call. You can
- * experiment this with a list of strings starting with an empty string.
+ * the implementation in the book has a bug. It won't work if the first
+ * element of the list results in an empty string. This is because the
+ * accumulator empty condition is used to detect whether it is the first
+ * recursive call.  The problem is that if the first element results in
+ * an empty string, the accumulator will still be empty on the second call.
  */
 fun <T> makeString_(list: List<T>, delim: String): String {
     tailrec fun makeString_(list: List<T>, acc: String): String = when {

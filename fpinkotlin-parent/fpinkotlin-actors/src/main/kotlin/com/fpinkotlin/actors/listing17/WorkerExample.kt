@@ -88,8 +88,8 @@ fun CoroutineScope.processorActor() =
 
 fun main() {
     runBlocking {
-        val numbers = 200_000
-        val workers = 4
+        val numbers = 20_000
+        val workers = 1
 
         val sequence = sequence {
             /**
@@ -127,7 +127,7 @@ fun main() {
 
             withContext(Dispatchers.Default) {
                 parallelProcess(workers) {
-                    for (msg in receiveChannel) processorActor.send(ComputeMessage(msg.index, fibonacci(msg.value)))
+                    for (msg in receiveChannel) processorActor.send(ComputeMessage(msg.index, slowFibonacci(msg.value)))
                 }
             }
 

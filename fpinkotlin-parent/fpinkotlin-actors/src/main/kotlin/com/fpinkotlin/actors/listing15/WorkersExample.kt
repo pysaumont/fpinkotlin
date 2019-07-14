@@ -62,7 +62,7 @@ fun main() {
              * Change the following to using slowFibonacci to see the difference it makes
              * when using a potentially long lasting job.
              */
-            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+            outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
         }
     }
 
@@ -86,7 +86,7 @@ fun main() {
                     it.nextInt(35)
                 })
             }
-        }.take(200_000)
+        }.take(20_000)
 
     /**
      * The first 40 values, used to display the result.

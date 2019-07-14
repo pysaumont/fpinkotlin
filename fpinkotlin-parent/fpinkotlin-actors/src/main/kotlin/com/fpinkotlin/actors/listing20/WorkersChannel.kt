@@ -16,12 +16,10 @@ import java.util.*
 import kotlin.Comparator
 
 /**
- * This is a version using a truly immutable data sharing list to collect the result. Although this is much faster
- * than Kotlin non modifiable lists and even slightly faster than modifiable ones, the overall result is slower
- * than the later because the list eventually has to be reversed. This would be unnecessary if the order was irrelevant,
- * which will of course completely contradict the requirement of reordering results. What we would really need is an
- * immutable data sharing double end queue offering the same performance in both head and tail access. We'll do this
- * in listing21.
+ * This is a version using a truly immutable data sharing Dequeue to collect the result. This is roughly as
+ * fast as a Kotlin mutable list (baked with an array list) although being a true immutable data sharing
+ * double ended queue..
+ *
  */
 fun main() {
 
@@ -57,7 +55,7 @@ fun main() {
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
                      outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
         for (pair in inputChannel) {
-            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+            outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
         }
     }
 
@@ -98,7 +96,7 @@ fun main() {
         }
     }
 
-    val numbers = 200_000
+    val numbers = 20_000
 
     /**
      * Source data is a series of random positive integers in the range [0 - 35].
@@ -132,7 +130,7 @@ fun main() {
      *
      * Here, we use our immutable list. This is slightly faster but unfortunately,
      * it produces a list in reverse order, and we then lose time to put the result
-     * in the correct order by reversing the list.
+     * in the corect order by reversing the list.
      *
      * Also note that [ReceiveChannel.take] is deprecated in Kotlin 1.3.40 (meaning
      * annotated with @ObsoleteCoroutinesApi) and will be removed in future versions.
@@ -146,11 +144,10 @@ fun main() {
      *          The effect to apply to elements
      * @return  The job that will consume the data from the input channel
      */
-    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (List<Int>) -> Unit): Job = GlobalScope.launch {
-        effect(inputChannel.take(num).fold(List<Int>()) { list, pair ->
-            list.cons(pair.second)
-//        }.drop(numbers - 40).reverse()) // uncomment this line and comment next one for a different solution
-        }.reverse().splitAt(40).first)
+    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (Deque<Int>) -> Unit): Job = GlobalScope.launch {
+        effect(inputChannel.take(num).fold(Deque()) { deque, pair ->
+            deque.addRight(pair.second)
+        })
         cancel()
     }
 
@@ -188,10 +185,11 @@ fun main() {
 
         val startTime = System.currentTimeMillis()
 
-        val job = launchClient(clientChannel, numbers) {
+        val job = launchClient(clientChannel, numbers) { deque: Deque<Int> ->
             println("Total time: " + (System.currentTimeMillis() - startTime))
             println("Input:  $input")
-            println("Result: ${it.splitAt(40).first}")
+            print("Result: ")
+            println("${deque.takeLeft(40).reverse()}")
         }
 
         job.join()
