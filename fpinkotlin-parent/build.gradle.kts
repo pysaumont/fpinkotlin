@@ -5,7 +5,7 @@ ext["junitVersion"] = "3.1.8"
 
 plugins {
     base
-    kotlin("jvm") version "1.3.40"
+    kotlin("jvm") version "1.3.50"
 }
 
 allprojects {

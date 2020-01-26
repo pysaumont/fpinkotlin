@@ -1,5 +1,7 @@
 package com.fpinkotlin.lists.exercise15
 
+import com.fpinkotlin.lists.exercise15.List.Companion.flatten
+
 
 sealed class List<out A> {
 
@@ -99,6 +101,13 @@ sealed class List<out A> {
                     x::concat
                 }
 
+        fun <A> flatten_(list: List<List<A>>): List<A> =
+                list.foldLeft(Nil as List<A>) { x: List<A> ->
+                    { y: List<A> ->
+                        x.concat(y)
+                    }
+                }
+
         operator fun <A> invoke(vararg az: A): List<A> =
                 az.foldRight(Nil) { a: A, list: List<A> -> Cons(a, list) }
     }
@@ -107,3 +116,7 @@ sealed class List<out A> {
 fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
 fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }
+
+fun main() {
+    println(flatten((List(List(1,2), List(3,4)))))
+}

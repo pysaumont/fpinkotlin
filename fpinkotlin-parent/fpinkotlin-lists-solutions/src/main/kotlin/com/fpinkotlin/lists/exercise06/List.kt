@@ -14,7 +14,9 @@ sealed class List<out A> {
 
     fun cons(a: @UnsafeVariance A): List<A> = Cons(a, this)
 
-    fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
+    //fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
+
+    abstract fun concat(list: List<@UnsafeVariance A>): List<A>
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -37,6 +39,9 @@ sealed class List<out A> {
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
+        override fun concat(list: List<Nothing>): List<Nothing> {
+            return list
+        }
     }
 
     internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
@@ -51,6 +56,10 @@ sealed class List<out A> {
             Nil  -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
+
+        override fun concat(list: List<@UnsafeVariance A>): List<A> =
+                   Cons(this.head, this.tail.concat(list))
+
     }
 
     companion object {
@@ -88,3 +97,6 @@ fun sum(ints: List<Int>): Int = when (ints) {
 }
 
 
+fun main() {
+    println(List(1, 2).concat(List(3, 4)))
+}
