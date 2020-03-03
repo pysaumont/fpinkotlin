@@ -18,7 +18,7 @@ class ListTest: StringSpec() {
     }
 }
 
-fun main(args: Array<String>) {
+fun main_(args: Array<String>) {
     val testLimit = 35000
     val array = Array(testLimit) {i -> i.toLong() }
     val testList: List<Long> = List(*array)

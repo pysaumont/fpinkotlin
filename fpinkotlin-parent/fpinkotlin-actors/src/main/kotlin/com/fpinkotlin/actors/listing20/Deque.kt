@@ -1,4 +1,4 @@
-package com.asn.pmdatabase.checker.actors01.listing20
+package com.fpinkotlin.actors.listing20
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
@@ -69,11 +69,11 @@ sealed class Deque<T> {
      *
      * @return a Result.Success<T> if the Deque is not empty, and a Result.Empty otherwise.
      */
-    fun peek(): Result<T> = if (isEmpty()) Result.Empty else Result.Success(left())
+    fun peek(): Result<T> = if (isEmpty()) Result() else Result(left())
 
-    internal open fun takeLeft(): Pair<Result<T>, Deque<T>> = Pair(Result.Success(left()), removeLeft())
+    internal open fun takeLeft(): Pair<Result<T>, Deque<T>> = Pair(Result(left()), removeLeft())
 
-    internal open fun takeRight(): Pair<Result<T>, Deque<T>> = Pair(Result.Success(right()), removeRight())
+    internal open fun takeRight(): Pair<Result<T>, Deque<T>> = Pair(Result(right()), removeRight())
 
     fun takeLeft(n: Int): List<T> {
         tailrec fun takeLeft(m: Int, deque: Deque<T>, acc: List<T> = List()): List<T> = when (m) {
@@ -106,9 +106,9 @@ sealed class Deque<T> {
         override fun removeRight(): Deque<T> =
             throw IllegalStateException("Can't remove an element from right of an empty deque")
 
-        override fun takeLeft(): Pair<Result<T>, Deque<T>> = Pair(Result.Empty, this)
+        override fun takeLeft(): Pair<Result<T>, Deque<T>> = Pair(Result(), this)
 
-        override fun takeRight(): Pair<Result<T>, Deque<T>> = Pair(Result.Empty, this)
+        override fun takeRight(): Pair<Result<T>, Deque<T>> = Pair(Result(), this)
     }
 
     private class SubTree<T>(val left: Affix<T>,

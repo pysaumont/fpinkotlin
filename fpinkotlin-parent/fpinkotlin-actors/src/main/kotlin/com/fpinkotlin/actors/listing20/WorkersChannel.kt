@@ -1,4 +1,4 @@
-package com.asn.pmdatabase.checker.actors01.listing20
+package com.fpinkotlin.actors.listing20
 
 import com.fpinkotlin.common.List
 import kotlinx.coroutines.CoroutineScope

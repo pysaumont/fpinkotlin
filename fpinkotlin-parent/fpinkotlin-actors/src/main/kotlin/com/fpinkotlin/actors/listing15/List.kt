@@ -1,5 +1,7 @@
 package com.asn.pmdatabase.checker.actors01.listing15
 
+import com.fpinkotlin.actors.listing15.Option
+import com.fpinkotlin.actors.listing15.Result
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 
@@ -463,20 +465,20 @@ fun <A> flattenResult(list: List<Result<A>>): List<A> =
 fun <A> sequenceLeft(list: List<Result<A>>): Result<List<A>> =
         list.foldLeft(Result(
             List())) { x: Result<List<A>> ->
-            { y -> map2(y, x) { a -> { b: List<A> -> b.cons(a) } } }
+            { y -> com.fpinkotlin.actors.listing15.map2(y, x) { a -> { b: List<A> -> b.cons(a) } } }
         }.map { it.reverse() }
 
 fun <A> sequence2(list: List<Result<A>>): Result<List<A>> =
         list.filter{ !it.isEmpty() }.foldRight(Result(List())) { x ->
             { y: Result<List<A>> ->
-                map2(x, y) { a -> { b: List<A> -> b.cons(a) } }
+                com.fpinkotlin.actors.listing15.map2(x, y) { a -> { b: List<A> -> b.cons(a) } }
             }
         }
 
 fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> =
         list.foldRight(Result(List())) { x ->
             { y: Result<List<B>> ->
-                map2(f(x), y) { a -> { b: List<B> -> b.cons(a) } }
+                com.fpinkotlin.actors.listing15.map2(f(x), y) { a -> { b: List<B> -> b.cons(a) } }
             }
         }
 

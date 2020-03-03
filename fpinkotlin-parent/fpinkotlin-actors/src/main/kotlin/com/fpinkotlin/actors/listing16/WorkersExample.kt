@@ -1,14 +1,10 @@
-package com.asn.pmdatabase.checker.actors01.listing16
+package com.fpinkotlin.actors.listing16
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.fold
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.Comparator
 
@@ -122,12 +118,28 @@ fun main() {
          * The whole process is run inside a [runBlocking] block in order to allow using
          * suspending functions.
          */
+        /**
+         * The whole process is run inside a [runBlocking] block in order to allow using
+         * suspending functions.
+         */
         runBlocking {
+            /**
+             * Initialise the producer channel
+             */
             /**
              * Initialise the producer channel
              */
             val producer = produceTasks(numbers.mapIndexed { index, num ->  Pair(index, num)})
 
+            /**
+             * The channel where to send the results. Note that the channel queue size
+             * is specified as 200_000 which is the exact size we need for the channel
+             * to contain all our data. This allows for Kotlin to use a more efficient
+             * data structure for the queue. You may prefer to use an unbounded queue
+             * with Channel<Pair<Int, Int>>(UNLIMITED), which is in fact equivalent to
+             * Channel<Pair<Int, Int>>(INT.MAX_VALUE). Try it and see how it affects
+             * performance.
+             */
             /**
              * The channel where to send the results. Note that the channel queue size
              * is specified as 200_000 which is the exact size we need for the channel
@@ -143,9 +155,17 @@ fun main() {
              * Launch four parallel jobs. Change this number
              * to see how it affects the processing time.
              */
+            /**
+             * Launch four parallel jobs. Change this number
+             * to see how it affects the processing time.
+             */
             val jobs = (0 until 4).map {
                 launchWorker(producer, resultChannel)
             }
+
+            /**
+             * Wait for all jobs to complete.
+             */
 
             /**
              * Wait for all jobs to complete.
@@ -160,7 +180,20 @@ fun main() {
              * It would be better to accumulate the results
              * while they are produced.
              */
+
+            /**
+             * Close the channel in order to be able to bulk process its
+             * content. This is not the ideal way to handle the problem.
+             * It would be better to accumulate the results
+             * while they are produced.
+             */
             resultChannel.close()
+
+            /**
+             * [sortedSetOf(Comparator)] returns a [TreeSet] so [acc] must be specified of type
+             * [SortedSet]. Alternatively, the [SortedSet.plus] operator function could be declared
+             * as [TreeSet.plus]
+             */
 
             /**
              * [sortedSetOf(Comparator)] returns a [TreeSet] so [acc] must be specified of type

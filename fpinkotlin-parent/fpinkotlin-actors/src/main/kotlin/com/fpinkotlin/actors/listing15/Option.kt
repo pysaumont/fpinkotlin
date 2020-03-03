@@ -1,4 +1,7 @@
-package  com.asn.pmdatabase.checker.actors01.listing15
+package  com.fpinkotlin.actors.listing15
+
+import com.asn.pmdatabase.checker.actors01.listing15.List
+import com.asn.pmdatabase.checker.actors01.listing15.sum
 
 
 sealed class Option<out A> {
@@ -124,7 +127,7 @@ val parseHex: (String) -> Int = parseWithRadix(16)
 fun abs(d: Double): Double = if (d > 0) d else -d
 
 fun abs0(od: Option<Double>): Option<Double> = lift(
-    ::abs)(od)
+                ::abs)(od)
 
 val upperOption: (Option<String>) -> Option<String> = lift { it.toUpperCase() }
 

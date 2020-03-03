@@ -1,17 +1,8 @@
-package com.asn.pmdatabase.checker.actors01.listing19
+package com.fpinkotlin.actors.listing19
 
 import com.fpinkotlin.common.List
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.fold
-import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.channels.take
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import java.util.*
 import kotlin.Comparator
 
