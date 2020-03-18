@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     println("inserted ${list.length} elements in $duration ms.")
     val time2 = System.currentTimeMillis()
     print("Emptying tree... ")
-    val tree2 = list.foldLeft(tree) { t -> { t.delete (it) } }
+    val tree2 = list.foldLeft(tree) { t -> { t - it } }
     val duration2 = System.currentTimeMillis() - time2
     println("removed ${list.length} elements in $duration2 ms.")
 }
