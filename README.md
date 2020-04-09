@@ -171,7 +171,7 @@ Code modules are generally named after the chapter titles, and not the chapter n
 
 ## Code example fro appendix A & B
 
-The code examples for appendix A & B are to be found in the [kotlingradle repository](https://github.com/pysaumont/kotlingradle)
+The code examples for appendix A & B are to be found in the [kotlingradle repository](https://github.com/pysaumont/fpinkotlin/tree/master/examples/kotlingradle)
 
 
 
