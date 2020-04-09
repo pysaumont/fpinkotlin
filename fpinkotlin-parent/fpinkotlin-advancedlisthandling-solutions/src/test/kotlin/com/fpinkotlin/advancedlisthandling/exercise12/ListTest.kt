@@ -33,6 +33,16 @@ class ListTest: StringSpec() {
                         second.getAtViaFoldLeft(index).toString() == if (first.isEmpty()) error else Result(first[index]).toString()
             }
         }
+
+        "getAtViaFoldLeft2" {
+            forAll(IntListGenerator()) { (first, second) ->
+                val index = if (first.isEmpty()) 0 else random.nextInt(max(first.size - 1, 1))
+                val error = Result.failure<Int>("Index out of bound").toString()
+                second.getAtViaFoldLeft2(- (index + 1)).toString() ==  error &&
+                        second.getAtViaFoldLeft2(first.size + index).toString() == error &&
+                        second.getAtViaFoldLeft2(index).toString() == if (first.isEmpty()) error else Result(first[index]).toString()
+            }
+        }
     }
 }
 

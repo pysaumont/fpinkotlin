@@ -187,3 +187,25 @@ fun <A, B, C> zipWith(list1: List<A>,
     }
     return zipWith(List(), list1, list2).reverse()
 }
+
+    fun <A, B, C> zipWithViaFoldLeft(list1: List<A>,
+                                     list2: List<B>,
+                                     f: (A) -> (B) -> C): List<C> =
+        list1.foldLeft(Pair(list2, List<C>())) { acc ->
+            { el ->
+                when (val l2 = acc.first) {
+                    is List.Nil -> acc
+                    is List.Cons -> {
+                        Pair(l2.tail , acc.second.cons(f(el)(l2.head)))
+                    }
+                }
+            }
+        }.second.reverse()
+
+
+fun main() {
+    val list1 = List("a", "b", "c", "d")
+    val list2 = List(1, 2, 3, 4, 5, 6)
+    val list3 = zipWithViaFoldLeft(list1, list2) { s-> { i: Int -> Pair(s, i)} }
+    println(list3)
+}

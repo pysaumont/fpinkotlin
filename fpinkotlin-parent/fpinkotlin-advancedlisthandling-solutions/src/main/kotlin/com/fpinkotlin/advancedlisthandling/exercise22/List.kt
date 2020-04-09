@@ -20,9 +20,10 @@ sealed class List<out A> {
 
     fun splitListAt(index: Int): List<List<A>> {
         tailrec fun splitListAt(acc: List<A>,
-                            list: List<A>, i: Int): List<List<A>> =
+                                list: List<A>,
+                                i: Int): List<List<A>> =
             when (list) {
-                Nil -> List(list.reverse(), acc)
+                Nil -> List(list, acc)
                 is Cons ->
                     if (i == 0)
                         List(list.reverse(), acc)
@@ -35,6 +36,12 @@ sealed class List<out A> {
             else             -> splitListAt(Nil, this.reverse(), this.length() - index)
         }
     }
+
+    /**
+     * Defining splitListAt in terms of splitAt. Try defining splitAt in terms of splitAtList and see
+     * how special case handling is different.
+     */
+    fun splitListAt2(index: Int): List<List<A>> = splitAt(index).let { List(it.second).cons(it.first) }
 
     fun divide(depth: Int): List<List<A>> {
         tailrec
@@ -54,7 +61,7 @@ sealed class List<out A> {
     }
 
     fun exists(p: (A) -> Boolean): Boolean =
-        foldLeft(false, true) { x -> { y: A -> x || p(y) } }.first
+        foldLeft(identity = false, zero = true) { x -> { y: A -> x || p(y) } }.first
 
     fun forAll(p: (A) -> Boolean): Boolean = !exists { !p(it) }
 
@@ -118,7 +125,7 @@ sealed class List<out A> {
         }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }
@@ -162,7 +169,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -363,8 +370,7 @@ fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { 
 
 fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A>> {
     tailrec fun unfold(acc: List<A>, z: S): Result<List<A>> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Result.Empty -> Result(acc)
             is Result.Failure -> Result.failure(next.exception)
             is Result.Success ->
@@ -376,8 +382,7 @@ fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A
 
 fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
     tailrec fun unfold(acc: List<A>, z: S): List<A> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Option.None -> acc
             is Option.Some ->
                 unfold(acc.cons(next.value.first), next.value.second)

@@ -45,6 +45,17 @@ sealed class List<out A> {
                 }
         }.first
 
+    fun getAtViaFoldLeft2(index: Int): Result<A> =
+        foldLeft(Pair(index, Result.failure<A>("Index out of bound"))) {
+            { a -> it.first.let { i ->
+                when {
+                    i < 0 -> it
+                    i == 0 -> Pair(i - 1, Result(a))
+                    else -> it.copy(i - 1)
+                }
+            } }
+        }.second
+
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
         this.coFoldRight(Pair(Nil, Nil)) { a ->
             { listPair: Pair<List<A1>, List<A2>> ->

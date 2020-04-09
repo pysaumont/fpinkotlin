@@ -140,7 +140,7 @@ sealed class List<out A> {
                                internal val tail: List<A>): List<A>() {
 
         override fun <B> foldLeft(identity: B, p: (B) -> Boolean, f: (B) -> (A) -> B): B {
-            fun foldLeft(acc: B, list: List<A>): B = when (list) {
+            tailrec fun foldLeft(acc: B, list: List<A>): B = when (list) {
                 Nil -> acc
                 is Cons ->
                     if (p(acc))
@@ -152,7 +152,7 @@ sealed class List<out A> {
         }
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (A) -> B): B {
-            fun foldLeft(acc: B, list: List<A>): B = when (list) {
+            tailrec fun foldLeft(acc: B, list: List<A>): B = when (list) {
                 Nil -> acc
                 is Cons ->
                     if (acc == zero)
