@@ -7,10 +7,7 @@ data class Payment(val creditCard: CreditCard, val amount: Int) {
                 Payment(creditCard, amount + payment.amount)
             else
                 throw IllegalStateException("Cards don't match.")
-    operator fun component1(): CreditCard = creditCard
 
-    operator fun component2(): Int = amount
-    
     companion object {
         fun groupByCard(payments: List<Payment>): List<Payment> =
                 payments.groupBy { it.creditCard }
