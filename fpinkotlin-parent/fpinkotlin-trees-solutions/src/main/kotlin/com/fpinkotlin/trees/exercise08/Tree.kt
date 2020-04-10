@@ -95,22 +95,29 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
 
         override val height: Int = 1 + max(left.height, right.height)
 
-//        override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
-//            g(right.foldLeft(identity, f, g))(f(left.foldLeft(identity, f, g))(this.value))
+        override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
+            g(right.foldLeft(identity, f, g))(f(left.foldLeft(identity, f, g))(this.value))
 
+//        /**
+//         * An implementation corresponding to a different traversal order, by ascending value
+//         */
 //        override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
 //            g(g(left.foldLeft(identity, f, g))(f(identity)(value)))((right.foldLeft(identity, f, g)))
 
-    override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B {
-        tailrec fun foldLeft(t: Tree<A>, acc: B): B = when (t) {
-            Empty -> acc
-            is T  -> {
-                val min = t.min().getOrElse { throw Exception() }
-                foldLeft(t.remove(min), f(acc)(min))
-            }
-        }
-        return foldLeft(this, identity)
-    }
+//        /**
+//         * An implementation corresponding to a different traversal order, by ascending value,
+//         * but based upon corecursion.
+//         */
+//        fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B {
+//            tailrec fun foldLeft(t: Tree<A>, acc: B): B = when (t) {
+//                Empty -> acc
+//                is T  -> {
+//                    val min = t.min().getOrElse { throw Exception() }
+//                    foldLeft(t.remove(min), f(acc)(min))
+//                }
+//            }
+//            return foldLeft(this, identity)
+//        }
 
 
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B =
