@@ -57,11 +57,11 @@ class TreeTest: StringSpec() {
                 val time2 = System.currentTimeMillis()
                 val tree2 = range(0, 5000).foldLeft(tree) { t -> { t - it } }
                 val duration2 = System.currentTimeMillis() - time2
-                (duration < maxTime) &&
-                    tree.size == set.size &&
-                    tree.height <= 2 * log2nlz(tree.size + 1) &&
-                    duration2 < maxTime &&
-                    tree2.height <= 2 * log2nlz(tree2.size + 1)
+                (tree.isEmpty || duration < maxTime) &&
+                        tree.size == set.size &&
+                        tree.height <= 2 * log2nlz(tree.size + 1) &&
+                        (tree2.isEmpty || duration2 < maxTime) &&
+                        tree2.height <= 2 * log2nlz(tree2.size + 1)
             }
         }
     }
