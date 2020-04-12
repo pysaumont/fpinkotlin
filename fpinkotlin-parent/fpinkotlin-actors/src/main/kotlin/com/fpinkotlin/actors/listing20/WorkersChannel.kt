@@ -1,26 +1,21 @@
 package com.fpinkotlin.actors.listing20
 
 import com.fpinkotlin.common.List
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.fold
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.channels.take
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.Comparator
 
 /**
  * This is a version using a truly immutable data sharing Dequeue to collect the result. This is roughly as
  * fast as a Kotlin mutable list (baked with an array list) although being a true immutable data sharing
- * double ended queue..
- *
+ * double ended queue.
  */
+@ExperimentalCoroutinesApi
 fun main() {
 
     /**
@@ -33,11 +28,12 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
-        numbers.forEach {
-            send(it)
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
+        produce {
+            numbers.forEach {
+                send(it)
+            }
         }
-    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -53,11 +49,12 @@ fun main() {
      *          to complete)
      */
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
-                     outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
-        for (pair in inputChannel) {
-            outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
+                     outputChannel: Channel<Pair<Int, Int>>): Job =
+        GlobalScope.launch {
+            for (pair in inputChannel) {
+                outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
+            }
         }
-    }
 
     /**
      * A comparator to compare pairs of integer by comparing their first elements.
@@ -106,6 +103,7 @@ fun main() {
      * representative of the general use case. However, generating
      */
     val sequence = sequence {
+
         /**
          * The pseudo random generator is initialized with an integer value (0) in order
          * to always produce the same sequence of pseudo random numbers, which is useful
@@ -144,12 +142,13 @@ fun main() {
      *          The effect to apply to elements
      * @return  The job that will consume the data from the input channel
      */
-    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (Deque<Int>) -> Unit): Job = GlobalScope.launch {
-        effect(inputChannel.take(num).fold(Deque()) { deque, pair ->
-            deque.addRight(pair.second)
-        })
-        cancel()
-    }
+    fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (Deque<Int>) -> Unit): Job =
+        GlobalScope.launch {
+            effect(inputChannel.take(num).fold(Deque()) { deque, pair ->
+                deque.addRight(pair.second)
+            })
+            cancel()
+        }
 
     runBlocking {
 
@@ -162,7 +161,8 @@ fun main() {
         /**
          * Initialise the producer channel
          */
-        val producer: ReceiveChannel<Pair<Int, Int>> = produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
+        val producer: ReceiveChannel<Pair<Int, Int>> =
+            produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
 
         /**
          * The channel where to send the results from the workers. Note that the

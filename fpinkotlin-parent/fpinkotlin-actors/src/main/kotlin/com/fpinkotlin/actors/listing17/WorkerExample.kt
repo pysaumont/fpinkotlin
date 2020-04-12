@@ -116,16 +116,10 @@ fun main() {
             /**
              * Create a channel holding the data to process
              */
-            /**
-             * Create a channel holding the data to process
-             */
             val receiveChannel = produceData(sequence.mapIndexed { index, num ->
                 ComputeMessage(index, num)
             })
 
-            /**
-             * Create the processing actor
-             */
             /**
              * Create the processing actor
              */
@@ -141,25 +135,14 @@ fun main() {
              * Create a response message and send it to the processing actor
              * to be completed with the actual result
              */
-            /**
-             * Create a response message and send it to the processing actor
-             * to be completed with the actual result
-             */
             val response = CompletableDeferred<List<Int>>()
             processorActor.send(ResultMessage(response))
 
             /**
              * Wait for the completed result
              */
-            /**
-             * Wait for the completed result
-             */
             val result = response.await()
             processorActor.close()
-
-            /**
-             * Return the result
-             */
 
             /**
              * Return the result

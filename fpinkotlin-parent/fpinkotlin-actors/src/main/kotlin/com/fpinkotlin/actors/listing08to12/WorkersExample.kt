@@ -1,6 +1,5 @@
 package com.fpinkotlin.actors.listing08to12
 
-
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
 import com.fpinkotlin.common.range

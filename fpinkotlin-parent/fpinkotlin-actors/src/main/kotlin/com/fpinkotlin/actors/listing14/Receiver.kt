@@ -23,15 +23,15 @@ class Receiver(id: String, private val client: Actor<List<Int>>) : AbstractActor
         }
     }
 
-    override fun onReceive(i: Int, sender: Result<Actor<Int>>) {
-        context.become(Behavior(List(i)))
+    override fun onReceive(message: Int, sender: Result<Actor<Int>>) {
+        context.become(Behavior(List(message)))
     }
 
     internal inner class Behavior internal constructor(
         internal val resultList: List<Int>) : MessageProcessor<Int> {
 
-        override fun process(i: Int, sender: Result<Actor<Int>>) {
-            receiverFunction(this@Receiver)(this@Behavior)(i)
+        override fun process(message: Int, sender: Result<Actor<Int>>) {
+            receiverFunction(this@Receiver)(this@Behavior)(message)
         }
     }
 }

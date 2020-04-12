@@ -14,6 +14,7 @@ import kotlin.Comparator
  * immutable data sharing double end queue offering the same performance in both head and tail access. We'll do this
  * in listing21.
  */
+@ExperimentalCoroutinesApi
 fun main() {
 
     /**
@@ -26,11 +27,12 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
-        numbers.forEach {
-            send(it)
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
+        produce {
+            numbers.forEach {
+                send(it)
+            }
         }
-    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -46,11 +48,12 @@ fun main() {
      *          to complete)
      */
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
-                     outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
-        for (pair in inputChannel) {
-            outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+                     outputChannel: Channel<Pair<Int, Int>>): Job =
+        GlobalScope.launch {
+            for (pair in inputChannel) {
+                outputChannel.send(Pair(pair.first, fibonacci(pair.second)))
+            }
         }
-    }
 
     /**
      * A comparator to compare pairs of integer by comparing their first elements.
@@ -99,6 +102,7 @@ fun main() {
      * representative of the general use case. However, generating
      */
     val sequence = sequence {
+
         /**
          * The pseudo random generator is initialized with an integer value (0) in order
          * to always produce the same sequence of pseudo random numbers, which is useful
@@ -140,7 +144,7 @@ fun main() {
     fun launchClient(inputChannel: ReceiveChannel<Pair<Int, Int>>, num: Int, effect: (List<Int>) -> Unit): Job = GlobalScope.launch {
         effect(inputChannel.take(num).fold(List<Int>()) { list, pair ->
             list.cons(pair.second)
-//        }.drop(numbers - 40).reverse()) // uncomment this line and comment next one for a different solution
+//        }.drop(numbers - 40).reverse()) // uncomment this line and comment the next one for a different solution
         }.reverse().splitAt(40).first)
         cancel()
     }
@@ -156,7 +160,8 @@ fun main() {
         /**
          * Initialise the producer channel
          */
-        val producer: ReceiveChannel<Pair<Int, Int>> = produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
+        val producer: ReceiveChannel<Pair<Int, Int>> =
+            produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
 
         /**
          * The channel where to send the results from the workers. Note that the

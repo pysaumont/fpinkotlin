@@ -15,24 +15,24 @@ sealed class Result<out A>: Serializable {
 
     fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
         is Success -> this.value
-        else                                                            -> defaultValue
+        else       -> defaultValue
     }
 
     fun getOrElse(defaultValue: () -> @UnsafeVariance A): A = when (this) {
         is Success -> this.value
-        else                                                            -> defaultValue()
+        else       -> defaultValue()
     }
 
     fun orElse(defaultValue: () -> Result<@UnsafeVariance A>): Result<A> =
             when (this) {
                 is Success -> this
-                else                                                            -> try {
-                    defaultValue()
-                } catch (e: RuntimeException) {
-                    failure<A>(e)
-                } catch (e: Exception) {
-                    failure<A>(RuntimeException(e))
-                }
+                else       -> try {
+                        defaultValue()
+                    } catch (e: RuntimeException) {
+                        failure<A>(e)
+                    } catch (e: Exception) {
+                        failure<A>(RuntimeException(e))
+                    }
             }
 
     fun filter(p: (A) -> Boolean): Result<A> = flatMap {

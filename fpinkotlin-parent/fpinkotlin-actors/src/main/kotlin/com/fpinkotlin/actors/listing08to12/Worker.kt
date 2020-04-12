@@ -8,8 +8,6 @@ class Worker(id: String) : AbstractActor<Int>(id) {
     override fun onReceive(message: Int, sender: Result<Actor<Int>>) {
         sender.forEach (onSuccess = { a: Actor<Int> ->
             a.tell(slowFibonacci(message), self())
-
-
         })
     }
 
@@ -18,8 +16,6 @@ class Worker(id: String) : AbstractActor<Int>(id) {
             0    -> 1
             1    -> 1
             else -> slowFibonacci(number - 1) + slowFibonacci(number - 2)
-
-
         }
     }
 

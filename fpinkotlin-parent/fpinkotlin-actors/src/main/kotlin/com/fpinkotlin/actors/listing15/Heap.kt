@@ -1,8 +1,4 @@
-package com.asn.pmdatabase.checker.actors01.listing15
-
-import com.fpinkotlin.actors.listing15.Option
-import com.fpinkotlin.actors.listing15.Result
-
+package com.fpinkotlin.actors.listing15
 
 sealed class Heap<out A> {
 
@@ -25,19 +21,20 @@ sealed class Heap<out A> {
     abstract fun get(index: Int): Result<A>
 
     operator fun plus(element: @UnsafeVariance A): Heap<A> = merge(
-        this, Heap(element, comparator))
+        this, Heap(element, comparator)
+    )
 
     abstract fun pop(): Option<Pair<A, Heap<A>>>
 
     fun toList(): List<A> = foldLeft(
-        List<A>()) { list -> { a -> list.cons(a) } }.reverse()
+        List<A>()
+    ) { list -> { a -> list.cons(a) } }.reverse()
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = unfold(this, { it.pop() }, identity, f)
 
     private fun <A, S, B> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>, identity: B, f: (B) -> (A) -> B): B {
         tailrec fun unfold(acc: B, z: S): B {
-            val next = getNext(z)
-            return when (next) {
+            return when (val next = getNext(z)) {
                 Option.None    -> acc
                 is Option.Some ->
                     unfold(f(acc)(next.value.first), next.value.second)
@@ -93,7 +90,8 @@ sealed class Heap<out A> {
         override val size: Int = lft.size + rght.size + 1
 
         override fun tail(): Result<Heap<A>> = Result(
-            merge(lft, rght))
+            merge(lft, rght)
+        )
 
         override fun get(index: Int): Result<A> = when (index) {
             0 -> Result(hd)
@@ -144,14 +142,16 @@ sealed class Heap<out A> {
                             first.right.map { fr ->
                                 merge(fh, fl,
                                                                                                    merge(
-                                                                                                       fr, second, comparator))
+                                                                                                       fr, second, comparator)
+                                )
                             }
                         }
                         else                                                                                          -> second.left.flatMap { sl ->
                             second.right.map { sr ->
                                 merge(sh, sl,
                                                                                                    merge(
-                                                                                                       first, sr, comparator))
+                                                                                                       first, sr, comparator)
+                                )
                             }
                         }
                     }

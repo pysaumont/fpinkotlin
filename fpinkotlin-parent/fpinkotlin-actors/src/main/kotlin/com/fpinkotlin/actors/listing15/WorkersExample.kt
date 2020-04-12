@@ -1,15 +1,10 @@
 package com.fpinkotlin.actors.listing15
 
-import com.asn.pmdatabase.checker.actors01.listing15.Heap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.fold
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.Comparator
 
@@ -25,6 +20,7 @@ import kotlin.Comparator
  * This version uses our immutable Heap. Look at listing16 and listing17 for faster versions
  * using Kotlin data structures.
  */
+@ExperimentalCoroutinesApi
 fun main() {
 
     /**
@@ -37,11 +33,12 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
-        numbers.forEach {
-            send(it)
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
+        produce {
+            numbers.forEach {
+                send(it)
+            }
         }
-    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -109,14 +106,8 @@ fun main() {
          * The whole process is run inside a [runBlocking] block in order to allow using
          * suspending functions.
          */
-        /**
-         * The whole process is run inside a [runBlocking] block in order to allow using
-         * suspending functions.
-         */
         runBlocking {
-            /**
-             * Initialise the producer channel
-             */
+
             /**
              * Initialise the producer channel
              */
@@ -134,21 +125,8 @@ fun main() {
              * Channel<Pair<Int, Int>>(INT.MAX_VALUE). Try it and see how it affects
              * performance.
              */
-            /**
-             * The channel where to send the results. Note that the channel queue size
-             * is specified as 200_000 which is the exact size we need for the channel
-             * to contain all our data. This allows for Kotlin to use a more efficient
-             * data structure for the queue. You may prefer to use an unbounded queue
-             * with Channel<Pair<Int, Int>>(UNLIMITED), which is in fact equivalent to
-             * Channel<Pair<Int, Int>>(INT.MAX_VALUE). Try it and see how it affects
-             * performance.
-             */
             val resultChannel = Channel<Pair<Int, Int>>(200_000)
 
-            /**
-             * Launch four parallel jobs. Change this number
-             * to see how it affects the processing time.
-             */
             /**
              * Launch four parallel jobs. Change this number
              * to see how it affects the processing time.
@@ -156,10 +134,6 @@ fun main() {
             val jobs = (0 until 4).map {
                 launchWorker(producer, resultChannel)
             }
-
-            /**
-             * Wait for all jobs to complete.
-             */
 
             /**
              * Wait for all jobs to complete.
@@ -174,20 +148,7 @@ fun main() {
              * It would be better to accumulate the results
              * while they are produced.
              */
-
-            /**
-             * Close the channel in order to be able to bulk process its
-             * content. This is not the ideal way to handle the problem.
-             * It would be better to accumulate the results
-             * while they are produced.
-             */
             resultChannel.close()
-
-            /**
-             * Closing the channel allows folding its content. Note that
-             * [Channel.fold] is experimental and is subject to change or
-             * even to suppression in a future version of Kotlin coroutines.
-             */
 
             /**
              * Closing the channel allows folding its content. Note that

@@ -43,8 +43,12 @@ class Manager(id: String, list: List<Int>,
                      onFailure = { this.tellClientEmptyResult(it.message ?: "Unknown error") })
     }
 
-    private fun initWorker(t: Pair<Int, Int>): Result<() -> Unit> =
-        Result({ Worker("Worker " + t.second).tell(t.first, self()) })
+    private fun initWorker(t: Pair<Int, Int>): Result<() -> Unit> {
+        // Don't follow IntelliJ advice to move the following lambda out of the parentheses, as of Kotlin 1.3.71,
+        // or it will no longer compile with "Error:(48, 18) Kotlin: Type mismatch: inferred type is Unit but Boolean was expected"
+        // error message.
+        return Result ({ Worker("Worker " + t.second).tell(t.first, self()) })
+    }
 
     private fun initWorkers(lst: List<() -> Unit>) {
         lst.forEach { it() }
@@ -58,8 +62,7 @@ class Manager(id: String, list: List<Int>,
         context.become(Behavior(workList, resultList))
     }
 
-    internal inner class Behavior
-    internal constructor(internal val workList: List<Int>,
+    internal inner class Behavior internal constructor(internal val workList: List<Int>,
                          internal val resultList: List<Int>) : MessageProcessor<Int> {
 
         override fun process(message: Int, sender: Result<Actor<Int>>) {

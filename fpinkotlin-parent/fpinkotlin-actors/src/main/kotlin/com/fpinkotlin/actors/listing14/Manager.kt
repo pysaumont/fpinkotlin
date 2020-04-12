@@ -25,8 +25,8 @@ class Manager(id: String, list: List<Int>,
         managerFunction = { manager ->
             { behavior ->
                 { p ->
-                    val result = streamResult(behavior.resultHeap + p,
-                                              behavior.expected, List())
+                    val result =
+                        streamResult(behavior.resultHeap + p, behavior.expected, List())
                     result.third.reverse().forEach { client.tell(it) }
                     if (result.second > limit) {
                         this.client.tell(-1)
@@ -45,8 +45,8 @@ class Manager(id: String, list: List<Int>,
                              expected: Int,
                              list: List<Int>): Triple<Heap<Pair<Int, Int>>, Int, List<Int>> {
         val triple = Triple(result, expected, list)
-        val temp = result.head
-            .flatMap { head ->
+        val temp =
+            result.head.flatMap { head ->
                 result.tail().map { tail ->
                     if (head.second == expected) {
                         val newList = list.cons(head.first)

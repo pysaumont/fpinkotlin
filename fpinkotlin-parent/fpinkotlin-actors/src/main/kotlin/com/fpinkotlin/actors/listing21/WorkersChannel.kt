@@ -32,11 +32,12 @@ fun main() {
      *          to complete)
      */
     fun launchWorker(inputChannel: ReceiveChannel<Pair<Int, Int>>,
-                     outputChannel: Channel<Pair<Int, Int>>): Job = GlobalScope.launch {
-        for (pair in inputChannel) {
-            outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
+                     outputChannel: Channel<Pair<Int, Int>>): Job =
+        GlobalScope.launch {
+            for (pair in inputChannel) {
+                outputChannel.send(Pair(pair.first, slowFibonacci(pair.second)))
+            }
         }
-    }
 
     /**
      * A comparator to compare pairs of integer by comparing their first elements.
@@ -53,24 +54,25 @@ fun main() {
      *          The input channel providing the results.
      * @return  a Flow.
      */
-    fun launchReceiver(inputChannel: ReceiveChannel<Pair<Int, Int>>): Flow<Pair<Int, Int>> = flow {
-        val set = sortedSetOf(pairComparator)
-        var expected = 0
-        for (pair in inputChannel) {
-            if (pair.first == expected) {
-                emit(pair)
-                expected++
-                while (!set.isEmpty() && set.first().first == expected) {
-                    val x = set.first()
-                    emit(x)
-                    set.remove(x)
+    fun launchReceiver(inputChannel: ReceiveChannel<Pair<Int, Int>>): Flow<Pair<Int, Int>> =
+        flow {
+            val set = sortedSetOf(pairComparator)
+            var expected = 0
+            for (pair in inputChannel) {
+                if (pair.first == expected) {
+                    emit(pair)
                     expected++
+                    while (!set.isEmpty() && set.first().first == expected) {
+                        val x = set.first()
+                        emit(x)
+                        set.remove(x)
+                        expected++
+                    }
+                } else {
+                    set.add(pair)
                 }
-            } else {
-                set.add(pair)
             }
         }
-    }
 
     val numbers = 20_000
 
@@ -92,13 +94,14 @@ fun main() {
         /**
          * Initialise the producer channel
          */
-        val producer: ReceiveChannel<Pair<Int, Int>> = produce {
+        val producer: ReceiveChannel<Pair<Int, Int>> =
+            produce {
                 Random(0).let {
                     for (x in 0 until numbers) {
                         send(Pair(x, it.nextInt(35)))
                     }
                 }
-        }
+            }
 
         /**
          * Launch four parallel jobs. Change this number

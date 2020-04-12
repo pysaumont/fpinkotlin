@@ -12,6 +12,7 @@ import kotlin.Comparator
  * an Kotlin unmodifiable list. Using our immutable data sharing list will be exercised in listing20.
  *
  */
+@ExperimentalCoroutinesApi
 fun main() {
 
     /**
@@ -24,11 +25,12 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
-        numbers.forEach {
-            send(it)
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
+        produce {
+            numbers.forEach {
+                send(it)
+            }
         }
-    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -171,7 +173,8 @@ fun main() {
         /**
          * Initialise the producer channel
          */
-        val producer: ReceiveChannel<Pair<Int, Int>> = produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
+        val producer: ReceiveChannel<Pair<Int, Int>> =
+            produceTasks(sequence.mapIndexed { index, num ->  Pair(index, num)})
 
         /**
          * The channel where to send the results from the workers. Note that the

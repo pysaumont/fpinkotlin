@@ -1,7 +1,6 @@
 package  com.fpinkotlin.actors.listing15
 
-import com.asn.pmdatabase.checker.actors01.listing15.List
-import com.asn.pmdatabase.checker.actors01.listing15.sum
+import kotlin.math.pow
 
 
 sealed class Option<out A> {
@@ -10,8 +9,7 @@ sealed class Option<out A> {
 
     abstract fun <B> map(f: (A) -> B): Option<B>
 
-    fun <B> flatMap(f: (A) -> Option<B>): Option<B> = map(f).getOrElse(
-        None)
+    fun <B> flatMap(f: (A) -> Option<B>): Option<B> = map(f).getOrElse(None)
 
     fun filter(p: (A) -> Boolean): Option<A> =
             flatMap { x -> if (p(x)) this else None }
@@ -78,7 +76,7 @@ val mean: (List<Double>) -> Option<Double> = { list ->
 val variance: (List<Double>) -> Option<Double> = { list ->
     mean(list).flatMap { m ->
         mean(list.map { x ->
-            Math.pow((x - m), 2.0)
+            (x - m).pow(2.0)
         })
     }
 }
@@ -93,10 +91,9 @@ fun mean(list: List<Double>): Option<Double> =
 fun variance(list: List<Double>): Option<Double> =
     mean(list).flatMap { m ->
         mean(list.map { x ->
-            Math.pow((x - m), 2.0)
+            (x - m).pow(2.0)
         })
     }
-
 
 val abs: (Double) -> Double = { d -> if (d > 0) d else -d }
 
@@ -131,8 +128,7 @@ fun abs0(od: Option<Double>): Option<Double> = lift(
 
 val upperOption: (Option<String>) -> Option<String> = lift { it.toUpperCase() }
 
-val upperOption_: (Option<String>) -> Option<String> = lift(
-    String::toUpperCase)
+val upperOption_: (Option<String>) -> Option<String> = lift(String::toUpperCase)
 
 fun <A, B, C> map2(oa: Option<A>,
                    ob: Option<B>,

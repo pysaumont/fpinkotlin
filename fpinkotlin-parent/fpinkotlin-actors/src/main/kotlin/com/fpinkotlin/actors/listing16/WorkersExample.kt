@@ -12,6 +12,7 @@ import kotlin.Comparator
  * A more idiomatic (and faster) version of the same problem, using a [SortedSet] instead of a [Heap]
  * to reorder the results.
  */
+@ExperimentalCoroutinesApi
 fun main() {
 
     /**
@@ -24,11 +25,12 @@ fun main() {
      *          The producer works from a list of pairs of integers, making all elements available to the receive channel.
      * @return  A receive channel with all data elements available.
      */
-    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> = produce {
-        numbers.forEach {
-            send(it)
+    fun CoroutineScope.produceTasks(numbers: Sequence<Pair<Int, Int>>): ReceiveChannel<Pair<Int, Int>> =
+        produce {
+            numbers.forEach {
+                send(it)
+            }
         }
-    }
 
     /**
      * Launch a worker job. A worker job consist in reading data from the input channel, processing it
@@ -118,28 +120,12 @@ fun main() {
          * The whole process is run inside a [runBlocking] block in order to allow using
          * suspending functions.
          */
-        /**
-         * The whole process is run inside a [runBlocking] block in order to allow using
-         * suspending functions.
-         */
         runBlocking {
-            /**
-             * Initialise the producer channel
-             */
             /**
              * Initialise the producer channel
              */
             val producer = produceTasks(numbers.mapIndexed { index, num ->  Pair(index, num)})
 
-            /**
-             * The channel where to send the results. Note that the channel queue size
-             * is specified as 200_000 which is the exact size we need for the channel
-             * to contain all our data. This allows for Kotlin to use a more efficient
-             * data structure for the queue. You may prefer to use an unbounded queue
-             * with Channel<Pair<Int, Int>>(UNLIMITED), which is in fact equivalent to
-             * Channel<Pair<Int, Int>>(INT.MAX_VALUE). Try it and see how it affects
-             * performance.
-             */
             /**
              * The channel where to send the results. Note that the channel queue size
              * is specified as 200_000 which is the exact size we need for the channel
@@ -155,17 +141,9 @@ fun main() {
              * Launch four parallel jobs. Change this number
              * to see how it affects the processing time.
              */
-            /**
-             * Launch four parallel jobs. Change this number
-             * to see how it affects the processing time.
-             */
             val jobs = (0 until 4).map {
                 launchWorker(producer, resultChannel)
             }
-
-            /**
-             * Wait for all jobs to complete.
-             */
 
             /**
              * Wait for all jobs to complete.
@@ -180,20 +158,7 @@ fun main() {
              * It would be better to accumulate the results
              * while they are produced.
              */
-
-            /**
-             * Close the channel in order to be able to bulk process its
-             * content. This is not the ideal way to handle the problem.
-             * It would be better to accumulate the results
-             * while they are produced.
-             */
             resultChannel.close()
-
-            /**
-             * [sortedSetOf(Comparator)] returns a [TreeSet] so [acc] must be specified of type
-             * [SortedSet]. Alternatively, the [SortedSet.plus] operator function could be declared
-             * as [TreeSet.plus]
-             */
 
             /**
              * [sortedSetOf(Comparator)] returns a [TreeSet] so [acc] must be specified of type
@@ -221,7 +186,6 @@ inline fun <T> measureTimeMillis(function: () -> T): Pair<Long, T> =
             Pair(System.currentTimeMillis() - start, result)
         }
     }
-
 
 /**
  * A fast function for computing the value of a number in the Fibonacci series
