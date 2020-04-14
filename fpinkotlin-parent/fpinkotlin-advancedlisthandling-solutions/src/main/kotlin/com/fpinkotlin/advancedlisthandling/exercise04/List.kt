@@ -13,7 +13,7 @@ sealed class List<out A> {
 
     fun headSafe(): Result<A> =
             foldRight(Result()) { x: A ->
-                { _: Result<A> ->
+                {
                     Result(x)
                 }
             }
@@ -24,7 +24,7 @@ sealed class List<out A> {
     }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }
@@ -39,7 +39,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 

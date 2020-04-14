@@ -172,9 +172,9 @@ fun <A> Result<A>.orElse(defaultValue: () -> Result<A>): Result<A> = map { this 
         else              -> try {
             defaultValue()
         } catch (e: RuntimeException) {
-            Result.failure<A>(e)
+            Result.failure(e)
         } catch (e: Exception) {
-            Result.failure<A>(RuntimeException(e))
+            Result.failure(RuntimeException(e))
         }
     }
 }

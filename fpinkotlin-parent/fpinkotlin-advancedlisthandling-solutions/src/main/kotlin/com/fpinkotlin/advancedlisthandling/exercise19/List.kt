@@ -78,7 +78,7 @@ sealed class List<out A> {
         }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }
@@ -104,7 +104,7 @@ sealed class List<out A> {
         fun <A> hasSubList(list: List<A>, sub: List<A>): Boolean =
                 when (list) {
                     Nil -> sub.isEmpty()
-                    is List.Cons ->
+                    is Cons ->
                         if (list.startsWith(sub))
                             true
                         else
@@ -122,7 +122,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -230,13 +230,13 @@ sealed class List<out A> {
         fun <A, B> foldRight(list: List<A>, identity: B, f: (A) -> (B) -> B): B =
                 when (list) {
                     Nil -> identity
-                    is List.Cons -> f(list.head)(foldRight(list.tail, identity, f))
+                    is Cons -> f(list.head)(foldRight(list.tail, identity, f))
                 }
 
         tailrec fun <A, B> foldLeft(acc: B, list: List<A>, f: (B) -> (A) -> B): B =
                 when (list) {
                     Nil -> acc
-                    is List.Cons -> foldLeft(f(acc)(list.head), list.tail, f)
+                    is Cons -> foldLeft(f(acc)(list.head), list.tail, f)
                 }
 
         tailrec fun <A, B> coFoldRight(acc: B, list: List<A>, identity: B, f: (A) -> (B) -> B): B =
@@ -324,8 +324,7 @@ fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { 
 
 fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A>> {
     tailrec fun unfold(acc: List<A>, z: S): Result<List<A>> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Result.Empty -> Result(acc)
             is Result.Failure -> Result.failure(next.exception)
             is Result.Success ->
@@ -337,8 +336,7 @@ fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A
 
 fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
     tailrec fun unfold(acc: List<A>, z: S): List<A> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Option.None -> acc
             is Option.Some ->
                 unfold(acc.cons(next.value.first), next.value.second)
