@@ -12,9 +12,9 @@ sealed class List<out A> {
     abstract val length: Int
 
     fun headSafe(): Result<A> =
-            foldRight(Result()) { x: A ->
+            foldRight(Result<A>()) { x: A ->
                 {
-                    Result(x)
+                    Result<A>(x)
                 }
             }
 
