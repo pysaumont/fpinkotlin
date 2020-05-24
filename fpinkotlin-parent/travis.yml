@@ -1,0 +1,20 @@
+language: java
+
+sudo: required
+
+jdk:
+   - oraclejdk8
+
+install: true
+
+script:
+  - sudo apt-get update && sudo apt-get install oracle-java8-installer
+  - java -version
+  - ./gradlew
+
+notifications:
+  email:
+    recipients:
+      - build@fpinjava.com
+    on_success: always # default: change [always|never|change]
+    on_failure: always # default: always [always|never|change]
