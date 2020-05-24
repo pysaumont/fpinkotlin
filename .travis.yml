@@ -15,6 +15,6 @@ script:
 notifications:
   email:
     recipients:
-      - build@volga.fr
+      - fpinkotlin@volgadev.com
     on_success: always # default: change [always|never|change]
     on_failure: always # default: always [always|never|change]
