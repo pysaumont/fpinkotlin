@@ -10,7 +10,7 @@ install: true
 script:
   - java -version
   - cd fpinkotlin-parent
-  - ./gradlew tasks
+  - ./gradlew assemble
 
 notifications:
   email:
