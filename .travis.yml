@@ -9,7 +9,7 @@ install: true
 
 script:
   - java -version
-  - ./fpinkotlin-parent/gradlew compileKotlin
+  - ./fpinkotlin-parent/gradlew compile
 
 notifications:
   email:
