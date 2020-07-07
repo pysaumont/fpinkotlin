@@ -1,8 +1,6 @@
 package com.mydomain.mymultipleproject.common.example04
 
 import io.kotlintest.properties.Gen
-import io.kotlintest.properties.shrinking.ListShrinker
-import java.util.*
 
 
 fun stringGenerator(maxList: Int,

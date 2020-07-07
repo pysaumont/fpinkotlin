@@ -19,7 +19,7 @@ sealed class List<out A> {
                               f: (B) -> (A) -> B): B
 
     fun exists(p: (A) -> Boolean): Boolean =
-            foldLeft(false, true) { x -> { y: A -> x || p(y) } }.first
+            foldLeft(identity = false, zero = true) { x -> { y: A -> x || p(y) } }.first
 
     fun forAll(p: (A) -> Boolean): Boolean = TODO("forAll")
 

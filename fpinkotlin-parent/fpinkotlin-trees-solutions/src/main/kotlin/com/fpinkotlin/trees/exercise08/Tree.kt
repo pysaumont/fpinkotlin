@@ -98,6 +98,28 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
             g(right.foldLeft(identity, f, g))(f(left.foldLeft(identity, f, g))(this.value))
 
+//        /**
+//         * An implementation corresponding to a different traversal order, by ascending value
+//         */
+//        override fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B =
+//            g(g(left.foldLeft(identity, f, g))(f(identity)(value)))((right.foldLeft(identity, f, g)))
+
+//        /**
+//         * An implementation corresponding to a different traversal order, by ascending value,
+//         * but based upon corecursion.
+//         */
+//        fun <B> foldLeft(identity: B, f: (B) -> (A) -> B, g: (B) -> (B) -> B): B {
+//            tailrec fun foldLeft(t: Tree<A>, acc: B): B = when (t) {
+//                Empty -> acc
+//                is T  -> {
+//                    val min = t.min().getOrElse { throw Exception() }
+//                    foldLeft(t.remove(min), f(acc)(min))
+//                }
+//            }
+//            return foldLeft(this, identity)
+//        }
+
+
         override fun <B> foldRight(identity: B, f: (A) -> (B) -> B, g: (B) -> (B) -> B): B =
             g(f(this.value)(left.foldRight(identity, f, g)))(right.foldRight(identity, f, g))
 
@@ -129,4 +151,12 @@ sealed class Tree<out A: Comparable<@UnsafeVariance A>> {
         operator fun <A: Comparable<A>> invoke(list: List<A>): Tree<A> =
             list.foldLeft(Empty as Tree<A>) { tree: Tree<A> -> { a: A -> tree.plus(a) } }
     }
+}
+
+fun main() {
+//    val tree = Tree(1, 8, 3, 5, 7, 2, 9, 0, 6, 4)
+//    val tree = Tree(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    val tree = Tree(3,1,8,0,2,6,10,5,7,9,11,4)
+
+    println(tree.foldLeft("", { b -> { a -> "$b,$a"} }) { a -> { b -> a + b}})
 }

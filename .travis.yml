@@ -3,18 +3,18 @@ language: java
 sudo: required
 
 jdk:
-   - oraclejdk8
+   - openjdk8
 
 install: true
 
 script:
-  - sudo apt-get update && sudo apt-get install oracle-java8-installer
   - java -version
-  - ./fpinjava-parent/gradlew
+  - cd fpinkotlin-parent
+  - ./gradlew assemble
 
 notifications:
   email:
     recipients:
-      - build@fpinjava.com
+      - fpinkotlin@volgadev.com
     on_success: always # default: change [always|never|change]
     on_failure: always # default: always [always|never|change]

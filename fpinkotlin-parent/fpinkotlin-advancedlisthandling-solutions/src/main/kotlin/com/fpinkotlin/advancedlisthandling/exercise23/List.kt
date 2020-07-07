@@ -78,7 +78,7 @@ sealed class List<out A> {
     }
 
     fun exists(p: (A) -> Boolean): Boolean =
-        foldLeft(false, true) { x -> { y: A -> x || p(y) } }.first
+        foldLeft(identity = false, zero = true) { x -> { y: A -> x || p(y) } }.first
 
     fun forAll(p: (A) -> Boolean): Boolean = !exists { !p(it) }
 
@@ -142,7 +142,7 @@ sealed class List<out A> {
         }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }
@@ -186,7 +186,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -388,8 +388,7 @@ fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { 
 
 fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A>> {
     tailrec fun unfold(acc: List<A>, z: S): Result<List<A>> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Result.Empty -> Result(acc)
             is Result.Failure -> Result.failure(next.exception)
             is Result.Success ->
@@ -401,8 +400,7 @@ fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A
 
 fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
     tailrec fun unfold(acc: List<A>, z: S): List<A> {
-        val next = getNext(z)
-        return when (next) {
+        return when (val next = getNext(z)) {
             Option.None -> acc
             is Option.Some ->
                 unfold(acc.cons(next.value.first), next.value.second)

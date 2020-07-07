@@ -3,6 +3,9 @@ package com.fpinkotlin.recursion.exercise03
 import io.kotlintest.properties.Gen
 import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
+import java.math.BigInteger
+
+infix operator fun BigInteger.plus(that: BigInteger): BigInteger = this.add(that)
 
 class FibonacciTest : StringSpec() {
 

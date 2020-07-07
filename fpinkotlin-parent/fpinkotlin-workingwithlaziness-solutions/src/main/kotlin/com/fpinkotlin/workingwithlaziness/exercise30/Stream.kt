@@ -2,6 +2,7 @@ package com.fpinkotlin.workingwithlaziness.exercise30
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
+import kotlin.system.measureTimeMillis
 
 
 sealed class Stream<out A> {
@@ -22,6 +23,7 @@ sealed class Stream<out A> {
     fun find(p: (A) -> Boolean): Result<A> = filter(p).head()
 
     fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
+        // Unlike what IntelliJ think, the cast to Stream<B> below is absolutely necessary
             foldRight(Lazy { Empty as Stream<B> }) { a ->
                 { b: Lazy<Stream<B>> ->
                     f(a).append(b)
@@ -43,12 +45,25 @@ sealed class Stream<out A> {
            }
        }
 
+    tailrec fun <A> go(p: (A) -> Boolean, s: Stream<A>): Stream<A> =
+        when (s) {
+            Empty -> s
+            is Cons -> {
+                if (p(s.hd())) cons(s.hd, Lazy { f(p, s.tl()) })
+                else go(p, s.tl())
+            }
+        }
+
+    fun <A> f(p: (A) -> Boolean, s: Stream<A>): Stream<A> = go(p, s)
+
+    fun filter1(p: (A) -> Boolean): Stream<A> = go(p, this)
+
     fun filter2(p: (A) -> Boolean): Stream<A> =
         dropWhile { x -> !p(x) }.let { stream ->
             when (stream) {
                 Empty -> stream
                 is Cons -> stream.head().map { a ->
-                    cons(Lazy { a }, Lazy { stream.tl().filter(p) })
+                    cons(Lazy { a }, Lazy { stream.tl().filter2(p) })
                 }.getOrElse(Empty)
             }
         }
@@ -180,12 +195,42 @@ fun fibs(): Stream<Int> =
         Result(Pair(x.first, Pair(x.second, x.first + x.second)))
     }
 
-
 fun main(args: Array<String>) {
-    Stream.from(0)
-        .filter { it > 100_000 }
-        .head().forEach(::println)
-    Stream.from(0)
-        .filter2 { it > 100_000 }
-        .head().forEach(::println)
+    val n = 1_000_000
+     val t1 = measureTimeMillis {
+         Stream.from(0)
+             .filter { it > n }
+             .head().forEach(::println)
+     }
+    val t2 = measureTimeMillis {
+        Stream.from(0)
+            .filter1 { it > n }
+            .head().forEach(::println)
+    }
+    val t3 = measureTimeMillis {
+        Stream.from(0)
+            .filter2 { it > n }
+            .head().forEach(::println)
+    }
+    val t4 = measureTimeMillis {
+        Stream.from(0)
+            .filter2 { it > n }
+            .head().forEach(::println)
+    }
+    val t5 = measureTimeMillis {
+        Stream.from(0)
+            .filter1 { it > n }
+            .head().forEach(::println)
+    }
+    val t6 = measureTimeMillis {
+        Stream.from(0)
+            .filter { it > n }
+            .head().forEach(::println)
+    }
+    println(t1)
+    println(t2)
+    println(t3)
+    println(t4)
+    println(t5)
+    println(t6)
 }

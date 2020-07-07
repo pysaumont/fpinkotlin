@@ -112,7 +112,7 @@ fun <A, B, C, D> map3(oa: Option<A>,
                       f: (A) -> (B) -> (C) -> D): Option<D> =
         oa.flatMap { a -> ob.flatMap { b -> oc.map { c -> f(a)(b)(c) } } }
 
-fun <A, B> traverse_(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
+fun <A, B> traverse2(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
         list.foldRight(Option(List())) { x ->
             { y: Option<List<B>> ->
                 map2(f(x), y) { a ->
@@ -123,4 +123,4 @@ fun <A, B> traverse_(list: List<A> , f: (A) -> Option<B>): Option<List<B>> =
             }
         }
 
-fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse_(list) { x: Option<A> -> x }
+fun <A> sequence(list: List<Option<A>>): Option<List<A>> = traverse2(list) { x: Option<A> -> x }

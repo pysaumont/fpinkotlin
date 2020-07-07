@@ -1,7 +1,7 @@
 package com.fpinkotlin.recursion.exercise07
 
 
-import com.fpinkotlin.recursion.exercise08.reverse
+import com.fpinkotlin.recursion.exercise07.reverse
 import io.kotlintest.properties.forAll
 import io.kotlintest.specs.StringSpec
 

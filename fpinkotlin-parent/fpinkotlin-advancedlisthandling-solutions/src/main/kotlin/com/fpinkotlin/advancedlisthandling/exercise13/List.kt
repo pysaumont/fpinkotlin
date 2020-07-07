@@ -79,7 +79,7 @@ sealed class List<out A> {
         }
 
     fun lastSafe(): Result<A> =
-            foldLeft(Result()) { _: Result<A> ->
+            foldLeft(Result()) {
                 { y: A ->
                     Result(y)
                 }
@@ -94,7 +94,7 @@ sealed class List<out A> {
 
     fun concat(list: List<@UnsafeVariance A>): List<A> = concat(this, list)
 
-    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = List.concatViaFoldRight(this, list)
+    fun concatViaFoldRight(list: List<@UnsafeVariance A>): List<A> = concatViaFoldRight(this, list)
 
     fun drop(n: Int): List<A> = drop(this, n)
 
@@ -140,7 +140,7 @@ sealed class List<out A> {
                                internal val tail: List<A>): List<A>() {
 
         override fun <B> foldLeft(identity: B, p: (B) -> Boolean, f: (B) -> (A) -> B): B {
-            fun foldLeft(acc: B, list: List<A>): B = when (list) {
+            tailrec fun foldLeft(acc: B, list: List<A>): B = when (list) {
                 Nil -> acc
                 is Cons ->
                     if (p(acc))
@@ -152,7 +152,7 @@ sealed class List<out A> {
         }
 
         override fun <B> foldLeft(identity: B, zero: B, f: (B) -> (A) -> B): B {
-            fun foldLeft(acc: B, list: List<A>): B = when (list) {
+            tailrec fun foldLeft(acc: B, list: List<A>): B = when (list) {
                 Nil -> acc
                 is Cons ->
                     if (acc == zero)

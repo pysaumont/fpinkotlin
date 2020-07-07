@@ -42,7 +42,7 @@ fun player(id: String,
 
 private val semaphore = Semaphore(1)
 
-fun main(args: Array<String>) {
+fun main() {
     val referee = object : AbstractActor<Int>("Referee") {
 
         override fun onReceive(message: Int, sender: Result<Actor<Int>>) {

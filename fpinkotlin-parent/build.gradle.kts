@@ -1,13 +1,7 @@
-ext["kotlintestVersion"] = "3.1.10"
-ext["logbackVersion"] = "1.2.3"
-ext["slf4jVersion"] = "1.7.25"
-ext["junitVersion"] = "3.1.8"
-
 plugins {
     base
-    kotlin("jvm") version "1.2.70"
+    kotlin("jvm") version "1.3.61"
 }
-
 
 allprojects {
 
@@ -18,5 +12,30 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
+    }
+    
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+}
+
+subprojects {
+    val kotlinVersion: String by project
+    val projectGroup: String by project
+    val projectVersion: String by project
+
+    group = projectGroup
+    version = projectVersion
+
+    buildscript {
+
+        repositories {
+            jcenter()
+            mavenCentral()
+        }
+
+        dependencies {
+            classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        }
     }
 }

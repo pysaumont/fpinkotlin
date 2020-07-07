@@ -1,4 +1,4 @@
-package com.fpinkotlin.actors.listing08to10
+package com.fpinkotlin.actors.listing08to12
 
 import com.fpinkotlin.common.Result
 
@@ -7,8 +7,16 @@ class Worker(id: String) : AbstractActor<Int>(id) {
 
     override fun onReceive(message: Int, sender: Result<Actor<Int>>) {
         sender.forEach (onSuccess = { a: Actor<Int> ->
-                    a.tell(slowFibonacci(message), self())
-                })
+            a.tell(slowFibonacci(message), self())
+        })
+    }
+
+    private fun slowFibonacci(number: Int): Int {
+        return when (number) {
+            0    -> 1
+            1    -> 1
+            else -> slowFibonacci(number - 1) + slowFibonacci(number - 2)
+        }
     }
 
     private fun fibonacci(number: Int): Int {
@@ -20,12 +28,4 @@ class Worker(id: String) : AbstractActor<Int>(id) {
         return fibonacci(0, 1, number)
     }
 
-    private fun slowFibonacci(number: Int): Int {
-        return when (number) {
-            0    -> 1
-            1    -> 1
-            else -> slowFibonacci(number - 1) + slowFibonacci(number - 2)
-        }
-    }
 }
-

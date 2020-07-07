@@ -25,13 +25,13 @@ class Manager(id: String, list: List<Int>,
         managerFunction = { manager ->
             { behavior ->
                 { p ->
-                    val result = streamResult(behavior.resultHeap + p,
-                                              behavior.expected, List())
-                    result.third.forEach { client.tell(it) }
+                    val result =
+                        streamResult(behavior.resultHeap + p, behavior.expected, List())
+                    result.third.reverse().forEach { client.tell(it) }
                     if (result.second > limit) {
                         this.client.tell(-1)
                     } else {
-                        manager.actorContext
+                        manager.context
                             .become(Behavior(behavior.workList
                                                  .tailSafe()
                                                  .getOrElse(List()), result.first, result.second))
@@ -42,16 +42,19 @@ class Manager(id: String, list: List<Int>,
     }
 
     private fun streamResult(result: Heap<Pair<Int, Int>>,
-                             expected: Int, list: List<Int>):
-                  Triple<Heap<Pair<Int, Int>>, Int, List<Int>> {
+                             expected: Int,
+                             list: List<Int>): Triple<Heap<Pair<Int, Int>>, Int, List<Int>> {
         val triple = Triple(result, expected, list)
-        val temp = result.head
-            .flatMap { head ->
+        val temp =
+            result.head.flatMap { head ->
                 result.tail().map { tail ->
-                    if (head.second == expected)
-                        streamResult(tail, expected + 1, list.cons(head.first))
-                    else
+                    if (head.second == expected) {
+                        val newList = list.cons(head.first)
+                        streamResult(tail, expected + 1, newList)
+                    }
+                    else {
                         triple
+                    }
                 }
             }
         return temp.getOrElse(triple)
@@ -73,14 +76,13 @@ class Manager(id: String, list: List<Int>,
 
     override fun onReceive(message: Pair<Int, Int>,
                            sender: Result<Actor<Pair<Int, Int>>>) {
-        actorContext.become(Behavior(workList, resultHeap, 0))
+        context.become(Behavior(workList, resultHeap, 0))
     }
 
     internal inner class Behavior
         internal constructor(internal val workList: List<Pair<Int, Int>>,
                              internal val resultHeap: Heap<Pair<Int, Int>>,
-                             internal val expected: Int) :
-                                                    MessageProcessor<Pair<Int, Int>> {
+                             internal val expected: Int) : MessageProcessor<Pair<Int, Int>> {
 
         override fun process(message: Pair<Int, Int>,
                              sender: Result<Actor<Pair<Int, Int>>>) {

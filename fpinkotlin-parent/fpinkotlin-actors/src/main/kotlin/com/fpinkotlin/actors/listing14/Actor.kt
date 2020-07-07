@@ -1,9 +1,10 @@
 package com.fpinkotlin.actors.listing14
 
 import com.fpinkotlin.common.Result
-import kotlinx.coroutines.experimental.ThreadPoolDispatcher
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newSingleThreadContext
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ThreadFactory
 
 
 interface ActorContext<T> {
@@ -20,7 +21,7 @@ interface MessageProcessor<T> {
 
 interface Actor<T> {
 
-    val actorContext: ActorContext<T>
+    val context: ActorContext<T>
 
     fun self(): Result<Actor<T>> = Result(this)
 
@@ -36,9 +37,19 @@ interface Actor<T> {
     }
 }
 
+class DaemonThreadFactory : ThreadFactory {
+
+    override fun newThread(runnableTask: Runnable): Thread {
+        val thread = Executors.defaultThreadFactory().newThread(runnableTask)
+        thread.isDaemon = true
+        return thread
+    }
+}
+
+
 abstract class AbstractActor<T>(protected val id: String) : Actor<T> {
 
-    override val actorContext: ActorContext<T> = object: ActorContext<T> {
+    override val context: ActorContext<T> = object: ActorContext<T> {
 
         var behavior: MessageProcessor<T> = object: MessageProcessor<T> {
 
@@ -55,7 +66,8 @@ abstract class AbstractActor<T>(protected val id: String) : Actor<T> {
         override fun behavior() = behavior
     }
 
-    private val dispatcher: ThreadPoolDispatcher = newSingleThreadContext("MyOwnThread")
+    private val executor: ExecutorService =
+            Executors.newSingleThreadExecutor(DaemonThreadFactory())
 
     abstract fun onReceive(message: T, sender: Result<Actor<T>>)
 
@@ -64,13 +76,22 @@ abstract class AbstractActor<T>(protected val id: String) : Actor<T> {
     }
 
     override fun shutdown() {
-        this.dispatcher.close()
+        this.executor.shutdown()
     }
 
     @Synchronized
     override fun tell(message: T, sender: Result<Actor<T>>) {
-        launch(dispatcher) {
-            actorContext.behavior().process(message, sender)
+        executor.execute {
+            try {
+                context.behavior().process(message, sender)
+            } catch (e: RejectedExecutionException) {
+                /*
+                 * This is probably normal and means all pending tasks
+                 * were canceled because the actor was stopped.
+                 */
+            } catch (e: Exception) {
+                throw RuntimeException(e)
+            }
         }
     }
 }
