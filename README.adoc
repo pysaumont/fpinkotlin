@@ -123,15 +123,15 @@ Total time: 16.222 secs
 
 Here is the report for a failed test:
 
-image:failedTest01.png[]
+image::failedTest01.png[Failed Test 1]
 
 You may click on the test name to get detailed about what happened:
 
-![Failed Test 2](graphics/failedTest02.png)
+image::failedTest02.png[Failed Test 2]
 
 Once the problem is fixed, the test succeeds and you get the following report:
 
-![Successful Test](graphics/successTest03.png)
+image::successTest03.png[Successful Test]
 
 == Doing the exercises
 
