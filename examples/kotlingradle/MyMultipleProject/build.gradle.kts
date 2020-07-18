@@ -4,7 +4,7 @@ ext["slf4jVersion"] = "1.7.25"
 
 plugins {
     base
-    kotlin("jvm") version "1.3.10" //apply false
+    kotlin("jvm") version "1.3.20" //apply false
 }
 
 allprojects {

@@ -4,7 +4,7 @@ val slf4jVersion = "1.7.25"
 
 plugins {
     application
-    kotlin("jvm") version "1.2.71"
+    kotlin("jvm") version "1.3.20"
 }
 
 application {
