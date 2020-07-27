@@ -1,5 +1,7 @@
 package com.fpinkotlin.common
 
+import com.fpinkotlin.common.Stream.Companion.fill
+import com.fpinkotlin.common.Stream.Companion.iterate
 import java.math.BigInteger
 
 
@@ -164,11 +166,22 @@ sealed class Stream<out A> {
         fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
 
         fun <A> fill(n: Int, elem: Lazy<A>): Stream<A> {
-            tailrec fun <A> fill(acc: Stream<A>, n: Int, elem: Lazy<A>): Stream<A> = when {
-                n <= 0 -> acc
-                else -> fill(Cons(elem, Lazy { acc }), n - 1, elem)
+            tailrec fun <A> fill(acc: Stream<A>, n: Int, elem: Lazy<A>): Stream<A> {
+                //println(elem)
+                return when {
+                    n <= 0 -> acc
+                    else -> fill(Cons(elem, Lazy { acc }), n - 1, elem)
+                }
             }
             return fill(Empty, n, elem)
+        }
+
+        fun <A> fill2(n: Int, elem: Lazy<A>): Stream<A> {
+            //println(elem)
+            return when {
+                n <= 0 -> Empty
+                else -> Cons(elem, Lazy { fill(n - 1, elem) })
+            }
         }
 
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
@@ -197,19 +210,4 @@ sealed class Stream<out A> {
             else        -> cons(Lazy { start }, Lazy { range(start + BigInteger.ONE, end) })
         }
     }
-}
-
-fun fibs(): Stream<Int> =
-    Stream.unfold(Pair(1, 1)) { x ->
-        Result(Pair(x.first, Pair(x.second, x.first + x.second)))
-    }
-
-
-fun main(args: Array<String>) {
-    Stream.from(0)
-        .filter { it > 100_000 }
-        .head().forEach(::println)
-    Stream.from(0)
-        .filter2 { it > 100_000 }
-        .head().forEach(::println)
 }

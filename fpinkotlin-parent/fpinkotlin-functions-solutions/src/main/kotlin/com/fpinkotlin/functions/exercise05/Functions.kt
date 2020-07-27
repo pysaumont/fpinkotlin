@@ -19,3 +19,13 @@ fun <T, U, V> higherCompose(): ((U) -> V) -> ((T) -> U) -> (T) -> V =
             { x -> f(g(x)) }
         }
     }
+
+fun <T, U, V> higherCompose(f: (U) -> V): ((T) -> U) -> (T) -> V = {
+    g: (T) -> U -> { x: T -> f(g(x)) }
+}
+
+fun main() {
+    val f1 = higherCompose<Int, Int, Int>()(::square)(::triple)
+    println(higherCompose<Int, Int, Int>()(::square)(::triple)(3))
+    println(higherCompose<Int, Int, Int>(::square)(::triple)(3))
+}
