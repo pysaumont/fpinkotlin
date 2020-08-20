@@ -45,7 +45,7 @@ sealed class List<out A> {
 
     internal object Nil: List<Nothing>() {
 
-        override fun lengthMemoized(): Int = TODO("lengthMemoized")
+        override fun lengthMemoized(): Int = 0
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
@@ -57,7 +57,7 @@ sealed class List<out A> {
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
 
-        override fun lengthMemoized() = TODO("lengthMemoized")
+        override fun lengthMemoized() = tail.lengthMemoized() + 1
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 
