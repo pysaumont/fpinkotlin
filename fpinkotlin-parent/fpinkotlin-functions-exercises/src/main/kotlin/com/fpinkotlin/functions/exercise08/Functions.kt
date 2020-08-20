@@ -29,4 +29,4 @@ fun <T, U, V> higherAndThen(): ((T) -> U) -> ((U) -> V) -> (T) -> V =
 
 fun <A, B, C> partialA(a: A, f: (A) -> (B) -> C): (B) -> C =  f(a)
 
-fun partialB() = null // Define function partialB
+fun <A, B, C> partialB(b: B, f: (A) -> (B) -> C): (A) -> C = { a: A -> f(a)(b) } // Define function partialB
