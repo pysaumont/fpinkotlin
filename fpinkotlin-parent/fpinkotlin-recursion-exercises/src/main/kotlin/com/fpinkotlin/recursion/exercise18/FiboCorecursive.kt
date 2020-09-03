@@ -44,7 +44,7 @@ fun <T> makeString(list: List<T>, separator: String): String =
             foldLeft(list.tail(), "") { x, y -> x + separator + y}
     }
 
-tailrec fun fiboCorecursive(number: Int): String {
+fun fiboCorecursive(number: Int): String {
     val seed = Pair(BigInteger.ZERO, BigInteger.ONE)
     val f = {x: Pair<BigInteger, BigInteger> -> Pair(x.second, x.first + x.second)}
     val listOfPairs = iterate(seed, f, number + 1)
