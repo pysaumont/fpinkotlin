@@ -22,6 +22,6 @@ fun <T, U> foldLeft(list: List<T>, z: U, f: (U, T) -> U): U {
     return foldLeft_(list, z, f)
 }
 
-fun <T> prepend(list: List<T>, elem: T): List<T> = TODO("prepend")
+fun <T> prepend(list: List<T>, elem: T): List<T> = list.fold(listOf(elem)) {acc, t -> acc + t}
 
-fun <T> reverse(list: List<T>): List<T> = TODO("reverse")
+fun <T> reverse(list: List<T>): List<T> = list.fold(emptyList(), ::prepend)

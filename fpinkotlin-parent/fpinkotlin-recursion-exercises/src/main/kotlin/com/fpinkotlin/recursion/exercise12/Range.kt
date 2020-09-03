@@ -24,4 +24,7 @@ fun <T, U> foldLeft(list: List<T>, z: U, f: (U, T) -> U): U {
 
 fun <T> prepend(list: List<T>, elem: T): List<T> = foldLeft(list, listOf(elem)) { lst, elm -> lst + elm }
 
-fun range(start: Int, end: Int): List<Int> = TODO("range")
+fun range(start: Int, end: Int): List<Int> =
+        if (end <= start)
+            listOf()
+        else prepend(range(start + 1, end), start)
