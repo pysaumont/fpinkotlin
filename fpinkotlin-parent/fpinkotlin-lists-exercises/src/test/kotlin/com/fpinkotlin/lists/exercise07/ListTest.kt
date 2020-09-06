@@ -11,7 +11,11 @@ class ListTest: StringSpec() {
 
         "product" {
             forAll(DoubleListGenerator()) { (first, second) ->
-                Math.abs(product(second) - first.fold(1.0) { a, b -> a * b }) < 0.001
+                val product = product(second)
+                val second = first.fold(1.0) { a, b -> a * b }
+                println("First: $product")
+                println("Second: $second")
+                Math.abs(product - second) < 0.001
             }
         }
     }

@@ -15,11 +15,18 @@ sealed class List<A> {
 
     fun concat(list: List<A>): List<A> = concat(this, list)
 
-    fun init(): List<A> = TODO("init")
+    fun init(): List<A> = reverse().drop(1).reverse()
 
-    fun reverse(): List<A> = TODO("reverse")
+    fun reverse(): List<A> {
+        tailrec fun reverse(acc: List<A>, list: List<A>): List<A> =
+                when (list) {
+                    is Nil -> acc
+                    is Cons -> reverse(acc.cons(list.head), list.tail)
+                }
+        return reverse(invoke(), this)
+    }
 
-    internal object Nil: List<Nothing>() {
+    internal object Nil : List<Nothing>() {
 
         override fun setHead(a: Nothing): List<Nothing> = throw IllegalStateException("setHead called on an empty list")
 
@@ -28,7 +35,7 @@ sealed class List<A> {
         override fun toString(): String = "[NIL]"
     }
 
-    internal class Cons<A>(val head: A, val tail: List<A>): List<A>() {
+    internal class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
 
         override fun setHead(a: A): List<A> = tail.cons(a)
 
@@ -37,7 +44,7 @@ sealed class List<A> {
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
-            Nil  -> acc
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }

@@ -37,7 +37,7 @@ sealed class List<out A> {
 
     fun <B> map(f: (A) -> B): List<B> = foldLeft(Nil) { acc: List<B> -> { h: A -> Cons(f(h), acc) } }.reverse()
 
-    fun filter(p: (A) -> Boolean): List<A> = TODO("filter")
+    fun filter(p: (A) -> Boolean): List<A> = foldRight(Nil) {x -> {list: List<A> -> if(p(x)) Cons(x, list) else list}}
 
     internal object Nil: List<Nothing>() {
 

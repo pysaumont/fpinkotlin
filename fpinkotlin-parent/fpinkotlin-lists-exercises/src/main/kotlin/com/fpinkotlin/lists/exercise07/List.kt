@@ -87,4 +87,11 @@ fun sum(ints: List<Int>): Int = when (ints) {
     is List.Cons -> ints.head + sum(ints.tail)
 }
 
-fun product(ints: List<Double>): Double = TODO("product")
+fun product(ints: List<Double>): Double {
+    tailrec fun productTail(acc: Double, list: List<Double>): Double =
+            when (list) {
+                is List.Nil -> acc
+                is List.Cons -> productTail(acc * list.head, list.tail)
+            }
+    return productTail(1.0, ints)
+}

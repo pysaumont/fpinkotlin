@@ -4,7 +4,7 @@ sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
-    fun cons(a: A): List<A> = TODO("cons")
+    fun cons(a: A): List<A> = Cons(a, this)
 
     private object Nil: List<Nothing>() {
 

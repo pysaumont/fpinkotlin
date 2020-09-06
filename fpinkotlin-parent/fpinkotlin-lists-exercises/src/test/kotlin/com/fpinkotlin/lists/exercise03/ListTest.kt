@@ -14,8 +14,12 @@ class ListTest: StringSpec() {
                 second.isEmpty()
             else {
                 (i % first.size).let {
-                    second.drop(it).toString() ==
-                        first.drop(it).joinToString(", ", "[", ", NIL]")
+                    val secondToString = second.drop(it).toString()
+                    val firstToString = first.drop(it).joinToString(", ", "[", ", NIL]")
+                    println("First: $firstToString")
+                    println("Second: $secondToString")
+                    secondToString ==
+                            firstToString
                 }
             }
         }

@@ -14,23 +14,32 @@ sealed class List<A> {
 
     fun drop(n: Int): List<A> = drop(this, n)
 
-    fun dropWhile(p: (A) -> Boolean): List<A> = TODO("dropWhile")
+    fun dropWhile(p: (A) -> Boolean): List<A> {
+        tailrec fun dropWhile(list: List<A>): List<A> =
+                when (list) {
+                    is Nil -> list
+                    is Cons ->
+                        if (p(list.head)) dropWhile(list.drop(1))
+                        else list
+                }
+        return dropWhile(this)
+    }
 
-    internal object Nil: List<Nothing>() {
+    internal object Nil : List<Nothing>() {
 
         override fun isEmpty() = true
 
         override fun toString(): String = "[NIL]"
     }
 
-    internal class Cons<A>(val head: A, val tail: List<A>): List<A>() {
+    internal class Cons<A>(val head: A, val tail: List<A>) : List<A>() {
 
         override fun isEmpty() = false
 
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
-            Nil  -> acc
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
