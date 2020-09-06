@@ -24,11 +24,18 @@ sealed class List<out A> {
 
     fun <B> foldRight(identity: B, f: (A) -> (B) -> B): B = foldRight(this, identity, f)
 
-    fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = TODO("foldLeft")
+    fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B {
+        tailrec fun foldLeftTail(list: List<A>, acc: B): B =
+                when (list) {
+                    is Nil -> acc
+                    is Cons -> foldLeftTail(list.tail, f(acc)(list.head))
+                }
+        return foldLeftTail(this, identity)
+    }
 
-    fun length(): Int = foldRight(0) { { it + 1} }
+    fun length(): Int = foldRight(0) { { it + 1 } }
 
-    internal object Nil: List<Nothing>() {
+    internal object Nil : List<Nothing>() {
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
@@ -37,7 +44,7 @@ sealed class List<out A> {
         override fun toString(): String = "[NIL]"
     }
 
-    internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
+    internal class Cons<out A>(internal val head: A, internal val tail: List<A>) : List<A>() {
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 
@@ -46,7 +53,7 @@ sealed class List<out A> {
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
-            Nil  -> acc
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }

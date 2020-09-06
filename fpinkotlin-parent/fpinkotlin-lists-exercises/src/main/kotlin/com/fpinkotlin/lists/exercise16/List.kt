@@ -28,14 +28,14 @@ sealed class List<out A> {
 
     fun <B> foldLeft(identity: B, f: (B) -> (A) -> B): B = foldLeft(identity, this, f)
 
-    fun length(): Int = foldLeft(0) { { _ -> it + 1} }
+    fun length(): Int = foldLeft(0) { { _ -> it + 1 } }
 
     fun <B> foldRightViaFoldLeft(identity: B, f: (A) -> (B) -> B): B =
             this.reverse().foldLeft(identity) { x -> { y -> f(y)(x) } }
 
     fun <B> coFoldRight(identity: B, f: (A) -> (B) -> B): B = coFoldRight(identity, this.reverse(), identity, f)
 
-    internal object Nil: List<Nothing>() {
+    internal object Nil : List<Nothing>() {
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
@@ -44,7 +44,7 @@ sealed class List<out A> {
         override fun toString(): String = "[NIL]"
     }
 
-    internal class Cons<out A>(internal val head: A, internal val tail: List<A>): List<A>() {
+    internal class Cons<out A>(internal val head: A, internal val tail: List<A>) : List<A>() {
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 
@@ -53,7 +53,7 @@ sealed class List<out A> {
         override fun toString(): String = "[${toString("", this)}NIL]"
 
         private tailrec fun toString(acc: String, list: List<A>): String = when (list) {
-            Nil  -> acc
+            Nil -> acc
             is Cons -> toString("$acc${list.head}, ", list.tail)
         }
     }
@@ -105,4 +105,12 @@ fun sum(list: List<Int>): Int = list.foldRight(0) { x -> { y -> x + y } }
 
 fun product(list: List<Double>): Double = list.foldRight(1.0) { x -> { y -> x * y } }
 
-fun triple(list: List<Int>): List<Int> = TODO("triple")
+//fun triple(list: List<Int>): List<Int> = list.foldRight(List.invoke()) { h -> { t: List<Int> -> t.cons(h * 3) } }
+fun triple(list: List<Int>): List<Int> = list.foldLeft(List.invoke(), {it: List<Int> ->  { x: Int -> it.cons(x * 3)}}).reverse()
+
+//fun triple(list: List<Int>): List<Int> =
+//        List.foldRight(list, List()) { h ->
+//            { t: List<Int> ->
+//                t.cons(h * 3)
+//            }
+//        }

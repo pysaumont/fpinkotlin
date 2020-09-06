@@ -4,11 +4,16 @@ sealed class List<A> {
 
     abstract fun isEmpty(): Boolean
 
-    fun cons(a: A): List<A>  = Cons(a, this)
+    fun cons(a: A): List<A> = Cons(a, this)
 
-    fun setHead(a: A): List<A> = TODO("setHead")
+    fun setHead(a: A): List<A> =
+            when (this) {
+                is Nil -> throw IllegalStateException("Cannot replace head on Nil")
+                is Cons -> tail.cons(a)
+            }
 
-    private object Nil: List<Nothing>() {
+
+    private object Nil : List<Nothing>() {
 
         override fun isEmpty() = true
 
