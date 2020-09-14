@@ -9,7 +9,10 @@ sealed class Option<out A> {
         is Some -> value
     }
 
-    fun getOrElse(default: () -> @UnsafeVariance A): A = TODO("Implement this function")
+    fun getOrElse(default: () -> @UnsafeVariance A): A = when (this) {
+        is None -> default()
+        is Some -> value
+    }
 
     internal object None: Option<Nothing>() {
 

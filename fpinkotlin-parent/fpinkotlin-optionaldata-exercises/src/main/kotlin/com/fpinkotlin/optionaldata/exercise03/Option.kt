@@ -5,7 +5,10 @@ sealed class Option<out A> {
 
     abstract fun isEmpty(): Boolean
 
-    fun <B> map(f: (A) -> B): Option<B> = TODO("map")
+    fun <B> map(f: (A) -> B): Option<B> = when (this) {
+        is None -> None
+        is Some -> Option(f(value))
+    }
 
     fun getOrElse(default: @UnsafeVariance A): A = when (this) {
         is None -> default
