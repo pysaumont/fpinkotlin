@@ -1,5 +1,7 @@
 package com.fpinkotlin.optionaldata.exercise07
 
+import kotlin.math.pow
+
 
 sealed class Option<out A> {
 
@@ -24,7 +26,7 @@ sealed class Option<out A> {
         is Some -> value
     }
 
-    internal object None: Option<Nothing>() {
+    internal object None : Option<Nothing>() {
 
         override fun <B> map(f: (Nothing) -> B): Option<B> = None
 
@@ -63,6 +65,13 @@ sealed class Option<out A> {
     }
 }
 
-fun mean(list: List<Double>): Option<Double> = TODO("mean")
+fun mean(list: List<Double>): Option<Double> = if (list.isEmpty())
+    Option.None
+else
+    Option.Some(list.sum()/list.size)
 
-fun variance(list: List<Double>): Option<Double> = TODO("variance")
+fun variance(list: List<Double>): Option<Double>  {
+    return mean(list)
+            .map { list.map { x -> (x - it).pow(2.0) } }
+            .flatMap(::mean)
+}

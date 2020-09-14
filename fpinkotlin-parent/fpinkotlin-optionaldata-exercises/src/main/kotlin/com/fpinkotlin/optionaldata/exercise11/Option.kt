@@ -139,5 +139,10 @@ fun <A, B, C, D> map3(oa: Option<A>,
                       f: (A) -> (B) -> (C) -> D): Option<D> =
         oa.flatMap { a -> ob.flatMap { b -> oc.map { c -> f(a)(b)(c) } } }
 
-fun <A> sequence(list: List<Option<A>>): Option<List<A>> = TODO("sequence")
+fun <A> sequence(list: List<Option<A>>): Option<List<A>> =
+        list.foldRight(Option(List())) { x ->
+            { y: Option<List<A>> -> map2(x, y) { a ->
+                { b: List<A> -> b.cons(a) } }
+            }
+        }
 
