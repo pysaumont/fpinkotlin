@@ -53,7 +53,7 @@ sealed class Result<out A>: Serializable {
 
     internal object Empty: Result<Nothing>() {
 
-        override fun forEach(effect: (Nothing) -> Unit) = TODO("forEach")
+        override fun forEach(effect: (Nothing) -> Unit) = Unit
 
         override fun <B> map(f: (Nothing) -> B): Result<B> = Empty
 
@@ -66,7 +66,7 @@ sealed class Result<out A>: Serializable {
 
     internal class Failure<out A>(private val exception: RuntimeException): Result<A>() {
 
-        override fun forEach(effect: (A) -> Unit) = TODO("forEach")
+        override fun forEach(effect: (A) -> Unit) = Unit
 
         override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
@@ -79,7 +79,7 @@ sealed class Result<out A>: Serializable {
 
     internal class Success<out A>(internal val value: A) : Result<A>() {
 
-        override fun forEach(effect: (A) -> Unit) = TODO("forEach")
+        override fun forEach(effect: (A) -> Unit) = effect(value)
 
         override fun <B> map(f: (A) -> B): Result<B> = try {
             Success(f(value))

@@ -57,7 +57,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEach(onSuccess: (Nothing) -> Unit,
                              onFailure: (RuntimeException) -> Unit,
-                             onEmpty: () -> Unit) = TODO("forEach")
+                             onEmpty: () -> Unit) = onEmpty()
 
         override fun <B> map(f: (Nothing) -> B): Result<B> = Empty
 
@@ -72,7 +72,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEach(onSuccess: (A) -> Unit,
                              onFailure: (RuntimeException) -> Unit,
-                             onEmpty: () -> Unit) = TODO("forEach")
+                             onEmpty: () -> Unit) = onFailure(exception)
 
         override fun <B> map(f: (A) -> B): Result<B> = Failure(exception)
 
@@ -87,7 +87,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEach(onSuccess: (A) -> Unit,
                              onFailure: (RuntimeException) -> Unit,
-                             onEmpty: () -> Unit) = TODO("forEach")
+                             onEmpty: () -> Unit) = onSuccess(value)
 
         override fun <B> map(f: (A) -> B): Result<B> = try {
             Success(f(value))

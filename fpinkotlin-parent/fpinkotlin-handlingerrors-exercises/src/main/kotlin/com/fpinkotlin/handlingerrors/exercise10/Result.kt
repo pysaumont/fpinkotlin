@@ -59,7 +59,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (Nothing) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
+                                   onEmpty: () -> Unit) = onEmpty()
 
         override fun forEach(effect: (Nothing) -> Unit) {}
 
@@ -76,7 +76,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
+                                   onEmpty: () -> Unit) = onFailure(exception)
 
         override fun forEach(effect: (A) -> Unit) {}
 
@@ -93,7 +93,7 @@ sealed class Result<out A>: Serializable {
 
         override fun forEachOrElse(onSuccess: (A) -> Unit,
                                    onFailure: (RuntimeException) -> Unit,
-                                   onEmpty: () -> Unit) = TODO("forEachOrElse")
+                                   onEmpty: () -> Unit) = onSuccess(value)
 
         override fun forEach(effect: (A) -> Unit) {
             effect(value)
