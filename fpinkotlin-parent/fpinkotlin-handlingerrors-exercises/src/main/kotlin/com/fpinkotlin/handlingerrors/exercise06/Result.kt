@@ -23,7 +23,7 @@ sealed class Result<out A>: Serializable {
             failure(message)
     }
 
-    fun exists(p: (A) -> Boolean): Boolean = TODO("exists")
+    fun exists(p: (A) -> Boolean): Boolean = map(p).getOrElse(false)
 
     fun getOrElse(defaultValue: @UnsafeVariance A): A = when (this) {
         is Success -> this.value

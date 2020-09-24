@@ -158,4 +158,4 @@ sealed class Result<out A>: Serializable {
     }
 }
 
-fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> =  TODO("lift")
+fun <A, B> lift(f: (A) -> B): (Result<A>) -> Result<B> = { a: Result<A> -> a.map(f) }
