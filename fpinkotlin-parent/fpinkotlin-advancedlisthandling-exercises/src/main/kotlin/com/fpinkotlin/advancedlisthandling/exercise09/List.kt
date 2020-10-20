@@ -190,4 +190,4 @@ fun <A, B, C> zipWith(list1: List<A>,
 
 fun <A, B, C> product(list1: List<A>,
                       list2: List<B>,
-                      f: (A) -> (B) -> C): List<C> = TODO("product")
+                      f: (A) -> (B) -> C): List<C> = list1.flatMap { a -> list2.map { b -> f(a)(b) } }

@@ -50,7 +50,7 @@ sealed class List<out A> {
 
     internal object Nil: List<Nothing>() {
 
-        override fun headSafe(): Result<Nothing> = TODO("headSafe")
+        override fun headSafe(): Result<Nothing> = Result()
 
         override val length: Int = 0
 
@@ -64,7 +64,7 @@ sealed class List<out A> {
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
 
-        override fun headSafe(): Result<A> = TODO("headSafe")
+        override fun headSafe(): Result<A> = Result(head)
 
         override val length = tail.length + 1
 

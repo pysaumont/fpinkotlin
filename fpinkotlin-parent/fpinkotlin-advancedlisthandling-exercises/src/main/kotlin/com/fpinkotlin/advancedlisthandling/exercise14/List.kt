@@ -21,7 +21,19 @@ sealed class List<out A> {
                               p: (B) -> Boolean,
                               f: (B) -> (A) -> B): B
 
-    fun splitAt(index: Int): Pair<List<A>, List<A>> = TODO("splitAt")
+    fun splitAt(index: Int): Pair<List<A>, List<A>> {
+        tailrec fun splitAt(index: Int, acc: List<A>, list: List<A>): Pair<List<A>, List<A>> =
+                when(list) {
+                    is Nil -> Pair(acc.reverse(), list)
+                    is Cons -> if (index == 0) Pair(acc.reverse(), list) else splitAt(index - 1, acc.cons(list.head), list.tail)
+                }
+        return when {
+            index < 0 -> splitAt(0)
+            index > length() -> splitAt(length())
+            else -> splitAt(index, List.invoke(), this)
+        }
+
+    }
 
 
     fun getAt(index: Int): Result<A> {

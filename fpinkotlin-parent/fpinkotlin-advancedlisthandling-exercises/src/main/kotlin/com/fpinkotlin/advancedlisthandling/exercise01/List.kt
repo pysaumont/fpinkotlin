@@ -2,12 +2,13 @@ package com.fpinkotlin.advancedlisthandling.exercise01
 
 
 sealed class List<out A> {
+    internal abstract val length: Int
 
     abstract fun isEmpty(): Boolean
 
     abstract fun init(): List<A>
 
-    abstract fun lengthMemoized(): Int
+    fun lengthMemoized(): Int = length
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
         Nil -> throw IllegalStateException("setHead called on an empty list")
@@ -45,7 +46,7 @@ sealed class List<out A> {
 
     internal object Nil: List<Nothing>() {
 
-        override fun lengthMemoized(): Int = 0
+        override val length: Int = 0
 
         override fun init(): List<Nothing> = throw IllegalStateException("init called on an empty list")
 
@@ -57,7 +58,7 @@ sealed class List<out A> {
     internal class Cons<out A>(internal val head: A,
                                internal val tail: List<A>): List<A>() {
 
-        override fun lengthMemoized() = tail.lengthMemoized() + 1
+        override val length: Int = tail.length + 1
 
         override fun init(): List<A> = reverse().drop(1).reverse()
 

@@ -1,6 +1,7 @@
 package com.fpinkotlin.advancedlisthandling.exercise06
 
 import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.map2
 
 
 sealed class List<out A> {
@@ -150,4 +151,13 @@ tailrec fun <A> lastSafe(list: List<A>): Result<A> = when (list) {
 fun <A> flattenResult(list: List<Result<A>>): List<A> =
         list.flatMap { ra -> ra.map { List(it) }.getOrElse(List()) }
 
-fun <A> sequence(list: List<Result<A>>): Result<List<A>> = TODO("sequence")
+fun <A> sequence(list: List<Result<A>>): Result<List<A>> = list
+        .filter { !it.isEmpty() }
+        .foldLeft(Result(List()))
+        { x: Result<List<A>> ->
+            { y: Result<A> ->
+                map2(x, y) { a: List<A> -> { b: A -> a.cons(b) } }
+            }
+        }
+        .map { result -> result.reverse() }
+

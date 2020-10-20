@@ -73,9 +73,26 @@ sealed class List<out A> {
                 }
             }
 
-    fun startsWith(sub: List<@UnsafeVariance A>): Boolean = TODO("startsWith")
+    fun startsWith(sub: List<@UnsafeVariance A>): Boolean {
+        tailrec fun startsWith(list: List<A>, sub: List<A>): Boolean =
+                when(sub) {
+                    is Nil -> true
+                    is Cons -> when(list) {
+                        is Nil -> false
+                        is Cons -> if(list.head == sub.head) startsWith(list.tail, sub.tail) else false
+                    }
+                }
+        return startsWith(this, sub)
+    }
 
-    fun hasSubList(sub: List<@UnsafeVariance A>): Boolean = TODO("hasSubList")
+    fun hasSubList(sub: List<@UnsafeVariance A>): Boolean {
+        tailrec fun hasSubList(list: List<A>, sub: List<A>): Boolean =
+                when(list) {
+                    is Nil -> sub.isEmpty()
+                    is Cons -> if (list.startsWith(sub)) true else hasSubList(list.tail, sub)
+                }
+        return hasSubList(this, sub)
+    }
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
         Nil -> throw IllegalStateException("setHead called on an empty list")

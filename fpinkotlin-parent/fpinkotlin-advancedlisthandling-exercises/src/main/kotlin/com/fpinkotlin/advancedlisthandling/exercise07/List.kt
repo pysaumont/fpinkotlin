@@ -162,6 +162,12 @@ fun <A> sequence2(list: List<Result<A>>): Result<List<A>> =
             { y: Result<List<A>> -> map2(x, y) { a -> { b: List<A> -> b.cons(a) } } }
         }
 
-fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> = TODO("traverse")
+fun <A, B> traverse(list: List<A>, f: (A) -> Result<B>): Result<List<B>> =
+        list.foldRight(Result(List())) { x ->
+            { y: Result<List<B>> ->
+                map2(f(x), y) { a -> { b: List<B> -> b.cons(a) } }
 
-fun <A> sequence(list: List<Result<A>>): Result<List<A>> = TODO("sequence")
+            }
+        }
+
+fun <A> sequence(list: List<Result<A>>): Result<List<A>> = traverse(list) {x: Result<A> -> x}

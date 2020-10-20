@@ -14,7 +14,16 @@ sealed class List<out A> {
 
     abstract fun headSafe(): Result<A>
 
-    fun getAt(index: Int): Result<A> = TODO("getAt")
+    fun getAt(index: Int): Result<A> {
+        tailrec fun <A> getAt(list: Cons<A>, index: Int): Result<A> = if (index == 0)
+            Result(list.head)
+        else
+            getAt(list.tail as Cons, index - 1)
+        return if (index < 0 || index >= length())
+            Result.failure("Index out of bound")
+        else
+            getAt(this as Cons, index)
+    }
 
     fun getAtViaFoldLeft(index: Int): Result<A> =
             Pair(Result.failure<A>("Index out of bound"), index).let {

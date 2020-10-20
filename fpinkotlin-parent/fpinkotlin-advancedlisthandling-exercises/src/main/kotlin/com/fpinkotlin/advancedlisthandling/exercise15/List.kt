@@ -21,7 +21,33 @@ sealed class List<out A> {
                               p: (B) -> Boolean,
                               f: (B) -> (A) -> B): B
 
-    fun splitAt(index: Int): Pair<List<A>, List<A>> = TODO("splitAt")
+    fun splitAt(index: Int): Pair<List<A>, List<A>> {
+
+        data class Pair<out A>(val first: List<A>, val second: Int) {
+            override fun equals(other: Any?): Boolean = when {
+                other == null -> false
+                other.javaClass == this.javaClass ->
+                    (other as Pair<A>).second == second
+                else -> false
+            }
+
+            override fun hashCode(): Int =
+                    first.hashCode() + second.hashCode()
+        }
+
+        return when {
+            index <= 0 -> Pair(Nil, this)
+            index >= length -> Pair(this, Nil)
+            else -> {
+                val identity = Pair(Nil as List<A>, -1)
+                val zero = Pair(this, index)
+                val (pair, list) = this.foldLeft(identity, zero) { acc ->
+                    { e -> Pair(acc.first.cons(e), acc.second + 1) }
+                }
+                Pair(pair.first.reverse(), list)
+            }
+        }
+    }
 
     fun getAt(index: Int): Result<A> {
         val p: (Pair<Result<A>, Int>) -> Boolean = { it.second < 0 }

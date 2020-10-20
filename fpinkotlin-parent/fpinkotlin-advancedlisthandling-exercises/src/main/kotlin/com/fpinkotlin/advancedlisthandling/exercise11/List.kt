@@ -14,7 +14,14 @@ sealed class List<out A> {
 
     abstract fun headSafe(): Result<A>
 
-    fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> = TODO("unzip")
+    fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> = this
+            .foldRight(Pair(invoke(), invoke()))
+            { element: A ->
+                { pairOfLists: Pair<List<A1>, List<A2>> ->
+                    val pair = f(element)
+                    Pair(pairOfLists.first.cons(pair.first), pairOfLists.second.cons(pair.second))
+                }
+            }
 
     fun lastSafe(): Result<A> =
             foldLeft(Result()) {

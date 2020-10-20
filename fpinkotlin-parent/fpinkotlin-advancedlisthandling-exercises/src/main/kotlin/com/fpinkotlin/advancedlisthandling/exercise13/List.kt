@@ -17,7 +17,14 @@ sealed class List<out A> {
     abstract fun <B> foldLeft(identity: B, zero: B,
                               f: (B) -> (A) -> B): B
 
-    fun getAt(index: Int): Result<A> = TODO("getAt")
+    fun getAt(index: Int): Result<A> {
+        tailrec fun <A> getAt(index: Int, list: List<A>): Result<A> =
+                when (list) {
+                    is Nil -> Result.failure("End of the list approached")
+                    is Cons -> if (index == 0) Result(list.head) else getAt(index - 1, list.tail)
+                }
+        return if (index < 0 || index >= length()) Result.failure("Index out of bound") else getAt(index, this)
+    }
 
     fun <A1, A2> unzip(f: (A) -> Pair<A1, A2>): Pair<List<A1>, List<A2>> =
             this.coFoldRight(Pair(Nil, Nil)) { a ->
