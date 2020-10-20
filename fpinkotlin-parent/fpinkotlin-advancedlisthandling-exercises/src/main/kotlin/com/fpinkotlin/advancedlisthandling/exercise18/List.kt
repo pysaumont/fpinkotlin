@@ -322,4 +322,13 @@ fun <A, B, C> product(list1: List<A>,
 
 fun <A, B> unzip(list: List<Pair<A, B>>): Pair<List<A>, List<B>> = list.unzip { it }
 
-fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> = TODO("unfold")
+fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
+    tailrec fun unfold(acc: List<A>, z: S): List<A> {
+        val next = getNext(z)
+        return when (next) {
+            is Option.None -> acc
+            is Option.Some -> unfold(acc.cons(next.value.first), next.value.second)
+        }
+    }
+    return unfold(List.invoke(), z).reverse()
+}

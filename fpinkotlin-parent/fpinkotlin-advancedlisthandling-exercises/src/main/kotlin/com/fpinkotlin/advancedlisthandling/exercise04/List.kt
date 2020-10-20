@@ -11,7 +11,7 @@ sealed class List<out A> {
 
     abstract val length: Int
 
-    fun headSafe(): Result<A> = TODO("headSafe")
+    fun headSafe(): Result<A> = foldRight(Result()) { x: A -> { _: Result<A> -> Result(x) } }
 
     fun headSafe2(): Result<A> = when (this) {
         Nil -> Result()

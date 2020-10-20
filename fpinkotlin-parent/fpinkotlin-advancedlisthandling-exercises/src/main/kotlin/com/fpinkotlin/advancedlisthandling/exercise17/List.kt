@@ -21,7 +21,13 @@ sealed class List<out A> {
                               p: (B) -> Boolean,
                               f: (B) -> (A) -> B): B
 
-    fun <B> groupBy(f: (A) -> B): Map<B, List<A>> = TODO("groupBy")
+    fun <B> groupBy(f: (A) -> B): Map<B, List<A>> =
+            reverse().foldLeft(mapOf()) { mt: Map<B, List<A>> ->
+                    { t ->
+                        val key = f(t)
+                        mt + (key to (mt.getOrDefault(key, Nil)).cons(t))
+                    }
+            }
 
     fun splitAt(index: Int): Pair<List<A>, List<A>> {
         tailrec fun splitAt(acc: List<A>,

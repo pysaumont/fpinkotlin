@@ -18,7 +18,8 @@ sealed class List<out A> {
                               p: (B) -> Boolean,
                               f: (B) -> (A) -> B): B
 
-    fun exists(p: (A) -> Boolean): Boolean = TODO("exists")
+    fun exists(p: (A) -> Boolean): Boolean =
+            foldLeft(identity = false, zero = true) { x -> { y: A -> x || p(y)}}.first
 
     fun <B> groupBy(f: (A) -> B): Map<B, List<A>> =
         reverse().foldLeft(mapOf()) { mt: Map<B, List<A>> ->

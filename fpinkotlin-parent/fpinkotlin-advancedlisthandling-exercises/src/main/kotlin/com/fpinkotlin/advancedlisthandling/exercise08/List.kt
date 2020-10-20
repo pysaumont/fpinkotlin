@@ -172,4 +172,13 @@ fun <A> sequence(list: List<Result<A>>): Result<List<A>> =
 
 fun <A, B, C> zipWith(list1: List<A>,
                       list2: List<B>,
-                      f: (A) -> (B) -> C): List<C> = TODO("zipWith")
+                      f: (A) -> (B) -> C): List<C> {
+    tailrec fun zipWithTail(acc: List<C>, list1: List<A>, list2: List<B>): List<C> = when(list1) {
+        List.Nil -> acc
+        is List.Cons -> when(list2) {
+            List.Nil -> acc
+            is List.Cons -> zipWithTail(acc.cons(f(list1.head)(list2.head)), list1.tail, list2.tail)
+        }
+    }
+    return zipWithTail(List(), list1, list2).reverse()
+}

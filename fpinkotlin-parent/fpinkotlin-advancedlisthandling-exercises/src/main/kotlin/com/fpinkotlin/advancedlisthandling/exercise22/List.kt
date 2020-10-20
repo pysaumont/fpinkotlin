@@ -18,9 +18,41 @@ sealed class List<out A> {
                               p: (B) -> Boolean,
                               f: (B) -> (A) -> B): B
 
-    fun splitListAt(index: Int): List<List<A>> = TODO("splitListAt")
+    fun splitListAt(index: Int): List<List<A>> {
+        tailrec fun splitListAt(acc: List<A>,
+                                list: List<A>,
+                                i: Int): List<List<A>> =
+                when (list) {
+                    Nil -> List(list, acc)
+                    is Cons ->
+                        if (i == 0)
+                            List(list.reverse(), acc)
+                        else
+                            splitListAt(acc.cons(list.head), list.tail, i - 1)
+                }
+        return when {
+            index < 0        -> splitListAt(0)
+            index > length() -> splitListAt(length())
+            else             -> splitListAt(Nil, this.reverse(), this.length() - index)
+        }
+    }
 
-    fun divide(depth: Int): List<List<A>> = TODO("divide")
+    fun divide(depth: Int): List<List<A>> {
+        tailrec
+        fun divide(list: List<List<A>>, depth: Int): List<List<A>> =
+                when (list) {
+                    Nil -> list // dead code
+                    is Cons ->
+                        if (list.head.length() < 2 || depth < 1)
+                            list
+                        else
+                            divide(list.flatMap { x -> x.splitListAt(x.length() / 2) }, depth - 1)
+                }
+        return if (this.isEmpty())
+            List(this)
+        else
+            divide(List(this), depth)
+    }
 
     fun exists(p: (A) -> Boolean): Boolean =
             foldLeft(identity = false, zero = true) { x -> { y: A -> x || p(y) } }.first

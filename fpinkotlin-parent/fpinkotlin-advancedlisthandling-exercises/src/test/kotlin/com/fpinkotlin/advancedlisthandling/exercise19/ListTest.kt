@@ -9,7 +9,7 @@ class ListTest: StringSpec() {
 
     init {
 
-        "unfold" {
+        "range" {
             forAll(Gen.choose(0, 100)) { number ->
                 range(0, number).foldLeft(0) { a -> { b -> a + b }} == (0 until number).sum()
             }

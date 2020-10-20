@@ -1,5 +1,6 @@
 package com.fpinkotlin.advancedlisthandling.exercise23
 
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 
 
@@ -23,7 +24,23 @@ sealed class List<out A> {
     fun <B> parFoldLeft(es: ExecutorService,
                         identity: B,
                         f: (B) -> (A) -> B,
-                        m: (B) -> (B) -> B): Result<B> = TODO("parFoldLeft")
+                        m: (B) -> (B) -> B): Result<B> =
+            try {
+                val result: List<B> = divide(1024).map { list: List<A> ->
+                    es.submit<B> { list.foldLeft(identity, f) }
+                }.map<B> { fb ->
+                    try {
+                        fb.get()
+                    } catch (e: InterruptedException) {
+                        throw RuntimeException(e)
+                    } catch (e: ExecutionException) {
+                        throw RuntimeException(e)
+                    }
+                }
+                Result(result.foldLeft(identity, m))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
 
     fun splitListAt(index: Int): List<List<A>> {
         tailrec fun splitListAt(acc: List<A>,

@@ -337,7 +337,7 @@ fun <A, S> unfoldResult(z: S, getNext: (S) -> Result<Pair<A, S>>): Result<List<A
 fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
     tailrec fun unfold(acc: List<A>, z: S): List<A> {
         return when (val next = getNext(z)) {
-            Option.None    -> acc
+            Option.None -> acc
             is Option.Some ->
                 unfold(acc.cons(next.value.first), next.value.second)
         }
@@ -345,4 +345,5 @@ fun <A, S> unfold(z: S, getNext: (S) -> Option<Pair<A, S>>): List<A> {
     return unfold(List.Nil, z).reverse()
 }
 
-fun range(start: Int, end: Int): List<Int> = TODO("Implement this function")
+fun range(start: Int, end: Int): List<Int> =
+        unfold(start) { if (it < end) Option(Pair(it, it + 1)) else Option() }

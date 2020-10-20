@@ -13,7 +13,7 @@ sealed class List<out A> {
 
     abstract fun headSafe(): Result<A>
 
-    fun lastSafe(): Result<A> = TODO("lastSafe")
+    fun lastSafe(): Result<A> = reverse().headSafe()
 
     fun setHead(a: @UnsafeVariance A): List<A> = when (this) {
         Nil -> throw IllegalStateException("setHead called on an empty list")
