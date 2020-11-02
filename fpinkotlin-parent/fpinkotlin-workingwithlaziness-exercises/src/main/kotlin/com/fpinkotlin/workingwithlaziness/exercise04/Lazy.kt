@@ -9,8 +9,14 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     companion object {
 
-        val lift2: ((String) -> (String) -> String) -> (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> =
-                TODO("lift2")
+        val lift2: ((String) -> (String) -> String) -> (Lazy<String>) -> (Lazy<String>) -> Lazy<String> =
+                { f ->
+                    { ls1 ->
+                        { ls2 ->
+                            Lazy { f(ls1())(ls2()) }
+                        }
+                    }
+                }
     }
 }
 

@@ -19,7 +19,12 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> = TODO("Implement this function")
+    fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
+            foldRight(Lazy {Empty as Stream<B>}){a: A ->
+                {b: Lazy<Stream<B>> ->
+                    f(a).append(b)
+                }
+            }
 
     fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
             this.foldRight(stream2) { a: A ->

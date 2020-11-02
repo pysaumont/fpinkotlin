@@ -21,4 +21,4 @@ fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
         }
 
 
-fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = TODO("sequence")
+fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = Lazy { lst.map { it() } }

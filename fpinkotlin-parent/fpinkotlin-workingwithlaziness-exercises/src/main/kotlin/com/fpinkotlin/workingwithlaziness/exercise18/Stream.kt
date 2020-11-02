@@ -16,7 +16,7 @@ sealed class Stream<out A> {
 
     abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
 
-    fun dropWhile(p: (A) -> Boolean): Stream<A> = TODO("dropWhile")
+    fun dropWhile(p: (A) -> Boolean): Stream<A> = dropWhile(p, this)
 
     fun toList(): List<A> = toList(this)
 
@@ -75,7 +75,7 @@ sealed class Stream<out A> {
         }
 
         fun <A> toList(stream: Stream<A>) : List<A> {
-            tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
+            tailrec fun <A> toList(list: List<A>, stream: Stream<A>): List<A> = when (stream) {
                 Empty -> list
                 is Cons -> toList(list.cons(stream.hd()), stream.tl())
             }
@@ -85,5 +85,11 @@ sealed class Stream<out A> {
         fun <A> iterate(seed: Lazy<A>, f: (A) -> A): Stream<A> = cons(seed, Lazy { iterate(f(seed()), f) })
 
         fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = iterate(Lazy { seed }, f)
+
+        tailrec fun <A> dropWhile(p: (A) -> Boolean, stream: Stream<A>): Stream<A> = when (stream) {
+            is Empty -> stream
+            is Cons -> if (p(stream.hd())) dropWhile(p, stream.tl())
+            else stream
+        }
     }
 }

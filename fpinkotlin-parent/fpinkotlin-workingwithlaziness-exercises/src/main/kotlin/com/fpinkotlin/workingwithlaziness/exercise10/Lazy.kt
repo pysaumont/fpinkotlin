@@ -14,11 +14,11 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     fun <B> flatMap(f: (A) -> Lazy<B>): Lazy<B> = Lazy { f(value)() }
 
-    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: () -> Unit = {}): Unit = TODO("forEach")
+    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: () -> Unit = {}): Unit = if (condition) ifTrue(value) else ifFalse()
 
-    fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit): Unit = TODO("forEach")
+    fun forEach(condition: Boolean, ifTrue: () -> Unit = {}, ifFalse: (A) -> Unit): Unit = if (condition) ifTrue() else ifFalse(value)
 
-    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: (A) -> Unit): Unit = TODO("forEach")
+    fun forEach(condition: Boolean, ifTrue: (A) -> Unit, ifFalse: (A) -> Unit): Unit = if (condition) ifTrue(value) else ifFalse(value)
 }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =

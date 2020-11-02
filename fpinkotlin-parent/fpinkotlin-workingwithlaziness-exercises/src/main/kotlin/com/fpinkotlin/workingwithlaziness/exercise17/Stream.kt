@@ -14,7 +14,7 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun takeWhile(p: (A) -> Boolean): Stream<A> = TODO("takeWhile")
+    abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
 
     fun toList(): List<A> = toList(this)
 
@@ -29,6 +29,8 @@ sealed class Stream<out A> {
         override fun tail(): Result<Nothing> = Result()
 
         override fun isEmpty(): Boolean = true
+
+        override fun takeWhile(p: (Nothing) -> Boolean): Stream<Nothing> = this
 
     }
 
@@ -45,6 +47,10 @@ sealed class Stream<out A> {
         override fun tail(): Result<Stream<A>> = Result(tl())
 
         override fun isEmpty(): Boolean = false
+
+        override fun takeWhile(p: (A) -> Boolean): Stream<A> =
+                if (p(hd())) cons(hd, Lazy { tl().takeWhile(p) })
+                else Empty
     }
 
     companion object {

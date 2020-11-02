@@ -151,12 +151,13 @@ sealed class Stream<out A> {
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
                 when (stream) {
                     Empty -> false
-                    is Cons  -> when {
+                    is Cons -> when {
                         p(stream.hd()) -> true
-                        else           -> exists(stream.tl(), p)
+                        else -> exists(stream.tl(), p)
                     }
                 }
     }
 }
 
-fun fibs(): Stream<Int> = TODO("Implement this function")
+fun fibs(): Stream<Int> = Stream.iterate(Pair(1, 1)) { x -> Pair(x.second, x.first + x.second) }
+        .map { it.first }

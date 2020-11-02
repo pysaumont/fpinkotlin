@@ -31,7 +31,7 @@ sealed class Stream<out A> {
     fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
             this.foldRight(stream2) { a: A ->
                 { b: Lazy<Stream<A>> ->
-                    Stream.cons(Lazy { a }, b)
+                    cons(Lazy { a }, b)
                 }
             }
 
@@ -149,16 +149,19 @@ sealed class Stream<out A> {
         tailrec fun <A> exists(stream: Stream<A>, p: (A) -> Boolean): Boolean =
                 when (stream) {
                     Empty -> false
-                    is Cons  -> when {
+                    is Cons -> when {
                         p(stream.hd()) -> true
-                        else           -> exists(stream.tl(), p)
+                        else -> exists(stream.tl(), p)
                     }
                 }
 
-        fun <A, S> unfold(z: S, f: (S) -> Result<Pair<A, S>>): Stream<A> = TODO("Implement this function")
+        fun <A, S> unfold(z: S, f: (S) -> Result<Pair<A, S>>): Stream<A> =
+                f(z).map { x ->
+                    cons(Lazy { x.first }, Lazy { unfold(x.second, f) })
+                }.getOrElse(Empty)
 
-        fun from(i: Int): Stream<Int> = TODO("Implement this function based upon unfold")
+        fun from(i: Int): Stream<Int> = unfold(i) { x -> Result(Pair(x, x + 1)) }
     }
 }
 
-fun fibs(): Stream<Int> = TODO("Implement this function based upon unfold")
+fun fibs(): Stream<Int> = Stream.unfold(Pair(1, 1)) { (x, y) -> Result(Pair(x, Pair(x, x + y))) }

@@ -35,7 +35,13 @@ sealed class Stream<out A> {
                 }
             }
 
-    fun filter(p: (A) -> Boolean): Stream<A>  = TODO("Implement this function")
+    fun filter(p: (A) -> Boolean): Stream<A> =
+            dropWhile { x: A -> !p(x) }.let {
+                when (it) {
+                    is Empty -> Empty
+                    is Cons -> cons(it.hd, Lazy { it.tl().filter(p) })
+                }
+            }
 
     fun <B> map(f: (A) -> B): Stream<B> =
             foldRight(Lazy { Empty }) { a ->

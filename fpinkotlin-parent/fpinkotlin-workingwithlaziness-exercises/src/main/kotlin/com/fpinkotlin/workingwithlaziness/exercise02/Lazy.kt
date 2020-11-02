@@ -8,4 +8,5 @@ class Lazy<out A>(function: () -> A): () -> A {
     override operator fun invoke(): A = value
 }
 
-fun constructMessage(greetings: Lazy<String>, name: Lazy<String>): Lazy<String> = TODO("Implement this function")
+fun constructMessage(greetings: Lazy<String>, name: Lazy<String>): Lazy<String> =
+        Lazy { "${greetings()}, ${name()}!" }

@@ -51,7 +51,7 @@ sealed class Stream<out A> {
 
         operator fun <A> invoke(): Stream<A> = Empty
 
-        fun from(i: Int): Stream<Int> = cons(Lazy { i }, Lazy { from(i + 1) })
+        fun from(i: Int): Stream<Int> = iterate(i) { it + 1}
 
         fun <A> repeat(f: () -> A): Stream<A> = cons(Lazy { f() }, Lazy { repeat(f) })
 
@@ -63,14 +63,15 @@ sealed class Stream<out A> {
             else -> stream
         }
 
-        fun <A> toList(stream: Stream<A>) : List<A> {
-            tailrec fun <A> toList(list: List<A>, stream: Stream<A>) : List<A> = when (stream) {
+        fun <A> toList(stream: Stream<A>): List<A> {
+            tailrec fun <A> toList(list: List<A>, stream: Stream<A>): List<A> = when (stream) {
                 Empty -> list
                 is Cons -> toList(list.cons(stream.hd()), stream.tl())
             }
             return toList(List(), stream).reverse()
         }
 
-        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> = TODO("iterate")
+        fun <A> iterate(seed: A, f: (A) -> A): Stream<A> =
+                cons(Lazy { seed }, Lazy { iterate(f(seed), f) })
     }
 }

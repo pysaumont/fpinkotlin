@@ -8,8 +8,12 @@ class Lazy<out A>(function: () -> A): () -> A {
     override operator fun invoke(): A = value
 }
 
-fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
-        TODO("lift2")
+fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) -> (Lazy<B>) -> Lazy<C> =
+        { a: Lazy<A> ->
+            { b: Lazy<B> ->
+                Lazy { f(a())(b()) }
+            }
+        }
 
 val consMessage: (String) -> (String) -> String =
     { greetings ->

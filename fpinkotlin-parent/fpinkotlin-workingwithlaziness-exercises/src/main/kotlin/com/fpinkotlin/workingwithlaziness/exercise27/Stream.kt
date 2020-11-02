@@ -19,7 +19,7 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun find(p: (A) -> Boolean): Result<A> = TODO("Implement this function")
+    fun find(p: (A) -> Boolean): Result<A> = filter(p).head()
 
     fun <B> flatMap(f: (A) -> Stream<B>): Stream<B> =
             foldRight(Lazy { Empty as Stream<B> }) { a ->

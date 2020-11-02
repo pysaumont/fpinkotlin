@@ -14,7 +14,7 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun toList(): List<A> = TODO("toList")
+    abstract fun toList(): List<A>
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
@@ -27,6 +27,8 @@ sealed class Stream<out A> {
         override fun tail(): Result<Nothing> = Result()
 
         override fun isEmpty(): Boolean = true
+
+        override fun toList(): List<Nothing> = List()
 
     }
 
@@ -43,6 +45,15 @@ sealed class Stream<out A> {
         override fun tail(): Result<Stream<A>> = Result(tl())
 
         override fun isEmpty(): Boolean = false
+
+        override fun toList(): List<A> {
+            tailrec fun toList(acc: List<A>, stream: Stream<A>): List<A> =
+                    when (stream) {
+                        is Empty -> acc
+                        is Cons -> toList(acc.cons(stream.hd()), stream.tl())
+                    }
+            return toList(List(), this).reverse()
+        }
     }
 
     companion object {

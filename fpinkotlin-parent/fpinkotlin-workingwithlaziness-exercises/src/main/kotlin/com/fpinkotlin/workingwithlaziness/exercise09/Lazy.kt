@@ -2,6 +2,7 @@ package com.fpinkotlin.workingwithlaziness.exercise09
 
 import com.fpinkotlin.common.List
 import com.fpinkotlin.common.Result
+import com.fpinkotlin.common.traverse
 
 class Lazy<out A>(function: () -> A): () -> A {
 
@@ -23,4 +24,8 @@ fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =
 
 fun <A> sequence(lst: List<Lazy<A>>): Lazy<List<A>> = Lazy { lst.map { it() } }
 
-fun <A> sequenceResult(lst: List<Lazy<A>>): Lazy<Result<List<A>>> = TODO("sequenceResult")
+fun <A> sequenceResult(lst: List<Lazy<A>>): Lazy<Result<List<A>>> =
+        Lazy { traverse(lst) { it: Lazy<A> -> val f: Lazy<A> = it
+            val of: Result<A> = Result.of(f)
+            of
+        } }

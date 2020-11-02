@@ -16,7 +16,16 @@ sealed class Stream<out A> {
 
     abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
 
-    fun exists(p: (A) -> Boolean): Boolean = TODO("exists")
+    fun exists(p: (A) -> Boolean): Boolean {
+        tailrec fun exists(stream: Stream<A>): Boolean =
+                when (stream) {
+                    is Empty -> false
+                    is Cons ->
+                        if (p(stream.hd())) true
+                        else exists(stream.tl())
+                }
+        return exists(this)
+    }
 
     fun dropWhile(p: (A) -> Boolean): Stream<A> = dropWhile(this, p)
 
@@ -24,7 +33,7 @@ sealed class Stream<out A> {
 
     fun dropAtMost(n: Int): Stream<A> = dropAtMost(n, this)
 
-    private object Empty: Stream<Nothing>() {
+    private object Empty : Stream<Nothing>() {
 
         override fun takeWhile(p: (Nothing) -> Boolean): Stream<Nothing> = this
 

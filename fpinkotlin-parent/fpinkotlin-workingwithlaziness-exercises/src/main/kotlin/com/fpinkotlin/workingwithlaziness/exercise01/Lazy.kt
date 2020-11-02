@@ -3,7 +3,7 @@ package com.fpinkotlin.workingwithlaziness.exercise01
 
 class Lazy<out A>(function: () -> A): () -> A {
 
-    // Add implementation
+    private val value: A by lazy(function)
 
-    override fun invoke(): A = TODO("not implemented")
+    override fun invoke(): A = value
 }

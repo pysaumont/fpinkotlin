@@ -16,8 +16,8 @@ sealed class Stream<out A> {
 
     abstract fun takeWhile(p: (A) -> Boolean): Stream<A>
 
-    fun <B> foldRight(z: Lazy<B>,
-                               f: (A) -> (Lazy<B>) -> B): B = TODO("foldRight")
+    abstract fun <B>  foldRight(z: Lazy<B>,
+                               f: (A) -> (Lazy<B>) -> B): B
 
     fun exists(p: (A) -> Boolean): Boolean = exists(this, p)
 
@@ -39,6 +39,8 @@ sealed class Stream<out A> {
 
         override fun isEmpty(): Boolean = true
 
+        override fun <B> foldRight(z: Lazy<B>, f: (Nothing) -> (Lazy<B>) -> B): B = z()
+
     }
 
     private class Cons<out A> (internal val hd: Lazy<A>,
@@ -59,6 +61,9 @@ sealed class Stream<out A> {
         override fun tail(): Result<Stream<A>> = Result(tl())
 
         override fun isEmpty(): Boolean = false
+
+        override fun <B> foldRight(z: Lazy<B>, f: (A) -> (Lazy<B>) -> B): B =
+                f(hd())(Lazy { tl().foldRight(z, f) })
     }
 
     companion object {

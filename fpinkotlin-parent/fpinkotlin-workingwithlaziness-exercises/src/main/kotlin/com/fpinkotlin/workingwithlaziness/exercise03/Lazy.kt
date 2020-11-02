@@ -9,4 +9,11 @@ class Lazy<out A>(function: () -> A): () -> A {
 }
 
 
-val constructMessage: (Lazy<String>) ->  (Lazy<String>) -> Lazy<String> = TODO("Implement this function")
+val constructMessage: (Lazy<String>) -> (Lazy<String>) -> Lazy<String> =
+        { greetings ->
+            { name ->
+                Lazy {
+                    "${greetings()}, ${name()}!"
+                }
+            }
+        }

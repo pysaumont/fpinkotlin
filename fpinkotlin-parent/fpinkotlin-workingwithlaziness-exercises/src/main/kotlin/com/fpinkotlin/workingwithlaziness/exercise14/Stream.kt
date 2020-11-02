@@ -13,9 +13,9 @@ sealed class Stream<out A> {
 
     abstract fun takeAtMost(n: Int): Stream<A>
 
-    fun dropAtMost(n: Int): Stream<A> = TODO("dropAtMost")
+    abstract fun dropAtMost(n: Int): Stream<A>
 
-    private object Empty: Stream<Nothing>() {
+    private object Empty : Stream<Nothing>() {
 
         override fun takeAtMost(n: Int): Stream<Nothing> = this
 
@@ -25,10 +25,12 @@ sealed class Stream<out A> {
 
         override fun isEmpty(): Boolean = true
 
+        override fun dropAtMost(n: Int): Stream<Nothing> = this
+
     }
 
-    private class Cons<out A> (internal val hd: Lazy<A>,
-                               internal val tl: Lazy<Stream<A>>) : Stream<A>() {
+    private class Cons<out A>(internal val hd: Lazy<A>,
+                              internal val tl: Lazy<Stream<A>>) : Stream<A>() {
 
         override fun takeAtMost(n: Int): Stream<A> = when {
             n > 0 -> cons(hd, Lazy { tl().takeAtMost(n - 1) })
@@ -40,6 +42,17 @@ sealed class Stream<out A> {
         override fun tail(): Result<Stream<A>> = Result(tl())
 
         override fun isEmpty(): Boolean = false
+
+        override fun dropAtMost(n: Int): Stream<A> {
+            tailrec fun dropAtMost(n: Int, stream: Stream<A>): Stream<A> = when(n) {
+                0 -> stream
+                else -> when(stream) {
+                    is Empty -> stream
+                    is Cons -> dropAtMost(n - 1, stream.tl())
+                }
+            }
+            return dropAtMost(n, this)
+        }
     }
 
     companion object {

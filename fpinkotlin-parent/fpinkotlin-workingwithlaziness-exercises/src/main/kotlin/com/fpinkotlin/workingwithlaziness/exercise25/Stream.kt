@@ -19,7 +19,12 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> = TODO("Implement this function")
+    fun append(stream2: Lazy<Stream<@UnsafeVariance A>>): Stream<A> =
+            foldRight(stream2) { a: A ->
+                { b: Lazy<Stream<A>> ->
+                    cons(Lazy { a }, b)
+                }
+            }
 
     fun filter(p: (A) -> Boolean): Stream<A> =
             foldRight(Lazy { Empty }) { a ->

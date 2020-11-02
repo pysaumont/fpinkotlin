@@ -7,7 +7,8 @@ class Lazy<out A>(function: () -> A): () -> A {
 
     override operator fun invoke(): A = value
 
-    fun <B> map(f: (A) -> B): Lazy<B> = TODO("lift2")
+    fun <B> map(f: (A) -> B): Lazy<B> =
+            Lazy {f(value)}
 }
 
 fun <A, B, C> lift2(f: (A) -> (B) -> C): (Lazy<A>) ->  (Lazy<B>) -> Lazy<C> =

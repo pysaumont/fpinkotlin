@@ -19,7 +19,15 @@ sealed class Stream<out A> {
     abstract fun <B> foldRight(z: Lazy<B>,
                                f: (A) -> (Lazy<B>) -> B): B
 
-    fun filter(p: (A) -> Boolean): Stream<A> = TODO("filter")
+    fun filter(p: (A) -> Boolean): Stream<A> =
+            foldRight(Lazy { Empty }) { a ->
+                {
+                    b: Lazy<Stream<A>> ->
+                    if(p(a))
+                        cons(Lazy {a}, b)
+                    else b()
+                }
+            }
 
     fun <B> map(f: (A) -> B): Stream<B> =
         foldRight(Lazy { Empty }) { a ->
